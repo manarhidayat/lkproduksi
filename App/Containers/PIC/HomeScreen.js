@@ -13,7 +13,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Colors, Images} from '../../Themes';
 import Text from '../../Components/Text';
 import SessionActions, {SessionSelectors} from '../../Redux/SessionRedux';
-import MachineActions, {MachineSelectors} from '../../Redux/MachineRedux';
 import NavigationServices from '../../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import {OperationSelectors} from '../../Redux/OperationRedux';

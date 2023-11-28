@@ -248,11 +248,6 @@ class FormBatchScreen extends Component {
             onSubmit={this.handleSubmit}
             validationSchema={schema}
             render={this.renderForm}
-            // initialValues={
-            //   {
-            //     // name: isEdit ? inventory.name : ''
-            //   }
-            // }
           />
         </View>
       </SafeAreaView>

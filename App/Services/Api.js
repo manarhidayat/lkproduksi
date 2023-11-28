@@ -67,16 +67,6 @@ const create = (baseURL = API_URL) => {
   const doLogin = (data) => api.post(`/login`, data);
   const doLoginAzure = (data) => api.post(`/signin`, data);
 
-  const getListActiveMachine = () => api.get(`/machine/active`);
-  const getListItemOfMachine = (id) => api.get(`/machine/${id}/items`);
-  const getListItemGoingToMaintenance = (data) => api.get(`/signin`, data);
-  const postBundleActivity = (data) => api.post(`/activity`, data);
-  const getListItemUse = (data) => api.get(`/signin`, data);
-  const postUseRequest = (data) => api.post(`/signin`, data);
-  const postReturnRequest = (data) => api.post(`/signin`, data);
-
-  const getLocations = (data) => api.get(`/master/location/data`, data);
-
   // ------
   // STEP 3
   // ------
@@ -93,15 +83,6 @@ const create = (baseURL = API_URL) => {
     // a list of the API functions from step 2
     doLogin,
     doLoginAzure,
-
-    getListActiveMachine,
-    getListItemOfMachine,
-    getListItemGoingToMaintenance,
-    postBundleActivity,
-    getListItemUse,
-    postUseRequest,
-    postReturnRequest,
-    getLocations,
 
     api
   };

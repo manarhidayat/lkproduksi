@@ -1,6 +1,5 @@
 import {select, fork} from 'redux-saga/effects';
 import {SessionSelectors} from '../Redux/SessionRedux';
-import ActivityActions from '../Redux/ActivityRedux';
 import {networkListener} from './NetworkSagas';
 import StoreHelper from '../Services/StoreHelper';
 
@@ -15,7 +14,6 @@ export function* startup(api) {
     }
 
     yield fork(networkListener);
-    StoreHelper.dispatch(ActivityActions.uploadActivity());
 
     // const selectBoarding = yield select(SessionSelectors.selectBoarding);
 

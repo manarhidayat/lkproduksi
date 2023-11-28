@@ -130,7 +130,7 @@ class LoginScreen extends Component {
                 fontSize: Fonts.size.regular,
                 fontFamily: Fonts.type.bold,
               }}>
-              Drill Management System
+              LK Produksi by Mac-id
             </Text>
           </View>
           <Text

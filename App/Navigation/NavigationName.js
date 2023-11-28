@@ -5,18 +5,6 @@ export const NAVIGATION_NAME = {
     chooseMachine: 'home.chooseMachine',
     profile: 'home.profile'
   },
-  ACTIVITY: {
-    list: 'activity.list',
-    add: 'activity.add'
-  },
-  SUPPORT_TOOLS: {
-    list: 'support_tools.list',
-    add: 'support_tools.add'
-  },
-  INVENTORY: {
-    list: 'inventory.list',
-    add: 'inventory.add'
-  },
   AUTH: {
     login: 'auth.login'
   },

@@ -19,12 +19,6 @@ export const reducers = combineReducers({
 
   session: resettable(require('./SessionRedux').reducer),
   auth: resettable(require('./AuthRedux').reducer),
-  activity: resettable(require('./ActivityRedux').reducer),
-  supportTools: resettable(require('./SupportToolsRedux').reducer),
-  inventory: resettable(require('./InventoryRedux').reducer),
-  machine: resettable(require('./MachineRedux').reducer),
-  use: resettable(require('./UseRedux').reducer),
-  network: resettable(require('./NetworkRedux').reducer),
   operation: resettable(require('./OperationRedux').reducer),
 });
 

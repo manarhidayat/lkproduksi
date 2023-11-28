@@ -5,11 +5,10 @@ import {Alert} from 'react-native';
 import DropDownHolder from '../Components/DropDownHolder';
 import {batch} from 'react-redux';
 import StoreHelper from '../Services/StoreHelper';
-import ActivityActions from '../Redux/ActivityRedux';
 import NetworkActions, {NetworkSelectors} from '../Redux/NetworkRedux';
 
 const NETWORK_ACTION = {
-  STATE_CHANGE: 'state-change'
+  STATE_CHANGE: 'state-change',
 };
 
 export function networkStateHandler() {
@@ -34,8 +33,8 @@ export function* networkListener() {
   if (networkState.isConnected === false) {
     DropDownHolder.alert(
       'error',
-      "Tidak ada internet",
-      "Periksa internet Anda"
+      'Tidak ada internet',
+      'Periksa internet Anda'
     );
   }
 
@@ -51,19 +50,16 @@ export function* networkListener() {
           if (isConnected === false && payload.isConnected === true) {
             DropDownHolder.alert(
               'info',
-              "Koneksi kembali",
-              "Internet kembali nyala"
+              'Koneksi kembali',
+              'Internet kembali nyala'
             );
-            batch(() => {
-              StoreHelper.dispatch(ActivityActions.uploadActivity());
-            });
           }
 
           if (isConnected === true && payload.isConnected === false) {
             DropDownHolder.alert(
               'error',
-              "Tidak ada internet",
-              "Periksa internet Anda"
+              'Tidak ada internet',
+              'Periksa internet Anda'
             );
           }
 
