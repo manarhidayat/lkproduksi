@@ -66,11 +66,12 @@ class FormBatchScreen extends Component {
 
   handleSubmit(values) {
     const {setTypeBoarding} = this.props;
-    setTypeBoarding(TYPE_ONBOARDING.timer);
-    NavigationServices.pop();
-    setTimeout(() => {
-      NavigationServices.replace(NAVIGATION_NAME.PIC.timer);
-    }, 1);
+    setTypeBoarding(TYPE_ONBOARDING.home);
+    NavigationServices.navigate(NAVIGATION_NAME.PIC.home);
+    // NavigationServices.pop();
+    // setTimeout(() => {
+    //   NavigationServices.replace(NAVIGATION_NAME.PIC.timer);
+    // }, 1);
   }
 
   renderForm(props) {

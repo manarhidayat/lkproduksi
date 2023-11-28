@@ -8,8 +8,6 @@ const {Types, Creators} = createActions({
   saveUserData: ['data'],
   saveUserHeaders: ['data'],
   saveUserRole: ['data'],
-  saveLocation: ['data'],
-  saveMachine: ['data'],
 
   setTypeBoarding: ['data'],
   saveBatch: ['data'],
@@ -32,8 +30,6 @@ export const INITIAL_STATE = Immutable({
   user: null,
   boarding: null,
   role: null,
-  location: null,
-  machine: null,
 
   batch: null,
   kitchen: null,
@@ -47,8 +43,6 @@ export const SessionSelectors = {
   selectBoarding: (state) => state.session.boarding,
   selectHeader: (state) => state.session.headers,
   selectRole: (state) => state.session.role,
-  selectMachine: (state) => state.session.machine,
-  selectLocation: (state) => state.session.location,
 
   selectBatch: (state) => state.session.batch,
   selectKitchen: (state) => state.session.kitchen,
@@ -94,12 +88,6 @@ export const saveUserHeadersReducer = (state, {data}) =>
 export const saveUserRoleReducer = (state, {data}) =>
   state.merge({...state, role: data});
 
-export const saveLocationReducer = (state, {data}) =>
-  state.merge({...state, location: data});
-
-export const saveMachineReducer = (state, {data}) =>
-  state.merge({...state, machine: data});
-
 export const saveKitchenReducer = (state, {data}) =>
   state.merge({...state, kitchen: data});
 
@@ -122,8 +110,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.UPDATE_USER_PHOTO]: updateUserPhoto,
   [Types.SAVE_USER_HEADERS]: saveUserHeadersReducer,
   [Types.SAVE_USER_ROLE]: saveUserRoleReducer,
-  [Types.SAVE_MACHINE]: saveMachineReducer,
-  [Types.SAVE_LOCATION]: saveLocationReducer,
 
   [Types.SAVE_KITCHEN]: saveKitchenReducer,
   [Types.SAVE_BATCH]: saveBatchReducer,

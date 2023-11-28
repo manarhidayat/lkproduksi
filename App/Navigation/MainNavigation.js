@@ -15,7 +15,6 @@ import TimelineScreen from '../Containers/PIC/TimelineScreen';
 import {SessionSelectors} from '../Redux/SessionRedux';
 import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,13 +22,14 @@ class MainNavigation extends PureComponent {
   render() {
     const {boarding} = this.props;
     let initialRouteName = NAVIGATION_NAME.PIC.selectBatch;
-    if (boarding === TYPE_ONBOARDING.timer) {
-      initialRouteName = NAVIGATION_NAME.PIC.timer;
-    } else if (boarding === TYPE_ONBOARDING.timer) {
+    // if (boarding === TYPE_ONBOARDING.timer) {
+    //   initialRouteName = NAVIGATION_NAME.PIC.timer;
+    // }
+    if (boarding === TYPE_ONBOARDING.home) {
       initialRouteName = NAVIGATION_NAME.PIC.home;
     }
 
-    initialRouteName = NAVIGATION_NAME.PIC.home;
+    // initialRouteName = NAVIGATION_NAME.PIC.home;
 
     return (
       <Stack.Navigator

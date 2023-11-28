@@ -97,8 +97,6 @@ class HomeScreen extends Component {
     const {operations} = this.props;
     const list = Object.values(OPERATIONS);
 
-    console.tron.log('wew operations', operations);
-
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.content}>
@@ -135,7 +133,7 @@ const selector = createSelector(
 const mapStateToProps = (state) => selector(state);
 
 const mapDispatchToProps = (dispatch) => ({
-  saveMachine: (params) => dispatch(SessionActions.saveMachine(params)),
+  // saveMachine: (params) => dispatch(SessionActions.saveMachine(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

@@ -12,7 +12,7 @@ class InputDate extends Component {
     super(props);
     this.state = {
       visible: false,
-      selected: props.value,
+      selected: props.value
     };
 
     this.handleDatePicked = this.handleDatePicked.bind(this);
@@ -24,8 +24,16 @@ class InputDate extends Component {
   }
 
   handleDatePicked(date) {
+    const {mode} = this.props;
     this.showModal(false);
-    this.props.onSelect(Moment(date).format('YYYY-MM-DD HH:mm'));
+
+    let format = 'YYYY-MM-DD HH:mm';
+    if (mode === 'date') {
+      format = 'YYYY-MM-DD';
+    } else if (mode === 'time') {
+      format = 'HH:mm';
+    }
+    this.props.onSelect(Moment(date).format(format));
   }
 
   showModal(visible) {
@@ -36,12 +44,12 @@ class InputDate extends Component {
   }
 
   renderModal() {
-    const {value, minimumDate, maximumDate} = this.props;
+    const {value, minimumDate, maximumDate, mode} = this.props;
 
     return (
       <DateTimePickerModal
         date={value ? new Date(value) : new Date()}
-        mode="datetime"
+        mode={mode || 'datetime'}
         display="spinner"
         isVisible={this.state.visible}
         onConfirm={this.handleDatePicked}
@@ -72,7 +80,7 @@ class InputDate extends Component {
               height: 47,
               width: '100%',
               flexDirection: 'row',
-              justifyContent: 'space-between',
+              justifyContent: 'space-between'
             },
           ]}
           onPress={this.showModal.bind(this, true)}>
@@ -101,7 +109,7 @@ InputDate.defaultProps = {
   data: [],
   renderItem: (item) => {},
   onSelect: (item) => {},
-  style: {},
+  style: {}
 };
 
 export default InputDate;

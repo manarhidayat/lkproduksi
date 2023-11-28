@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   Alert
 } from 'react-native';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
 import {connect} from 'react-redux';
 import {Colors} from '../../Themes';
 import Text from '../../Components/Text';
@@ -13,6 +15,7 @@ import SessionActions, {SessionSelectors} from '../../Redux/SessionRedux';
 import NavigationServices from '../../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import Spacer from '../../Components/Spacer';
+import InputDate from '../../Components/InputDate';
 
 const styles = StyleSheet.create({
   row: {
@@ -41,6 +44,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  form: {
+    flexDirection: 'row'
+  }
+});
+
+const schema = Yup.object().shape({
+  // email: Yup.string()
+  //   .email('Mohon masukan format Email dengan benar')
+  //   .required('Mohon lengkapi Email Anda'),
+  // password: Yup.string()
+  //   .min(6, 'Min 6 Karakter')
+  //   .required('Mohon lengkapi Kata Sandi Anda')
 });
 
 class SelectBatchScreen extends Component {
@@ -127,10 +142,64 @@ class SelectBatchScreen extends Component {
     );
   }
 
+  renderForm(props) {
+    return (
+      <View style={styles.form}>
+        <InputDate
+          title="Start Date"
+          placeholder="Start Date"
+          name="start_date"
+          pointerEvents="none"
+          editable={true}
+          selectTextOnFocus={false}
+          value={props.values.start_date}
+          error={props.errors.start_date}
+          containerStyle={{flex: 0.5}}
+          mode="date"
+          onSelect={(item) => {
+            props.setFieldValue('start_date', item);
+          }}
+          setFieldTouched={() => {}}
+          maximumDate={
+            props.values.end_date ? new Date(props.values.end_date) : undefined
+          }
+        />
+        <Spacer width={10} />
+        <InputDate
+          title="End Date"
+          placeholder="End Date"
+          name="end_date"
+          pointerEvents="none"
+          editable={true}
+          selectTextOnFocus={false}
+          containerStyle={{flex: 0.5}}
+          mode="date"
+          value={props.values.end_date}
+          error={props.errors.end_date}
+          onSelect={(item) => {
+            props.setFieldValue('end_date', item);
+          }}
+          setFieldTouched={() => {}}
+          minimumDate={
+            props.values.start_date
+              ? new Date(props.values.start_date)
+              : undefined
+          }
+        />
+      </View>
+    );
+  }
+
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.content}>
+        <Formik
+          onSubmit={this.handleSubmit}
+          validationSchema={schema}
+          render={this.renderForm}
+        />
+        <Spacer height={20} />
           <Text style={styles.title}>Select Batch</Text>
           {[1, 2, 3, 4].map((item) => this.renderItemBatch(item))}
           <Spacer height={10} />
