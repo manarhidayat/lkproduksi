@@ -2,12 +2,16 @@ import React, {PureComponent} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import {connect} from 'react-redux';
+import {createSelector} from 'reselect';
 import Modal from 'react-native-modal';
 import {Colors, Fonts} from '../Themes';
 import FullButton from './FullButton';
 import Input from './Input';
 import Spacer from './Spacer';
 import Text from './Text';
+import {OperationSelectors} from '../Redux/OperationRedux';
+import InputSelect from './InputSelect';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -31,7 +35,8 @@ const styles = StyleSheet.create({
 });
 
 const schema = Yup.object().shape({
-  comment: Yup.string().required('Mohon Masukan Comment'),
+  reason: Yup.string().required('Mohon Masukan reason'),
+  // reasonOther: Yup.string().required('Mohon Masukan reason'),
 });
 
 class ModalAddComment extends PureComponent {
@@ -39,6 +44,7 @@ class ModalAddComment extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      notes: null,
     };
 
     this.show = this.show.bind(this);
@@ -59,8 +65,9 @@ class ModalAddComment extends PureComponent {
     return this.state.visible;
   }
 
-  show() {
-    this.setState({visible: true});
+  show(notes) {
+    console.tron.log('wew notes', notes);
+    this.setState({visible: true, notes});
   }
 
   hide() {
@@ -69,23 +76,42 @@ class ModalAddComment extends PureComponent {
   }
 
   handleSubmit(values) {
-    const {comment} = values;
+    const {reason, reasonOther} = values;
     const {onDone} = this.props;
-    this.setState({visible: false}, () => onDone(comment));
+    this.setState({visible: false}, () => onDone({reason, reasonOther}));
   }
 
   renderForm(props) {
+    const {reasons} = this.props;
     return (
       <View style={styles.content}>
-        <Text style={styles.title}>Add Comment</Text>
+        <Text style={styles.title}>Masukan Catatan</Text>
         <Spacer height={10} />
+        <InputSelect
+          name="reason"
+          placeholder="Alasan"
+          editable={true}
+          data={reasons}
+          value={
+            props.values.reason
+              ? props.values.reason.code_name
+              : props.values.reason
+          }
+          selected={props.values.reason}
+          code_name
+          useSearch
+          error={props.errors.reason}
+          onSelect={(item) => {
+            props.setFieldValue('reason', item);
+          }}
+        />
         <Input
-          placeholder="Fill comment here"
-          name="comment"
+          placeholder="Alasan lainnya"
+          name="reasonOther"
           multiline
-          style={{height: 300}}
-          value={props.values.comment}
-          error={props.errors.comment}
+          style={{height: 100}}
+          value={props.values.reasonOther}
+          error={props.errors.reasonOther}
           setFieldValue={props.setFieldValue}
           setFieldTouched={() => {}}
         />
@@ -98,7 +124,7 @@ class ModalAddComment extends PureComponent {
               backgroundColor: Colors.button,
               borderWidth: 1,
             }}
-            text="CANCEL"
+            text="BATAL"
             textStyle={{color: 'black'}}
           />
           <Spacer width={20} />
@@ -107,7 +133,7 @@ class ModalAddComment extends PureComponent {
               props.handleSubmit(e);
             }}
             style={{width: '45%'}}
-            text="SAVE"
+            text="SIMPAN"
           />
         </View>
       </View>
@@ -115,7 +141,7 @@ class ModalAddComment extends PureComponent {
   }
 
   render() {
-    const {visible} = this.state;
+    const {visible, notes} = this.state;
     return (
       <>
         <Modal
@@ -128,6 +154,10 @@ class ModalAddComment extends PureComponent {
           style={styles.modalContainer}>
           <View style={styles.container}>
             <Formik
+              initialValues={{
+                reason: notes ? notes.reason : {},
+                reasonOther: notes ? notes.reasonOther : '',
+              }}
               onSubmit={this.handleSubmit}
               validationSchema={schema}
               render={this.renderForm}
@@ -139,4 +169,10 @@ class ModalAddComment extends PureComponent {
   }
 }
 
-export default ModalAddComment;
+const selector = createSelector([OperationSelectors.getReasons], (reasons) => ({
+  reasons,
+}));
+
+const mapStateToProps = (state) => selector(state);
+
+export default connect(mapStateToProps, null)(ModalAddComment);

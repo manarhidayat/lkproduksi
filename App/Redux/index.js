@@ -20,6 +20,8 @@ export const reducers = combineReducers({
   session: resettable(require('./SessionRedux').reducer),
   auth: resettable(require('./AuthRedux').reducer),
   operation: resettable(require('./OperationRedux').reducer),
+  approval: resettable(require('./ApprovalRedux').reducer),
+  dashboard: resettable(require('./DashboardRedux').reducer),
 });
 
 export default () => {

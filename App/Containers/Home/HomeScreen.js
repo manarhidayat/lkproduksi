@@ -14,6 +14,7 @@ import Text from '../../Components/Text';
 import NavigationServices from '../../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import {SessionSelectors} from '../../Redux/SessionRedux';
+import DashboardActions from '../../Redux/DashboardRedux';
 import {version} from '../../../package.json';
 
 const styles = StyleSheet.create({
@@ -55,13 +56,7 @@ class HomeScreen extends Component {
   }
 
   componentDidMount() {
-    const {machine} = this.props;
-
-    return setTimeout(() => {
-      if (machine === null || machine === undefined) {
-        NavigationServices.navigate(NAVIGATION_NAME.HOME.chooseMachine);
-      }
-    }, 100);
+    this.props.getResumeBatchRequest();
   }
 
   render() {
@@ -117,8 +112,8 @@ const selector = createSelector(
 );
 
 const mapDispatchToProps = (dispatch) => ({
-  // getLocationsRequest: (params) =>
-  //   dispatch(ActivityActions.getLocationsRequest(params)),
+  getResumeBatchRequest: (params) =>
+    dispatch(DashboardActions.getResumeBatchRequest(params)),
 });
 
 const mapStateToProps = (state) => selector(state);

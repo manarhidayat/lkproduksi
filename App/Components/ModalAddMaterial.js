@@ -177,7 +177,7 @@ class ModalAddMaterial extends PureComponent {
               backgroundColor: Colors.button,
               borderWidth: 1,
             }}
-            text="CANCEL"
+            text="BATAL"
             textStyle={{color: 'black'}}
           />
           <Spacer width={20} />
@@ -186,7 +186,7 @@ class ModalAddMaterial extends PureComponent {
               props.handleSubmit(e);
             }}
             style={{width: '45%'}}
-            text="SAVE"
+            text="SIMPAN"
           />
         </View>
       </View>
@@ -208,7 +208,7 @@ class ModalAddMaterial extends PureComponent {
           <View style={styles.container}>
             <Formik
               onSubmit={this.handleSubmit}
-              validationSchema={schema}
+              // validationSchema={schema}
               render={this.renderForm}
             />
           </View>

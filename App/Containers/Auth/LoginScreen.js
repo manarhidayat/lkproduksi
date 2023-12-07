@@ -9,7 +9,6 @@ import {
 import {connect} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import AzureAuth from 'react-native-azure-auth';
 import AuthActions from '../../Redux/AuthRedux';
 import SessionActions from '../../Redux/SessionRedux';
 
@@ -24,9 +23,8 @@ import Spacer from '../../Components/Spacer';
 import ModalSetupUrl from '../../Components/ModalSetupUrl';
 
 const schema = Yup.object().shape({
-  email: Yup.string()
-    .email('Mohon masukan format Email dengan benar')
-    .required('Mohon lengkapi Email Anda'),
+  usernama: Yup.string()
+    .required('Mohon lengkapi Usernama Anda'),
   password: Yup.string()
     .min(6, 'Min 6 Karakter')
     .required('Mohon lengkapi Kata Sandi Anda'),
@@ -34,8 +32,8 @@ const schema = Yup.object().shape({
 
 const styles = StyleSheet.create({
   footer: {
-    position: 'absolute',
-    bottom: 20,
+    // position: 'absolute',
+    // bottom: 20,
     alignSelf: 'center',
     flexDirection: 'row',
   },
@@ -54,7 +52,7 @@ class LoginScreen extends Component {
 
   async handleSubmit(values) {
     let data = {
-      email: values.email,
+      usernama: values.usernama,
       password: values.password,
     };
 
@@ -69,16 +67,15 @@ class LoginScreen extends Component {
           paddingTop: Metrics.doubleBaseMargin,
         }}>
         <Input
-          placeholder="Email"
-          name="email"
+          placeholder="Usernama"
+          name="usernama"
           maxLength={50}
           autoCapitalize="none"
-          keyboardType="email-address"
-          value={props.values.email}
-          error={props.errors.email}
+          value={props.values.usernama}
+          error={props.errors.usernama}
           setFieldValue={props.setFieldValue}
           setFieldTouched={() => {}}
-          leftIcon={<Icon name="envelope" size={27} color={Colors.primary} />}
+          leftIcon={<Icon name="user" size={27} color={Colors.primary} />}
         />
 
         <Input
@@ -148,7 +145,7 @@ class LoginScreen extends Component {
 
         <Formik
           onSubmit={this.handleSubmit}
-          // validationSchema={schema}
+          validationSchema={schema}
           render={this.renderForm}
         />
         <TouchableOpacity

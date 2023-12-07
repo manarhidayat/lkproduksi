@@ -9,22 +9,22 @@ import {connect} from 'react-redux';
 import {Colors} from '../Themes';
 import MainNavigation from '../Navigation/MainNavigation';
 import AuthNavigation from '../Navigation/AuthNavigation';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
+import ApprovalNavigation from '../Navigation/ApprovalNavigation';
 import DropDownAlertContainer from './DropDownAlertContainer';
 
 class App extends PureComponent {
   navigation = React.createRef();
 
   render() {
-    const {isLogin, boarding} = this.props;
+    const {isLogin, user} = this.props;
     let rootNav = null;
 
-    if (isLogin) {
-      // if(boarding === TYPE_ONBOARDING.chooseMachine) {
-      //   rootNav = <AuthNavigation  />;
-      // } else {
+    if (isLogin && user) {
+      if (user.role === 'P') {
         rootNav = <MainNavigation />;
-      // }
+      } else {
+        rootNav = <ApprovalNavigation />;
+      }
     } else {
       rootNav = <AuthNavigation />;
     }
@@ -61,11 +61,13 @@ const selector = createSelector(
   [
     SessionSelectors.isLogin,
     SessionSelectors.selectBoarding,
+    SessionSelectors.selectUser,
   ],
-  (isLogin, boarding) => {
+  (isLogin, boarding, user) => {
     return {
       isLogin,
-      boarding
+      boarding,
+      user
     };
   }
 );

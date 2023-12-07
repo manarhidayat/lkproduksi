@@ -28,9 +28,7 @@ export function* doLogin(api, action) {
   LoadingHelper.hide();
 
   if (response.ok) {
-    const {token, user, role, location} = response.data
-      ? response.data.data
-      : {};
+    const {token, data} = response.data ? response.data : {};
     api.api.setHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -40,17 +38,15 @@ export function* doLogin(api, action) {
 
     yield all([
       yield put(AuthActions.doLoginSuccess(response.data)),
-      yield put(SessionActions.saveUserData(user)),
-      yield put(SessionActions.saveUserRole(role)),
-      yield put(SessionActions.saveLocation(location)),
       yield put(SessionActions.saveUserHeaders(headers)),
       yield put(SessionActions.setLogin(true)),
+      yield put(SessionActions.saveUserData(data)),
       yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.selectBatch)),
     ]);
   } else {
     const message =
-      response.data && response.data.message
-        ? response.data.message
+      response.data && response.data.error
+        ? response.data.error
         : 'Login Gagal';
     Alert.alert('Peringatan', message);
     yield put(AuthActions.doLoginFailure(response));
@@ -64,10 +60,10 @@ export function* doLoginAzure(api, action) {
   if (response.ok) {
     const {token, user, role} = response.data ? response.data.data : {};
     api.api.setHeaders({
-      token
+      token,
     });
     const headers = {
-      token
+      token,
     };
 
     yield all([
@@ -75,7 +71,7 @@ export function* doLoginAzure(api, action) {
       yield put(SessionActions.saveUserData(user)),
       yield put(SessionActions.saveUserRole(role)),
       yield put(SessionActions.saveUserHeaders(headers)),
-      yield put(SessionActions.setLogin(true))
+      yield put(SessionActions.setLogin(true)),
     ]);
   } else {
     Alert.alert('Peringatan', 'Login gagal');

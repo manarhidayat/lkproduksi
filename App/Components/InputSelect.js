@@ -21,8 +21,8 @@ class InputSelect extends Component {
     super(props);
     this.state = {
       visible: false,
-      selected: props.value,
-      search: ''
+      selected: props.selected,
+      search: '',
     };
   }
 
@@ -42,13 +42,17 @@ class InputSelect extends Component {
 
   renderItem({item, index}) {
     const {selected} = this.state;
-    const {isInventory} = this.props;
+    const {isInventory, code_name} = this.props;
     let isSelected = selected.id === item.id;
 
     let name = item.name;
 
     if (isInventory) {
       name = item.item_name;
+    }
+    if (code_name) {
+      name = item.code_name;
+      isSelected = selected.code_id === item.code_id;
     }
 
     return (
@@ -60,16 +64,24 @@ class InputSelect extends Component {
     );
   }
 
-  renderData(){
+  renderData() {
     const {search} = this.state;
-    const {useSearch, data, isInventory} = this.props;
+    const {useSearch, data, isInventory, code_name} = this.props;
 
     let list = data;
-    if(useSearch){
+    if (useSearch) {
       if (isInventory) {
-        list =  data.filter(item => item.item_name.toLowerCase().includes(search.toLowerCase()))
-      }else{
-        list =  data.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+        list = data.filter((item) =>
+          item.item_name.toLowerCase().includes(search.toLowerCase())
+        );
+      } if (code_name) {
+        list = data.filter((item) =>
+          item.code_name.toLowerCase().includes(search.toLowerCase())
+        );
+      } else {
+        list = data.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase())
+        );
       }
     }
 
@@ -92,20 +104,24 @@ class InputSelect extends Component {
               Choose {this.props.title}
             </Text>
 
-            {
-              useSearch && 
-                <TextInput 
-                  placeholder="search"
-                  onChangeText={(txt) => this.setState({search: txt})} 
-                  style={{borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 5, borderColor: Colors.greyLight}}
-                />
-            }
-            
+            {useSearch && (
+              <TextInput
+                placeholder="search"
+                onChangeText={(txt) => this.setState({search: txt})}
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  padding: 10,
+                  marginBottom: 5,
+                  borderColor: Colors.greyLight,
+                }}
+              />
+            )}
 
             <FlatList
               data={data}
               keyExtractor={(item, index) => index.toString()}
-              style={{height: this.setHeight(), }}
+              style={{height: this.setHeight()}}
               extraData={this.state}
               renderItem={(item) => this.renderItem(item)}
             />
@@ -118,14 +134,14 @@ class InputSelect extends Component {
               }}>
               <ButtonWhite
                 onPress={this.showModal.bind(this, false)}
-                style={{height: 40, width: '45%'}}
-                text="CANCEL"
+                style={{height: 40, width: '45%', marginTop: 15}}
+                text="BATAL"
               />
 
               <Button
                 onPress={() => this.setSelected()}
                 style={{height: 40, width: '45%'}}
-                text="SELECT"
+                text="PILIH"
                 textSize={11}
               />
             </View>
@@ -136,7 +152,8 @@ class InputSelect extends Component {
   }
 
   render() {
-    const {title, value, error, containerStyle, placeholder, editable} = this.props;
+    const {title, value, error, containerStyle, placeholder, editable} =
+      this.props;
     const showError = !!(error && error.length > 0);
 
     return (
@@ -162,7 +179,15 @@ class InputSelect extends Component {
               {placeholder}
             </Text>
           ) : (
-            <Text style={{marginLeft: 3, color: 'black', flexWrap: 'wrap', flex: 1}}>{value}</Text>
+            <Text
+              style={{
+                marginLeft: 3,
+                color: 'black',
+                flexWrap: 'wrap',
+                flex: 1,
+              }}>
+              {value}
+            </Text>
           )}
 
           <Icon name="down" size={15} color={Colors.primary} />

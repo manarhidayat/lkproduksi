@@ -10,7 +10,7 @@ import TextUtil from '../../Lib/TextUtil';
 import Spacer from '../../Components/Spacer';
 import moment from 'moment';
 
-const CAUTION_TIME = 10;
+// const CAUTION_TIME = 10;
 
 class Timer extends PureComponent {
   clockCall = null;
@@ -86,9 +86,12 @@ class Timer extends PureComponent {
   }
 
   startTimer() {
-    const {isTimesCaution} = this.props;
+    const {isTimesCaution, cautionTime} = this.props;
+
+    const caution = parseInt(cautionTime, 10) * 60;
+
     this.clockCall = setInterval(() => {
-      if (this.state.timer > CAUTION_TIME && !this.cautionAlreadyCall) {
+      if (this.state.timer > caution && !this.cautionAlreadyCall) {
         isTimesCaution();
       }
       this.decrementClock();
@@ -102,15 +105,22 @@ class Timer extends PureComponent {
   }
 
   render() {
+    const {timer} = this.state;
     return (
       <View style={{justifyContent: 'center', alignItems: 'center'}}>
         <View style={{flexDirection: 'row'}}>
-          <Text>Hrs</Text>
+          <Text>Jam</Text>
           <Spacer width={60} />
-          <Text>Min</Text>
+          <Text>Mnt</Text>
+          {timer > 3599 && (
+            <>
+              <Spacer width={60} />
+              <Text>Dtk</Text>
+            </>
+          )}
         </View>
         <Text style={{fontSize: 56, fontWeight: 'bold'}}>
-          {TextUtil.formatTimeCountDown(this.state.timer)}
+          {TextUtil.formatTimeCountDown(timer)}
         </Text>
       </View>
     );

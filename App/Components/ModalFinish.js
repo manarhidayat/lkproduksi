@@ -8,7 +8,6 @@ import FullButton from './FullButton';
 import Input from './Input';
 import Spacer from './Spacer';
 import Text from './Text';
-import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -25,40 +24,54 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'center',
   },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 17,
+  },
+  titleLabel: {
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  heightField: {
+    height: 50,
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderColor: Colors.greyLight,
+  },
+  heightInput: {
+    height: 18,
+    marginTop: 1,
+  },
 });
 
 const schema = Yup.object().shape({
-  url: Yup.string().required('Mohon Masukan URL'),
+  gasMeter: Yup.string().required('Mohon Masukan Gas Meter'),
+  jumlahProduksi: Yup.string().required('Mohon Masukan Jumlah Produksi'),
 });
 
-class ModalSetupUrl extends PureComponent {
+class ModalFinish extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
-      url: ''
     };
 
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
-    this.onDone = this.onDone.bind(this);
+    this.isVisible = this.isVisible.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderForm = this.renderForm.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const {setRef} = this.props;
     if (setRef) {
       setRef(this);
     }
-
-    const url = await MMKVStoragePersistHelper.getItem('url');
-    this.setState({url});
   }
 
-  onDone() {
-    const {onDone} = this.props;
-    this.setState({visible: false}, () => onDone());
+  isVisible() {
+    return this.state.visible;
   }
 
   show() {
@@ -71,19 +84,31 @@ class ModalSetupUrl extends PureComponent {
   }
 
   handleSubmit(values) {
-    MMKVStoragePersistHelper.setItem('url', values.url);
-    this.setState({visible: false, url: values.url});
+    const {gasMeter, jumlahProduksi} = values;
+    const {onDone} = this.props;
+    this.setState({visible: false}, () => onDone(gasMeter, jumlahProduksi));
   }
 
   renderForm(props) {
     return (
       <View style={styles.content}>
+        <Text style={styles.title}>Masukan Gas Meter & Jumlah Produksi</Text>
+        <Spacer height={10} />
         <Input
-          placeholder="Masukan Base Url"
-          name="url"
-          title="Setup URL"
-          value={props.values.url}
-          error={props.errors.url}
+          placeholder="Gas Meter"
+          name="gasMeter"
+          keyboardType="number-pad"
+          value={props.values.gasMeter}
+          error={props.errors.gasMeter}
+          setFieldValue={props.setFieldValue}
+          setFieldTouched={() => {}}
+        />
+        <Input
+          placeholder="Jumlah Produksi"
+          name="jumlahProduksi"
+          keyboardType="number-pad"
+          value={props.values.jumlahProduksi}
+          error={props.errors.jumlahProduksi}
           setFieldValue={props.setFieldValue}
           setFieldTouched={() => {}}
         />
@@ -114,8 +139,6 @@ class ModalSetupUrl extends PureComponent {
 
   render() {
     const {visible} = this.state;
-    const {url} = this.state;
-
     return (
       <>
         <Modal
@@ -131,9 +154,6 @@ class ModalSetupUrl extends PureComponent {
               onSubmit={this.handleSubmit}
               validationSchema={schema}
               render={this.renderForm}
-              initialValues={{
-                url: url || '',
-              }}
             />
           </View>
         </Modal>
@@ -142,4 +162,4 @@ class ModalSetupUrl extends PureComponent {
   }
 }
 
-export default ModalSetupUrl;
+export default ModalFinish;

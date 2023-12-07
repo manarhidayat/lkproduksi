@@ -7,6 +7,7 @@ import AuthActions from '../Redux/AuthRedux';
 
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import StoreHelper from '../Services/StoreHelper';
+import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
 
 // our "constructor"
 const create = (baseURL = API_URL) => {
@@ -17,6 +18,7 @@ const create = (baseURL = API_URL) => {
   //
   // Create and configure an apisauce-based api object.
   //
+  // const url = MMKVStoragePersistHelper.getItem('url');
   const api = apisauce.create({
     // base URL is read from the "constructor"
     baseURL,
@@ -26,7 +28,7 @@ const create = (baseURL = API_URL) => {
       Accept: 'application/json',
     },
     // 10 second timeout...
-    timeout: 10000
+    timeout: 10000,
   });
 
   api.addResponseTransform((response) => {
@@ -38,7 +40,7 @@ const create = (baseURL = API_URL) => {
         ) {
           response.data = {
             responsecode: '0',
-            responsemessage: 'Silahkan Logout dan login kembali'
+            responsemessage: 'Silahkan Logout dan login kembali',
           };
 
           StoreHelper.dispatch(AuthActions.doLogOut());
@@ -64,8 +66,25 @@ const create = (baseURL = API_URL) => {
   // way at this level.
   //
 
-  const doLogin = (data) => api.post(`/login`, data);
-  const doLoginAzure = (data) => api.post(`/signin`, data);
+  const doLogin = (data) => api.post('/public/auth/login', data);
+  const doLoginAzure = (data) => api.post('/signin', data);
+
+  const getListBatch = (data) => api.get('/public/batches', data);
+  const getListKitchen = (data) => api.get('/public/kitchens', data);
+  const startOperation = (data) => api.post('/public/progress/start', data);
+  const stopOperation = (data) => api.post('/public/progress/stop', data);
+  const finishOperation = (data) => api.post('/public/progress/end', data);
+
+  const getListReason = (data) => api.get('/public/reasons', data);
+  const getListOperation = (data) => api.get('/public/process', data);
+  const beginOperation = (data) => api.post('/public/progress/begin', data);
+  const getDetailBatch = (data) => api.get(`/public/batches/${data.id}`, data);
+
+  const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
+  const getTimelineBatch = (data) => api.post(`/public/dashboard/resume/detail`, data);
+
+  const approve = (data) => api.post('/public/progress/approve', data);
+  const decline = (data) => api.post('/public/progress/decline', data);
 
   // ------
   // STEP 3
@@ -84,11 +103,28 @@ const create = (baseURL = API_URL) => {
     doLogin,
     doLoginAzure,
 
-    api
+    getListBatch,
+    getListKitchen,
+    startOperation,
+    stopOperation,
+    finishOperation,
+
+    getListReason,
+    getListOperation,
+    beginOperation,
+    getDetailBatch,
+
+    getResumeBatch,
+    getTimelineBatch,
+
+    approve,
+    decline,
+
+    api,
   };
 };
 
 // let's return back our create method as the default.
 export default {
-  create
+  create,
 };

@@ -1,7 +1,8 @@
-import MMKVStorage from 'react-native-mmkv-storage';
+import MMKVStorage, { MMKVLoader } from 'react-native-mmkv-storage';
 
 class MMKVStoragePersistHelper {
   constructor() {
+    // this.MMKV = new MMKVStorage.Loader().initialize(); // Returns an MMKV Instance
     this.MMKV = new MMKVStorage.Loader().initialize(); // Returns an MMKV Instance
   }
 

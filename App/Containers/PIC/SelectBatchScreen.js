@@ -4,18 +4,23 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  Alert
+  Alert,
+  ScrollView,
 } from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
 import {Colors} from '../../Themes';
 import Text from '../../Components/Text';
-import SessionActions, {SessionSelectors} from '../../Redux/SessionRedux';
+import SessionActions from '../../Redux/SessionRedux';
+import OperationActions, {OperationSelectors} from '../../Redux/OperationRedux';
 import NavigationServices from '../../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import Spacer from '../../Components/Spacer';
 import InputDate from '../../Components/InputDate';
+import FullButton from '../../Components/FullButton';
+import {getStatusOperation} from '../../Lib/Helper';
 
 const styles = StyleSheet.create({
   row: {
@@ -27,7 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginBottom: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   empty: {
     flex: 1,
@@ -45,8 +50,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   form: {
-    flexDirection: 'row'
-  }
+    flexDirection: 'row',
+  },
+  containerStatus: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    width: 120,
+    alignItems: 'center',
+  },
 });
 
 const schema = Yup.object().shape({
@@ -64,19 +76,54 @@ class SelectBatchScreen extends Component {
 
     this.state = {
       batchSelected: undefined,
-      kitchenSelected: undefined
+      kitchenSelected: undefined,
     };
- 
+
     this.renderItemBatch = this.renderItemBatch.bind(this);
     this.renderItemKitchen = this.renderItemKitchen.bind(this);
     this.renderEmpty = this.renderEmpty.bind(this);
     this.onPressDone = this.onPressDone.bind(this);
+    this.onPressLogout = this.onPressLogout.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
+    const {getListKitchenRequest} = this.props;
+    getListKitchenRequest();
+
     setTimeout(() => {
-      NavigationServices.setParams({onPressDone: this.onPressDone});
+      NavigationServices.setParams({onPressLogout: this.onPressLogout});
     }, 500);
+  }
+
+  handleSubmit(values) {
+    const {start_date, end_date} = values;
+    const {getListBatchRequest} = this.props;
+
+    getListBatchRequest({start_date, end_date});
+  }
+
+  onPressLogout() {
+    Alert.alert(
+      'Peringatan',
+      'Apakan Anda akan keluar aplikasi?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            this.props.setLogin(false);
+            this.props.removeSession();
+            this.props.removeOperations();
+          },
+        },
+      ],
+      {cancelable: false}
+    );
   }
 
   onPressDone() {
@@ -91,7 +138,9 @@ class SelectBatchScreen extends Component {
     saveBatch(batchSelected);
     saveKitchen(kitchenSelected);
 
-    NavigationServices.navigate(NAVIGATION_NAME.PIC.formBatch);
+    NavigationServices.navigate(NAVIGATION_NAME.PIC.formBatch, {
+      batch: batchSelected,
+    });
   }
 
   renderEmpty() {
@@ -107,16 +156,34 @@ class SelectBatchScreen extends Component {
     const style = isSelected
       ? {
           borderColor: Colors.primary,
-          borderWidth: 2
+          borderWidth: 2,
         }
       : {};
 
+    const {status, statusColor, statusBackground} = getStatusOperation(item);
+
     return (
       <TouchableOpacity
-        onPress={() => this.setState({batchSelected: item})}
+        onPress={() =>
+          status === '' ? this.setState({batchSelected: item}) : {}
+        }
         style={[styles.row, style]}>
         <View>
-          <Text>2309011.1c{item}</Text>
+          <Text>{item.woi_remarks}</Text>
+          {status !== '' && (
+            <>
+              <Spacer height={6} />
+              <View
+                style={[
+                  styles.containerStatus,
+                  {backgroundColor: statusBackground},
+                ]}>
+                <Text style={{fontWeight: 'bold', color: statusColor}}>
+                  {status}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -127,7 +194,7 @@ class SelectBatchScreen extends Component {
     const style = isSelected
       ? {
           borderColor: Colors.primary,
-          borderWidth: 2
+          borderWidth: 2,
         }
       : {};
 
@@ -136,7 +203,7 @@ class SelectBatchScreen extends Component {
         onPress={() => this.setState({kitchenSelected: item})}
         style={[styles.row, style]}>
         <View>
-          <Text>2309011.1c{item}</Text>
+          <Text>{item.mch_name}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -144,76 +211,118 @@ class SelectBatchScreen extends Component {
 
   renderForm(props) {
     return (
-      <View style={styles.form}>
-        <InputDate
-          title="Start Date"
-          placeholder="Start Date"
-          name="start_date"
-          pointerEvents="none"
-          editable={true}
-          selectTextOnFocus={false}
-          value={props.values.start_date}
-          error={props.errors.start_date}
-          containerStyle={{flex: 0.5}}
-          mode="date"
-          onSelect={(item) => {
-            props.setFieldValue('start_date', item);
+      <View>
+        <View style={styles.form}>
+          <InputDate
+            title="Tanggal Awal"
+            placeholder="Tanggal Awal"
+            name="start_date"
+            pointerEvents="none"
+            editable={true}
+            selectTextOnFocus={false}
+            value={props.values.start_date}
+            error={props.errors.start_date}
+            containerStyle={{flex: 0.5}}
+            mode="date"
+            onSelect={(item) => {
+              props.setFieldValue('start_date', item);
+            }}
+            setFieldTouched={() => {}}
+            maximumDate={
+              props.values.end_date
+                ? new Date(props.values.end_date)
+                : undefined
+            }
+          />
+          <Spacer width={10} />
+          <InputDate
+            title="Tanggal Akhir"
+            placeholder="Tanggal Akhir"
+            name="end_date"
+            pointerEvents="none"
+            editable={true}
+            selectTextOnFocus={false}
+            containerStyle={{flex: 0.5}}
+            mode="date"
+            value={props.values.end_date}
+            error={props.errors.end_date}
+            onSelect={(item) => {
+              props.setFieldValue('end_date', item);
+            }}
+            setFieldTouched={() => {}}
+            minimumDate={
+              props.values.start_date
+                ? new Date(props.values.start_date)
+                : undefined
+            }
+          />
+        </View>
+        <FullButton
+          onPress={(e) => {
+            props.handleSubmit(e);
           }}
-          setFieldTouched={() => {}}
-          maximumDate={
-            props.values.end_date ? new Date(props.values.end_date) : undefined
-          }
-        />
-        <Spacer width={10} />
-        <InputDate
-          title="End Date"
-          placeholder="End Date"
-          name="end_date"
-          pointerEvents="none"
-          editable={true}
-          selectTextOnFocus={false}
-          containerStyle={{flex: 0.5}}
-          mode="date"
-          value={props.values.end_date}
-          error={props.errors.end_date}
-          onSelect={(item) => {
-            props.setFieldValue('end_date', item);
-          }}
-          setFieldTouched={() => {}}
-          minimumDate={
-            props.values.start_date
-              ? new Date(props.values.start_date)
-              : undefined
-          }
+          text={'CARI BATCH'}
         />
       </View>
     );
   }
 
   render() {
+    const {kitchens, batches} = this.props;
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View style={styles.content}>
-        <Formik
-          onSubmit={this.handleSubmit}
-          validationSchema={schema}
-          render={this.renderForm}
-        />
-        <Spacer height={20} />
-          <Text style={styles.title}>Select Batch</Text>
-          {[1, 2, 3, 4].map((item) => this.renderItemBatch(item))}
-          <Spacer height={10} />
-          <Text style={styles.title}>Select Kitchen</Text>
-          {[1, 2, 3, 4].map((item) => this.renderItemKitchen(item))}
-        </View>
+        <ScrollView>
+          <View style={styles.content}>
+            <Formik
+              onSubmit={this.handleSubmit}
+              validationSchema={schema}
+              render={this.renderForm}
+            />
+            <Spacer height={20} />
+            {batches && batches.length > 0 && (
+              <>
+                <Text style={styles.title}>Pilih Batch</Text>
+                {batches && batches.map((item) => this.renderItemBatch(item))}
+              </>
+            )}
+            <Spacer height={10} />
+            <Text style={styles.title}>Pilih Kitchen</Text>
+            {kitchens && kitchens.map((item) => this.renderItemKitchen(item))}
+            <FullButton onPress={this.onPressDone} text="PILIH" />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 }
 
+const selector = createSelector(
+  [OperationSelectors.getKitchens, OperationSelectors.getBatchs],
+  (kitchens, batches) => {
+    return {
+      kitchens,
+      batches,
+    };
+  }
+);
+
+const mapStateToProps = (state) => {
+  return selector(state);
+};
+
 const mapDispatchToProps = (dispatch) => ({
   saveBatch: (params) => dispatch(SessionActions.saveBatch(params)),
   saveKitchen: (params) => dispatch(SessionActions.saveKitchen(params)),
+
+  getListKitchenRequest: (params) =>
+    dispatch(OperationActions.getListKitchenRequest(params)),
+  getListBatchRequest: (params) =>
+    dispatch(OperationActions.getListBatchRequest(params)),
+
+  setLogin: (params) => dispatch(SessionActions.setLogin(params)),
+  removeSession: (params) => dispatch(SessionActions.removeSession(params)),
+  removeOperations: (params) =>
+    dispatch(OperationActions.removeOperations(params)),
 });
 
-export default connect(null, mapDispatchToProps)(SelectBatchScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SelectBatchScreen);

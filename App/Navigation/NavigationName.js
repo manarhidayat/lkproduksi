@@ -20,6 +20,10 @@ export const NAVIGATION_NAME = {
     home: 'pic.home',
     timeline: 'pic.timeline',
   },
+  APPROVAL: {
+    index: 'approval.index',
+    detail: 'approval.detail',
+  },
 };
 
 export const any = () => {};

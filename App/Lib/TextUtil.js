@@ -36,7 +36,7 @@ class TextUtil {
         time = '00:' + value;
       }
     } else {
-      time = moment.duration(value, 'seconds').format('mm:ss');
+      time = moment.duration(value, 'seconds').format('HH:mm:ss');
     }
     return time;
   }
@@ -134,6 +134,21 @@ class TextUtil {
     }
 
     return newFormat;
+  }
+
+  replaceString(string) {
+    return string
+      .replace('Mon', 'Sen')
+      .replace('Tue', 'Sel')
+      .replace('Wed', 'Rab')
+      .replace('Thu', 'Kam')
+      .replace('Fri', 'Jum')
+      .replace('Sat', 'Sab')
+      .replace('Sun', 'Min')
+      
+      .replace('Aug', 'Agu')
+      .replace('Oct', 'Okt')
+      .replace('Dec', 'Des');
   }
 
   blurName(name) {

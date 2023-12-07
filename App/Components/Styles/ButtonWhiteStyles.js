@@ -3,8 +3,8 @@ import { Fonts, Colors } from '../../Themes/'
 
 export default StyleSheet.create({
   button: {
-    marginVertical: 15,
-    backgroundColor: 'white',
+    // marginVertical: 15,
+    // backgroundColor: 'white',
     borderWidth: 2, 
     borderColor: Colors.primary,
     borderRadius: 5,
@@ -18,6 +18,5 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     color: 'black',
     fontSize: Fonts.size.medium,
-    fontFamily: Fonts.type.regular
   }
 })

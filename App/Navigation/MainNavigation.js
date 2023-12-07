@@ -16,6 +16,8 @@ import {SessionSelectors} from '../Redux/SessionRedux';
 import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 const Stack = createNativeStackNavigator();
 
 class MainNavigation extends PureComponent {
@@ -27,6 +29,9 @@ class MainNavigation extends PureComponent {
     // }
     if (boarding === TYPE_ONBOARDING.home) {
       initialRouteName = NAVIGATION_NAME.PIC.home;
+    }
+    if (boarding === TYPE_ONBOARDING.timeline) {
+      initialRouteName = NAVIGATION_NAME.PIC.timeline;
     }
 
     // initialRouteName = NAVIGATION_NAME.PIC.home;
@@ -47,14 +52,14 @@ class MainNavigation extends PureComponent {
           name={NAVIGATION_NAME.PIC.selectBatch}
           component={SelectBatchScreen}
           options={({route}) => {
-            const onPressDone = route?.params?.onPressDone;
+            const onPressLogout = route?.params?.onPressLogout;
 
             return {
-              title: 'Select Batch & Kitchen',
+              title: 'Pilih Batch & Kitchen',
               headerRight: () => {
                 return (
-                  <TouchableOpacity onPress={onPressDone}>
-                    <Text style={ApplicationStyles.actionTitle}>Next</Text>
+                  <TouchableOpacity onPress={onPressLogout}>
+                    <Icon name="logout" size={20} color={'red'} />
                   </TouchableOpacity>
                 );
               },
@@ -64,15 +69,19 @@ class MainNavigation extends PureComponent {
         <Stack.Screen
           name={NAVIGATION_NAME.PIC.formBatch}
           component={FormBatchScreen}
-          options={() => ({
-            title: ' ',
-          })}
+          options={({route}) => {
+            const batch = route?.params?.batch;
+
+            return {
+              title: batch ? batch.woi_remarks : '',
+            };
+          }}
         />
         <Stack.Screen
           name={NAVIGATION_NAME.PIC.timer}
           component={TimerScreen}
           options={({route}) => {
-            const title = route?.params?.item.name;
+            const title = route?.params?.item.wc_desc;
             const hideBackButton = route?.params?.hideBackButton;
 
             return {
@@ -84,16 +93,26 @@ class MainNavigation extends PureComponent {
         <Stack.Screen
           name={NAVIGATION_NAME.PIC.home}
           component={HomeScreen}
-          options={() => ({
-            title: 'Home',
-          })}
+          options={({route}) => {
+            const onPressLogout = route?.params?.onPressLogout;
+
+            return {
+              title: 'Proses',
+              headerRight: () => {
+                return (
+                  <TouchableOpacity onPress={onPressLogout}>
+                    <Icon name="logout" size={20} color={'red'} />
+                  </TouchableOpacity>
+                );
+              },
+              headerLeft: () => <View />,
+            };
+          }}
         />
         <Stack.Screen
           name={NAVIGATION_NAME.PIC.timeline}
           component={TimelineScreen}
-          options={() => ({
-            title: ' ',
-          })}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     );
