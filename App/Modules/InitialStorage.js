@@ -2,7 +2,7 @@ import CUSTOM_PERSIST from '../Config/CustomPersistConfig';
 import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
 
 class InitialStorage {
-  restored = new Map();
+  restored = {};
 
   isLogin = false;
 
@@ -21,7 +21,6 @@ class InitialStorage {
           this.isLogin = MMKVStoragePersistHelper.getBool('isLogin');
           this.authToken = MMKVStoragePersistHelper.getString('authToken');
 
-
           for (let i = 0; i < CUSTOM_PERSIST.whitelist.length; i++) {
             let instance = CUSTOM_PERSIST.whitelist[i];
             const mmkvKeys2 = MMKVStoragePersistHelper.getAllKeys(instance);
@@ -32,25 +31,34 @@ class InitialStorage {
                 mmkvKey2,
                 instance
               );
-              instanceData[mmkvKey2] = JSON.parse(mmkvValue2);
+
+              instanceData = {
+                ...instanceData,
+                [mmkvKey2]: JSON.parse(mmkvValue2),
+              };
             }
-            this.restored = this.restored.set(instance, instanceData);
+            // this.restored = this.restored.set(instance, instanceData);
+            this.restored = {
+              ...this.restored,
+              [instance]: instanceData,
+            };
+
           }
 
-          if (
-            typeof value !== 'undefined' &&
-            value !== CUSTOM_PERSIST.version
-          ) {
-            this.restored = this.restored.setIn(
-              ['session', 'isUpdating'],
-              true
-            );
-          } else {
-            this.restored = this.restored.setIn(
-              ['session', 'isUpdating'],
-              false
-            );
-          }
+          // if (
+          //   typeof value !== 'undefined' &&
+          //   value !== CUSTOM_PERSIST.version
+          // ) {
+          //   this.restored = this.restored.setIn(
+          //     ['session', 'isUpdating'],
+          //     true
+          //   );
+          // } else {
+          //   this.restored = this.restored.setIn(
+          //     ['session', 'isUpdating'],
+          //     false
+          //   );
+          // }
 
           resolve();
           return;
@@ -62,6 +70,7 @@ class InitialStorage {
         console.tron.error({ERROR_GET_TEMP_STORAGE: error});
         reject(error);
       }
+
     });
   }
 
@@ -78,7 +87,7 @@ class InitialStorage {
   }
 
   getValue(key) {
-    return this.restored.get(key);
+    return this.restored[key] ? this.restored[key] : undefined;
   }
 }
 

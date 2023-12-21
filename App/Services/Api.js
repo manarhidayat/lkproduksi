@@ -18,10 +18,10 @@ const create = (baseURL = API_URL) => {
   //
   // Create and configure an apisauce-based api object.
   //
-  // const url = MMKVStoragePersistHelper.getItem('url');
+  const url = MMKVStoragePersistHelper.getString('url');
   const api = apisauce.create({
     // base URL is read from the "constructor"
-    baseURL,
+    baseURL: url,
     // here are some default headers
     headers: {
       'Content-Type': 'application/json',
@@ -79,6 +79,8 @@ const create = (baseURL = API_URL) => {
   const getListOperation = (data) => api.get('/public/process', data);
   const beginOperation = (data) => api.post('/public/progress/begin', data);
   const getDetailBatch = (data) => api.get(`/public/batches/${data.id}`, data);
+  const getJumlahProduksi = (id) => api.get(`/public/progress/result/${id}`);
+  const updateBatch = (data) => api.post(`/public/progress/updateresult`, data);
 
   const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
   const getTimelineBatch = (data) => api.post(`/public/dashboard/resume/detail`, data);
@@ -113,6 +115,8 @@ const create = (baseURL = API_URL) => {
     getListOperation,
     beginOperation,
     getDetailBatch,
+    getJumlahProduksi,
+    updateBatch,
 
     getResumeBatch,
     getTimelineBatch,

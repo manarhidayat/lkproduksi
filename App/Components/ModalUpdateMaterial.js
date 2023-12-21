@@ -11,6 +11,8 @@ import Input from './Input';
 import Spacer from './Spacer';
 import Text from './Text';
 import OperationActions, {OperationSelectors} from '../Redux/OperationRedux';
+import {SessionSelectors} from '../Redux/SessionRedux';
+import DashboardActions, {DashboardSelectors} from '../Redux/DashboardRedux';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -27,6 +29,9 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'center',
     maxHeight: 600,
+  },
+  content2: {
+    paddingBottom: 10,
   },
   title: {
     fontWeight: 'bold',
@@ -69,16 +74,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const schema = Yup.object().shape({
-  gasMeter: Yup.string().required('Mohon Masukan Gas Meter'),
-  // jumlahProduksi: Yup.string().required('Mohon Masukan Jumlah Produksi'),
-});
-
-class ModalFinish extends PureComponent {
+class ModalUpdateMaterial extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      materials: [],
     };
 
     this.show = this.show.bind(this);
@@ -99,8 +100,10 @@ class ModalFinish extends PureComponent {
     return this.state.visible;
   }
 
-  show() {
-    this.setState({visible: true});
+  show(materials) {
+    const {getDetailBatchRequest, batch} = this.props;
+    getDetailBatchRequest({id: batch.woi_code});
+    this.setState({visible: true, materials});
   }
 
   hide() {
@@ -109,25 +112,28 @@ class ModalFinish extends PureComponent {
   }
 
   handleSubmit(values) {
-    const {gasMeter, jumlahProduksi} = values;
-    const {onDone} = this.props;
+    const {
+      onDone,
+      detailDashboard,
+      updateBatchRequest,
+      getTimelineBatchRequest,
+      batch,
+    } = this.props;
 
-    const {finishMaterial, setFinishMaterial} = this.props;
+    const {detailBatch} = this.props;
     let validated = true;
 
     let detailMaterial = [];
-    finishMaterial.map((item) => {
-      if (values[item.pt_code]) {
-        if (values[item.pt_code] > item.wop_qty_open) {
+    detailBatch.map((item) => {
+      if (values[item.pt_id]) {
+        if (values[item.pt_id] > item.wod_qty_req) {
           Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
           validated = false;
           return;
         }
         detailMaterial.push({
-          ...item,
           material_id: item.pt_id,
-          qty_open: `${item.wop_qty_open}`,
-          qty_use: values[item.pt_code],
+          qty_use: values[item.pt_id],
         });
       }
     });
@@ -136,47 +142,33 @@ class ModalFinish extends PureComponent {
       return;
     }
 
-    setFinishMaterial(detailMaterial);
+    const params = {
+      wocpdm_wocpd_oid: detailDashboard.wocp_oid,
+      detail_material: detailMaterial,
+    };
 
-    setTimeout(() => {
-      this.setState({visible: false}, () => onDone(gasMeter));
-    }, 300);
+    updateBatchRequest(params, () => {
+      getTimelineBatchRequest({woi_oid: batch.woi_oid});
+      this.setState({visible: false});
+    });
   }
 
   renderForm(props) {
-    const {finishMaterial} = this.props;
+    const {detailBatch} = this.props;
     return (
       <View style={styles.content}>
-        <Text style={styles.title}>Masukan Gas Meter & Material</Text>
+        <Text style={styles.title}>Masukan Material</Text>
         <Spacer height={10} />
-        <Input
-          placeholder="Gas Meter"
-          name="gasMeter"
-          keyboardType="number-pad"
-          value={props.values.gasMeter}
-          error={props.errors.gasMeter}
-          setFieldValue={props.setFieldValue}
-          setFieldTouched={() => {}}
-        />
-        {/* <Input
-          placeholder="Jumlah Produksi"
-          name="jumlahProduksi"
-          keyboardType="number-pad"
-          value={props.values.jumlahProduksi}
-          error={props.errors.jumlahProduksi}
-          setFieldValue={props.setFieldValue}
-          setFieldTouched={() => {}}
-        /> */}
         <ScrollView>
-          <View style={styles.content}>
-            {finishMaterial.length > 0 && (
+          <View style={styles.content2}>
+            {detailBatch.length > 0 && (
               <View style={[styles.row, styles.titleContainer]}>
                 <Text style={[styles.textTitle, {flex: 1}]}>Material</Text>
                 <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text>
                 <Text style={[styles.textTitle, {flex: 0.5}]}>Actual</Text>
               </View>
             )}
-            {finishMaterial.map((item) => {
+            {detailBatch.map((item) => {
               return (
                 <View style={styles.row}>
                   <Text style={styles.textLabel}>{item.pt_desc1}</Text>
@@ -186,7 +178,7 @@ class ModalFinish extends PureComponent {
                     keyboardType="number-pad"
                     editable={false}
                     containerStyle={styles.inputPlan}
-                    value={`${item.wop_qty_open}`}
+                    value={`${item.wod_qty_req}`}
                     error={props.errors.baseMetalPlan}
                     setFieldValue={props.setFieldValue}
                     setFieldTouched={() => {}}
@@ -194,11 +186,11 @@ class ModalFinish extends PureComponent {
                   <Spacer width={10} />
                   <Input
                     placeholder=" "
-                    name={item.pt_code}
+                    name={item.pt_id}
                     keyboardType="number-pad"
                     containerStyle={styles.inputActual}
-                    value={props.values[item.pt_code]}
-                    error={props.errors[item.pt_code]}
+                    value={props.values[item.pt_id]}
+                    error={props.errors[item.pt_id]}
                     setFieldValue={props.setFieldValue}
                     setFieldTouched={() => {}}
                   />
@@ -233,7 +225,15 @@ class ModalFinish extends PureComponent {
   }
 
   render() {
-    const {visible} = this.state;
+    const {visible, materials} = this.state;
+
+    let initialValues = {};
+    materials.map((item) => {
+      initialValues = {
+        ...initialValues,
+        [item.wocpdm_pt_id]: `${parseInt(item.wocpdm_qty_use, 10)}`,
+      };
+    });
     return (
       <>
         <Modal
@@ -247,8 +247,8 @@ class ModalFinish extends PureComponent {
           <View style={styles.container}>
             <Formik
               onSubmit={this.handleSubmit}
-              validationSchema={schema}
               render={this.renderForm}
+              initialValues={initialValues}
             />
           </View>
         </Modal>
@@ -258,17 +258,32 @@ class ModalFinish extends PureComponent {
 }
 
 const selector = createSelector(
-  [OperationSelectors.getFinishMaterial],
-  (finishMaterial) => ({
-    finishMaterial,
+  [
+    OperationSelectors.getDetailBatch,
+    SessionSelectors.selectBatch,
+    DashboardSelectors.getDetailDashboard,
+    DashboardSelectors.getTimeline,
+  ],
+  (detailBatch, batch, detailDashboard, timeline) => ({
+    detailBatch,
+    batch,
+    detailDashboard,
+    timeline
   })
 );
 
 const mapStateToProps = (state) => selector(state);
 
 const mapDispatchToProps = (dispatch) => ({
-  setFinishMaterial: (params) =>
-    dispatch(OperationActions.setFinishMaterial(params)),
+  updateBatchRequest: (params, callback) =>
+    dispatch(OperationActions.updateBatchRequest(params, callback)),
+  getDetailBatchRequest: (params) =>
+    dispatch(OperationActions.getDetailBatchRequest(params)),
+  getTimelineBatchRequest: (params) =>
+    dispatch(DashboardActions.getTimelineBatchRequest(params)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModalFinish);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ModalUpdateMaterial);

@@ -21,6 +21,7 @@ import Spacer from '../../Components/Spacer';
 import InputDate from '../../Components/InputDate';
 import FullButton from '../../Components/FullButton';
 import {getStatusOperation} from '../../Lib/Helper';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   row: {
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
-    width: 120,
+    width: 160,
     alignItems: 'center',
   },
 });
@@ -88,11 +89,19 @@ class SelectBatchScreen extends Component {
   }
 
   componentDidMount() {
-    const {getListKitchenRequest} = this.props;
-    getListKitchenRequest();
+    const {getListKitchenRequest, getListBatchRequest, batches} = this.props;
 
     setTimeout(() => {
       NavigationServices.setParams({onPressLogout: this.onPressLogout});
+      getListKitchenRequest();
+
+      if (batches.length < 1) {
+        const start_date = moment(new Date())
+          .add(-1, 'day')
+          .format('YYYY-MM-DD');
+        const end_date = moment(new Date()).format('YYYY-MM-DD');
+        getListBatchRequest({start_date, end_date});
+      }
     }, 500);
   }
 
@@ -168,11 +177,11 @@ class SelectBatchScreen extends Component {
           status === '' ? this.setState({batchSelected: item}) : {}
         }
         style={[styles.row, style]}>
-        <View>
+        <View style={{flex: 1}}>
           <Text>{item.woi_remarks}</Text>
           {status !== '' && (
             <>
-              <Spacer height={6} />
+              <Spacer height={8} />
               <View
                 style={[
                   styles.containerStatus,
@@ -184,6 +193,11 @@ class SelectBatchScreen extends Component {
               </View>
             </>
           )}
+          <Spacer height={8} />
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text>{item.woi_code}</Text>
+            <Text>{item.woi_date}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -277,12 +291,23 @@ class SelectBatchScreen extends Component {
               onSubmit={this.handleSubmit}
               validationSchema={schema}
               render={this.renderForm}
+              initialValues={{
+                start_date: moment(new Date())
+                  .add(-1, 'day')
+                  .format('YYYY-MM-DD'),
+                end_date: moment(new Date()).format('YYYY-MM-DD'),
+              }}
             />
             <Spacer height={20} />
-            {batches && batches.length > 0 && (
+            {batches && batches.length > 0 ? (
               <>
                 <Text style={styles.title}>Pilih Batch</Text>
                 {batches && batches.map((item) => this.renderItemBatch(item))}
+              </>
+            ) : (
+              <>
+                <Text>Batch tidak ditemukan</Text>
+                <Spacer height={20} />
               </>
             )}
             <Spacer height={10} />

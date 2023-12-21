@@ -5,9 +5,11 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
+import Icon from 'react-native-vector-icons/AntDesign';
 import {Colors} from '../../Themes';
 import Text from '../../Components/Text';
 import ApprovalActions from '../../Redux/ApprovalRedux';
@@ -18,11 +20,13 @@ import moment from 'moment';
 import {getStatusOperation} from '../../Lib/Helper';
 import FullButton from '../../Components/FullButton';
 import {SessionSelectors} from '../../Redux/SessionRedux';
+import ModalMaterialNote from '../../Components/ModalMaterialNote';
 
 const styles = StyleSheet.create({
   content: {
     padding: 16,
     flex: 1,
+    paddingBottom: 100,
   },
   flexDirection: {
     flexDirection: 'row',
@@ -82,6 +86,8 @@ const styles = StyleSheet.create({
 });
 
 class DetailApprovalScreen extends Component {
+  modalMaterialNote = undefined;
+
   constructor(props) {
     super(props);
 
@@ -91,8 +97,7 @@ class DetailApprovalScreen extends Component {
   componentDidMount() {
     const {route, getTimelineBatchRequest} = this.props;
     const item = route?.params?.item;
-
-    getTimelineBatchRequest({woi_remarks: item.woi_remarks});
+    getTimelineBatchRequest({woi_oid: item.woi_oid});
   }
 
   onAccept() {
@@ -100,7 +105,22 @@ class DetailApprovalScreen extends Component {
     const item = detail;
     const {wocp_oid} = item;
 
-    approveRequest({progress_id: wocp_oid});
+    Alert.alert(
+      'Approve',
+      'Apakah Anda akan meng-Approve batch ini?',
+      [
+        {
+          text: 'Batal',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Ya',
+          onPress: () => approveRequest({progress_id: wocp_oid}),
+        },
+      ],
+      {cancelable: false}
+    );
   }
 
   onDecline() {
@@ -108,10 +128,26 @@ class DetailApprovalScreen extends Component {
     const item = detail;
     const {wocp_oid} = item;
 
-    declineRequest({progress_id: wocp_oid});
+    Alert.alert(
+      'Decline',
+      'Apakah Anda akan meng-Decline batch ini?',
+      [
+        {
+          text: 'Batal',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Ya',
+          onPress: () => declineRequest({progress_id: wocp_oid}),
+        },
+      ],
+      {cancelable: false}
+    );
   }
 
   renderItem(item, index) {
+    const {timeline} = this.props;
     const startTime = item.wocpd_start_time;
     const endTime = item.wocpd_stop_time;
 
@@ -121,36 +157,62 @@ class DetailApprovalScreen extends Component {
 
     const isLast = this.props.timeline.length - 1 === index;
 
+    let idleTime = 0;
+    if (index !== 0) {
+      idleTime = Math.round(
+        (new Date(startTime).getTime() -
+          new Date(timeline[index - 1].wocpd_stop_time).getTime()) /
+          1000
+      );
+    }
+
     return (
       <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
         <View style={{flex: 4}}>
+          {index !== 0 && (
+            <Text style={{color: 'grey'}}>
+              Idle time: {TextUtil.formatTimeCountDown(idleTime)}
+            </Text>
+          )}
           <Text style={{fontWeight: 'bold'}}>
-            {moment(item.startTime).format('HH:mm')} -{' '}
-            {moment(item.endTime).format('HH:mm')}
+            {moment(startTime).format('HH:mm')} -{' '}
+            {endTime ? moment(endTime).format('HH:mm') : 'Sekarang'}
           </Text>
           <Text style={{color: 'grey'}}>
-            {moment(item.startTime).format('ddd, DD MMM')}
+            {moment(startTime).format('ddd, DD MMM')}
           </Text>
           <Spacer height={10} />
-          <View style={{flexDirection: 'row'}}>
-            <View style={styles.containerTextTimer}>
-              <Text style={{color: Colors.primary}}>
-                {TextUtil.formatTimeCountDown(timer)}
-              </Text>
+          {endTime && (
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.containerTextTimer}>
+                <Text style={{color: Colors.primary}}>
+                  {TextUtil.formatTimeCountDown(timer)}
+                </Text>
+              </View>
+              <View />
             </View>
-            <View />
-          </View>
+          )}
           <Spacer height={20} />
         </View>
         <View style={{flex: 2, alignItems: 'center'}}>
           <View style={styles.dot} />
           {!isLast && <View style={styles.line} />}
         </View>
-        <View style={{flex: 4}}>
+        <View style={{flex: 4, alignItems: 'flex-end'}}>
           <Text style={styles.title}>{item.wc_desc}</Text>
-          <Text>
+          {/* <Text>
             {item.notes && item.notes.reason ? item.notes.reason.code_name : ''}
-          </Text>
+          </Text> */}
+          <Spacer height={6} />
+          {item.notes || item.materials.length > 0 ? (
+            // <Text>{item.notes.reason.code_name}</Text>
+            <TouchableOpacity onPress={() => this.modalMaterialNote.show(item)}>
+              {/* <Icon name="exclamationcircleo" size={20} color={'black'} /> */}
+              <Text style={{color: 'blue'}}>Lihat Detail</Text>
+            </TouchableOpacity>
+          ) : (
+            <View />
+          )}
         </View>
       </View>
     );
@@ -202,11 +264,31 @@ class DetailApprovalScreen extends Component {
             </View>
             <View style={styles.flexDirection}>
               <Text>Batch Selesai</Text>
-              <Text>{end}</Text>
+              <Text>{TextUtil.replaceString(end)}</Text>
             </View>
             <View style={styles.flexDirection}>
               <Text>Progress</Text>
               <Text style={{fontWeight: 'bold'}}>{lastProses}</Text>
+            </View>
+            <View style={styles.flexDirection}>
+              <Text>Gas Start</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                {TextUtil.formatMoney(
+                  detail.wocp_gas_start
+                    ? parseInt(detail.wocp_gas_start, 10)
+                    : '-'
+                )}
+              </Text>
+            </View>
+            <View style={styles.flexDirection}>
+              <Text>Gast Stop</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                {TextUtil.formatMoney(
+                  detail.wocp_gas_stop
+                    ? parseInt(detail.wocp_gas_stop, 10)
+                    : '-'
+                )}
+              </Text>
             </View>
             <Spacer height={20} />
             <Text style={styles.textBold}>Timeline</Text>
@@ -219,28 +301,27 @@ class DetailApprovalScreen extends Component {
               notes.map((item, index) => this.renderItemNote(item, index))}
           </View>
         </ScrollView>
-        {user.role === 'K' &&
-          item.wocp_status !== 'A' &&
-          item.wocp_status !== 'D' && (
-            <View style={styles.bottom}>
-              <FullButton
-                onPress={() => this.onDecline()}
-                style={{
-                  width: '45%',
-                  backgroundColor: Colors.button,
-                  borderWidth: 1,
-                }}
-                text="DECLINE"
-                textStyle={{color: 'black'}}
-              />
-              <Spacer width={20} />
-              <FullButton
-                onPress={() => this.onAccept()}
-                style={{width: '45%'}}
-                text="ACCEPT"
-              />
-            </View>
-          )}
+        <ModalMaterialNote setRef={(r) => (this.modalMaterialNote = r)} />
+        {user.role === 'K' && item.wocp_status === 'W' && (
+          <View style={styles.bottom}>
+            <FullButton
+              onPress={() => this.onDecline()}
+              style={{
+                width: '45%',
+                backgroundColor: Colors.button,
+                borderWidth: 1,
+              }}
+              text="DECLINE"
+              textStyle={{color: 'black'}}
+            />
+            <Spacer width={20} />
+            <FullButton
+              onPress={() => this.onAccept()}
+              style={{width: '45%'}}
+              text="ACCEPT"
+            />
+          </View>
+        )}
       </SafeAreaView>
     );
   }

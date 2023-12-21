@@ -35,8 +35,7 @@ const styles = StyleSheet.create({
 });
 
 const schema = Yup.object().shape({
-  reason: Yup.string().required('Mohon Masukan reason'),
-  // reasonOther: Yup.string().required('Mohon Masukan reason'),
+  reason: Yup.string().required('Mohon Masukan alasan'),
 });
 
 class ModalAddComment extends PureComponent {
@@ -66,7 +65,6 @@ class ModalAddComment extends PureComponent {
   }
 
   show(notes) {
-    console.tron.log('wew notes', notes);
     this.setState({visible: true, notes});
   }
 

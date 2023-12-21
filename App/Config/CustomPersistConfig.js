@@ -1,4 +1,4 @@
-export const whitelist = ['session'];
+export const whitelist = ['session', 'operation'];
 
 const CUSTOM_PERSIST = {
   active: true,

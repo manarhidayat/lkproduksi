@@ -3,10 +3,11 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Modal,
+  // Modal,
   StyleSheet,
   TextInput,
 } from 'react-native';
+import Modal from 'react-native-modal';
 
 import Button from './FullButton';
 import ButtonWhite from './ButtonWhite';
@@ -21,7 +22,7 @@ class InputSelect extends Component {
     super(props);
     this.state = {
       visible: false,
-      selected: props.selected,
+      selected: props.selected || {},
       search: '',
     };
   }
@@ -157,7 +158,7 @@ class InputSelect extends Component {
     const showError = !!(error && error.length > 0);
 
     return (
-      <View style={[containerStyle, {marginBottom: 10}]}>
+      <View style={[containerStyle, {marginBottom: 10,}]}>
         {title ? (
           <Text style={[styles.label, {marginBottom: 5}]}>{title}</Text>
         ) : null}

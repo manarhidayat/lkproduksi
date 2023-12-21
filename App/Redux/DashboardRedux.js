@@ -66,7 +66,13 @@ export const getResumeBatchFailure = (state, {error}) =>
   state.merge({...state, getResumeBatch: {fetching: false, error}});
 
 export const getTimelineBatchRequest = (state, {data}) =>
-  state.merge({...state, getTimelineBatch: {fetching: true, data}});
+  state.merge({
+    ...state,
+    getTimelineBatch: {fetching: true, data, payload: null},
+    detail: {},
+    timeline: [],
+    catatan: [],
+  });
 export const getTimelineBatchSuccess = (state, {payload}) =>
   state.merge({
     ...state,

@@ -44,8 +44,6 @@ class App extends PureComponent {
               name: `NAVIGATE/${currentRoute.name}`,
               action: currentRoute
             });
-
-         
           }}>
           <GestureHandlerRootView style={{flex: 1}}>
             {rootNav}

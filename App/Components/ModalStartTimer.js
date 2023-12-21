@@ -12,6 +12,7 @@ import Spacer from './Spacer';
 import Text from './Text';
 import {SessionSelectors} from '../Redux/SessionRedux';
 import OperationActions, {OperationSelectors} from '../Redux/OperationRedux';
+import InputSelect from './InputSelect';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -70,6 +71,7 @@ class ModalStartTimer extends PureComponent {
     super(props);
     this.state = {
       visible: false,
+      useReason: false,
     };
 
     this.show = this.show.bind(this);
@@ -79,6 +81,9 @@ class ModalStartTimer extends PureComponent {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderForm = this.renderForm.bind(this);
+
+    this.handleSubmitReason = this.handleSubmitReason.bind(this);
+    this.renderFormReason = this.renderFormReason.bind(this);
   }
 
   componentDidMount() {
@@ -92,18 +97,24 @@ class ModalStartTimer extends PureComponent {
     return this.state.visible;
   }
 
-  onDone() {
+  onDone(detailMaterial) {
     const {onDone} = this.props;
-    this.setState({visible: false}, () => onDone());
+    this.setState({visible: false}, () => onDone(detailMaterial));
   }
 
-  show() {
-    this.setState({visible: true});
+  show(useReason) {
+    this.setState({visible: true, useReason});
   }
 
   hide() {
     const {onCancel} = this.props;
-    this.setState({visible: false}, onCancel);
+    this.setState({visible: false, useReason: false}, onCancel);
+  }
+
+  handleSubmitReason(values) {
+    const {reason, reasonOther} = values;
+    const {onDone} = this.props;
+    this.setState({visible: false}, () => onDone({reason, reasonOther}));
   }
 
   handleSubmit(values) {
@@ -112,18 +123,19 @@ class ModalStartTimer extends PureComponent {
 
     let detailMaterial = [];
     detailBatch.map((item) => {
-      if (values[item.pt_code]) {
-        if (values[item.pt_code] > item.wod_qty_req) {
-          Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
-          validated = false;
-          return;
-        }
-        detailMaterial.push({
-          material_id: item.pt_id,
-          qty_open: `${item.wod_qty_req}`,
-          qty_use: values[item.pt_code],
-        });
+      // if (values[item.pt_code]) {
+      if (values[item.pt_code] > item.wod_qty_req) {
+        Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
+        validated = false;
+        return;
       }
+      detailMaterial.push({
+        ...item,
+        material_id: item.pt_id,
+        qty_open: `${item.wod_qty_req}`,
+        qty_use: values[item.pt_code] || '0',
+      });
+      // }
     });
 
     if (!validated) {
@@ -131,7 +143,7 @@ class ModalStartTimer extends PureComponent {
     }
 
     setDetailMaterial(detailMaterial);
-    this.onDone();
+    this.onDone(detailMaterial);
   }
 
   renderForm(props) {
@@ -166,6 +178,7 @@ class ModalStartTimer extends PureComponent {
                     name={item.pt_code}
                     keyboardType="number-pad"
                     containerStyle={styles.inputActual}
+                    defaultValue={'0'}
                     value={props.values[item.pt_code]}
                     error={props.errors[item.pt_code]}
                     setFieldValue={props.setFieldValue}
@@ -200,8 +213,67 @@ class ModalStartTimer extends PureComponent {
     );
   }
 
+  renderFormReason(props) {
+    const {reasons} = this.props;
+    return (
+      <View style={styles.content}>
+        <Text style={{}}>Masukan Catatan karna sudah melebihi overtime</Text>
+        <Spacer height={10} />
+        <InputSelect
+          name="reason"
+          placeholder="Alasan"
+          editable={true}
+          data={reasons}
+          containerStyle={{width: 300}}
+          value={
+            props.values.reason
+              ? props.values.reason.code_name
+              : props.values.reason
+          }
+          code_name
+          useSearch
+          error={props.errors.reason}
+          onSelect={(item) => {
+            props.setFieldValue('reason', item);
+          }}
+        />
+        <Input
+          placeholder="Alasan lainnya"
+          name="reasonOther"
+          multiline
+          style={{height: 100}}
+          containerStyle={{width: 300}}
+          value={props.values.reasonOther}
+          error={props.errors.reasonOther}
+          setFieldValue={props.setFieldValue}
+          setFieldTouched={() => {}}
+        />
+        <View style={styles.bottom}>
+          <FullButton
+            onPress={this.hide}
+            style={{
+              width: '45%',
+              backgroundColor: Colors.button,
+              borderWidth: 1,
+            }}
+            text="BATAL"
+            textStyle={{color: 'black'}}
+          />
+          <Spacer width={20} />
+          <FullButton
+            onPress={(e) => {
+              props.handleSubmit(e);
+            }}
+            style={{width: '45%'}}
+            text="SIMPAN"
+          />
+        </View>
+      </View>
+    );
+  }
+
   render() {
-    const {visible} = this.state;
+    const {visible, useReason} = this.state;
     const {title, desc, useMaterial} = this.props;
     const {detailBatch} = this.props;
 
@@ -237,6 +309,14 @@ class ModalStartTimer extends PureComponent {
                   validationSchema={Yup.object().shape(schema)}
                   render={this.renderForm}
                 />
+              ) : useReason ? (
+                <Formik
+                  onSubmit={this.handleSubmitReason}
+                  validationSchema={Yup.object().shape({
+                    reason: Yup.string().required('Mohon Masukan alasan'),
+                  })}
+                  render={this.renderFormReason}
+                />
               ) : (
                 <View style={styles.bottom}>
                   <FullButton
@@ -250,7 +330,7 @@ class ModalStartTimer extends PureComponent {
                   />
                   <Spacer width={20} />
                   <FullButton
-                    onPress={this.onDone}
+                    onPress={() => this.onDone()}
                     style={{width: '45%'}}
                     text="YES"
                   />
@@ -265,10 +345,15 @@ class ModalStartTimer extends PureComponent {
 }
 
 const selector = createSelector(
-  [SessionSelectors.selectBatch, OperationSelectors.getDetailBatch],
-  (kitchen, detailBatch) => ({
+  [
+    SessionSelectors.selectBatch,
+    OperationSelectors.getDetailBatch,
+    OperationSelectors.getReasons,
+  ],
+  (kitchen, detailBatch, reasons) => ({
     kitchen,
     detailBatch,
+    reasons,
   })
 );
 

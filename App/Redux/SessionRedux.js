@@ -16,7 +16,7 @@ const {Types, Creators} = createActions({
   removeSession: null,
 
   updateUserData: ['data'],
-  updateUserPhoto: ['data']
+  updateUserPhoto: ['data'],
 });
 
 export const SessionTypes = Types;
@@ -33,7 +33,7 @@ export const INITIAL_STATE = Immutable({
 
   batch: null,
   kitchen: null,
-  timer: null
+  timer: null,
 });
 
 /* ------------- Selectors ------------- */
@@ -47,19 +47,22 @@ export const SessionSelectors = {
   selectBatch: (state) => state.session.batch,
   selectKitchen: (state) => state.session.kitchen,
   selectTimer: (state) => state.session.timer,
-  isLogin: (state) => state.session.isLogin
+  isLogin: (state) => state.session.isLogin,
 };
 
 /* ------------- Reducers ------------- */
 
-export const setLogin = (state, {data}) =>
-  state.merge({...state, isLogin: data});
+export const setLogin = (state, {data}) => {
+  return {...state, isLogin: data};
+};
 
-export const saveUserData = (state, {data}) =>
-  state.merge({...state, user: data});
+export const saveUserData = (state, {data}) => {
+  return {...state, user: data};
+};
 
-export const setTypeBoarding = (state, {data}) =>
-  state.merge({...state, boarding: data});
+export const setTypeBoarding = (state, {data}) => {
+  return {...state, boarding: data};
+};
 
 export const updateUserData = (state, {data}) => {
   // const { data } = state.updateProfile
@@ -68,37 +71,43 @@ export const updateUserData = (state, {data}) => {
     name: data.name,
     email_address: data.email_address,
     mobile_phone_number: data.mobile_phone_number,
-    birth_date: data.birth_date
+    birth_date: data.birth_date,
   };
-  return state.merge({...state, user: newDataUser});
+  return {...state, user: newDataUser};
 };
 
 export const updateUserPhoto = (state, {data}) => {
   // const { data } = state.updateProfile
   const newDataUser = {
     ...state.user,
-    photo: data.photo
+    photo: data.photo,
   };
-  return state.merge({...state, user: newDataUser});
+  return {...state, user: newDataUser};
 };
 
-export const saveUserHeadersReducer = (state, {data}) =>
-  state.merge({...state, headers: data});
+export const saveUserHeadersReducer = (state, {data}) => {
+  return {...state, headers: data};
+};
 
-export const saveUserRoleReducer = (state, {data}) =>
-  state.merge({...state, role: data});
+export const saveUserRoleReducer = (state, {data}) => {
+  return {...state, role: data};
+};
 
-export const saveKitchenReducer = (state, {data}) =>
-  state.merge({...state, kitchen: data});
+export const saveKitchenReducer = (state, {data}) => {
+  return {...state, kitchen: data};
+};
 
-export const saveBatchReducer = (state, {data}) =>
-  state.merge({...state, batch: data});
+export const saveBatchReducer = (state, {data}) => {
+  return {...state, batch: data};
+};
 
-export const saveTimerReducer = (state, {data}) =>
-  state.merge({...state, timer: data});
+export const saveTimerReducer = (state, {data}) => {
+  return {...state, timer: data};
+};
 
-export const removeSessionReducer = (state) =>
-  state.merge({...state, ...INITIAL_STATE});
+export const removeSessionReducer = (state) => {
+  return {...state, ...INITIAL_STATE};
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 

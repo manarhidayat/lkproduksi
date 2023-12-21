@@ -1,18 +1,3 @@
-// import React from 'react';
-// import AppStoreProvider from '../Redux/Provider';
-
-// export default function ReduxWrapper(Component) {
-//   return function inject(props) {
-//     const EnhancedComponent = () => (
-//       <AppStoreProvider>
-//         <Component {...props} />
-//       </AppStoreProvider>
-//     );
-
-//     return <EnhancedComponent />;
-//   };
-// }
-
 import React from 'react';
 import AppStoreProvider from '../Redux/Provider';
 import {StatusBar} from 'react-native';

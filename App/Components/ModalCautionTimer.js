@@ -70,6 +70,7 @@ class ModalCautionTimer extends PureComponent {
 
   render() {
     const {visible} = this.state;
+    const {cautionTime} = this.props;
     return (
       <>
         <Modal
@@ -85,8 +86,8 @@ class ModalCautionTimer extends PureComponent {
               <Text style={styles.title}>Caution</Text>
               <Spacer height={10} />
               <Text>
-                Waktu proses charging sudah melebihi waktu rata-rata 3 jam.
-                Apakah Anda akan melanjutkan proses
+                Waktu proses charging sudah melebihi waktu rata-rata{' '}
+                {cautionTime} menit. Apakah Anda akan melanjutkan proses
               </Text>
 
               <View style={styles.bottom}>

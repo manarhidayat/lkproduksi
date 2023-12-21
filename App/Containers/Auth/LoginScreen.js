@@ -105,7 +105,7 @@ class LoginScreen extends Component {
       <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
         <View
           style={{
-            alignSelf: 'center',
+            alignItems: 'center',
             marginTop: 20,
             paddingHorizontal: Metrics.doubleBaseMargin,
           }}>
@@ -138,8 +138,8 @@ class LoginScreen extends Component {
             }}>
             Selamat Datang,
           </Text>
-          <Text style={{marginTop: 10}}>
-            Silakan login menggunakan Email dan Password Anda untuk masuk
+          <Text style={{marginTop: 10, textAlign: 'center'}}>
+            Silakan login menggunakan Usernama dan Password Anda untuk masuk
           </Text>
         </View>
 

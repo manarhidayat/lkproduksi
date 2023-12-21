@@ -64,6 +64,10 @@ class Timer extends PureComponent {
     this.appState = nextAppState;
   };
 
+  getTimer() {
+    return this.state.timer;
+  }
+
   setCautionAlreadyCall() {
     this.cautionAlreadyCall = true;
   }

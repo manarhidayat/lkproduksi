@@ -26,6 +26,7 @@ import InputDate from '../../Components/InputDate';
 import FullButton from '../../Components/FullButton';
 import {SessionSelectors} from '../../Redux/SessionRedux';
 import {getStatusOperation} from '../../Lib/Helper';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   avatar: {
@@ -111,9 +112,17 @@ class ApprovalScreen extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const {navigation, getResumeBatchRequest, listResume} = this.props;
     setTimeout(() => {
       navigation.setParams({onPressLogout: this.onPressLogout});
+
+      if (listResume.length < 1) {
+        const start_date = moment(new Date())
+          .add(-1, 'day')
+          .format('YYYY-MM-DD');
+        const end_date = moment(new Date()).format('YYYY-MM-DD');
+        getResumeBatchRequest({start_date, end_date});
+      }
     }, 300);
   }
 
@@ -174,7 +183,7 @@ class ApprovalScreen extends Component {
         icon: <Icon2 name="timer-sand" size={20} color={'black'} />,
       },
       {
-        title: 'Menunggu',
+        title: 'Menunggu Disetujui',
         value: resume.waiting,
         icon: <Icon3 name="questioncircleo" size={20} color={'orange'} />,
       },
@@ -199,7 +208,7 @@ class ApprovalScreen extends Component {
   renderEmpty() {
     return (
       <View style={styles.empty}>
-        <Text>Belum ada resume</Text>
+        <Text>Tidak ada Batch</Text>
       </View>
     );
   }
@@ -325,6 +334,12 @@ class ApprovalScreen extends Component {
             onSubmit={this.handleSubmit}
             validationSchema={schema}
             render={this.renderForm}
+            initialValues={{
+              start_date: moment(new Date())
+                .add(-1, 'day')
+                .format('YYYY-MM-DD'),
+              end_date: moment(new Date()).format('YYYY-MM-DD'),
+            }}
           />
           <FlatList
             contentContainerStyle={{flexGrow: 1, paddingBottom: 200}}

@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {PureComponent} from 'react';
-import {TouchableOpacity, Text, View} from 'react-native';
+import {TouchableOpacity, Text, View, Alert} from 'react-native';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -12,7 +12,8 @@ import HomeScreen from '../Containers/PIC/HomeScreen';
 import TimerScreen from '../Containers/PIC/TimerScreen';
 import TimelineScreen from '../Containers/PIC/TimelineScreen';
 
-import {SessionSelectors} from '../Redux/SessionRedux';
+import SessionActions, {SessionSelectors} from '../Redux/SessionRedux';
+import OperationActions from '../Redux/OperationRedux';
 import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
 
@@ -58,7 +59,29 @@ class MainNavigation extends PureComponent {
               title: 'Pilih Batch & Kitchen',
               headerRight: () => {
                 return (
-                  <TouchableOpacity onPress={onPressLogout}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert(
+                        'Peringatan',
+                        'Apakan Anda akan keluar aplikasi?',
+                        [
+                          {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                          },
+                          {
+                            text: 'OK',
+                            onPress: () => {
+                              this.props.setLogin(false);
+                              this.props.removeSession();
+                              this.props.removeOperations();
+                            },
+                          },
+                        ],
+                        {cancelable: false}
+                      );
+                    }}>
                     <Icon name="logout" size={20} color={'red'} />
                   </TouchableOpacity>
                 );
@@ -81,7 +104,9 @@ class MainNavigation extends PureComponent {
           name={NAVIGATION_NAME.PIC.timer}
           component={TimerScreen}
           options={({route}) => {
-            const title = route?.params?.item.wc_desc;
+            const title = route?.params?.item
+              ? route?.params?.item.wc_desc
+              : '';
             const hideBackButton = route?.params?.hideBackButton;
 
             return {
@@ -134,4 +159,11 @@ const mapStateToProps = (state) => {
   return selector(state);
 };
 
-export default connect(mapStateToProps)(MainNavigation);
+const mapDispatchToProps = (dispatch) => ({
+  setLogin: (params) => dispatch(SessionActions.setLogin(params)),
+  removeSession: (params) => dispatch(SessionActions.removeSession(params)),
+  removeOperations: (params) =>
+    dispatch(OperationActions.removeOperations(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainNavigation);

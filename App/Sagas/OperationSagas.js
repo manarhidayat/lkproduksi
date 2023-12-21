@@ -125,3 +125,31 @@ export function* getDetailBatch(api, action) {
     yield put(OperationActions.getDetailBatchFailure(response));
   }
 }
+
+export function* getJumlahProduksi(api, action) {
+  const {data, callback} = action;
+  const response = yield call(api.getJumlahProduksi, data);
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.getJumlahProduksiSuccess(response.data));
+    if (callback) {
+      callback();
+    }
+  } else {
+    yield put(OperationActions.getJumlahProduksiFailure(response));
+  }
+}
+
+export function* updateBatch(api, action) {
+  const {data, callback} = action;
+  const response = yield call(api.updateBatch, data);
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.updateBatchSuccess(response.data));
+    if (callback) {
+      callback();
+    }
+  } else {
+    yield put(OperationActions.updateBatchFailure(response));
+  }
+}

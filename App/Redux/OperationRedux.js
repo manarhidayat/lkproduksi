@@ -13,6 +13,7 @@ const {Types, Creators} = createActions({
   setStartGas: ['data'],
   setEndGas: ['data'],
   setJumlahProduksi: ['data'],
+  setFinishMaterial: ['data'],
 
   removeOperations: null,
   removeOperationsExcBatch: null,
@@ -52,6 +53,14 @@ const {Types, Creators} = createActions({
   getDetailBatchRequest: ['data'],
   getDetailBatchSuccess: ['payload'],
   getDetailBatchFailure: ['error'],
+
+  getJumlahProduksiRequest: ['data', 'callback'],
+  getJumlahProduksiSuccess: ['payload'],
+  getJumlahProduksiFailure: ['error'],
+
+  updateBatchRequest: ['data', 'callback'],
+  updateBatchSuccess: ['payload'],
+  updateBatchFailure: ['error'],
 });
 
 export const OperationTypes = Types;
@@ -68,6 +77,7 @@ export const INITIAL_STATE = Immutable({
   startGas: '',
   endGas: '',
   jumlahProduks: '',
+  finishMaterial: [],
 
   listBatch: {fetching: false, data: null, error: null, payload: null},
   listKitchen: {fetching: false, data: null, error: null, payload: null},
@@ -79,6 +89,8 @@ export const INITIAL_STATE = Immutable({
   getListOperation: {fetching: false, data: null, error: null, payload: null},
   beginOperation: {fetching: false, data: null, error: null, payload: null},
   getDetailBatch: {fetching: false, data: null, error: null, payload: null},
+  getJumlahProduksi: {fetching: false, data: null, error: null, payload: null},
+  updateBatch: {fetching: false, data: null, error: null, payload: null},
 });
 
 export const OperationSelectors = {
@@ -86,7 +98,10 @@ export const OperationSelectors = {
   getOperations: (state) => state.operation.operations,
   getCurrentOperation: (state) => state.operation.currentOperation,
   getDetailMaterial: (state) => state.operation.detailMaterial,
-  getProgressId: (state) => state.operation.beginOperation.payload.progress_id,
+  getProgressId: (state) =>
+    state.operation.beginOperation.payload
+      ? state.operation.beginOperation.payload.progress_id
+      : '',
   getProgressDetailId: (state) => state.operation.progressDetailId,
   getStartGas: (state) => state.operation.startGas,
   getEndGas: (state) => state.operation.endGas,
@@ -97,12 +112,16 @@ export const OperationSelectors = {
   getDetailBatch: (state) => state.operation.getDetailBatch.payload || [],
   getReasons: (state) => state.operation.getListReason.payload || [],
   getListOperation: (state) => state.operation.getListOperation.payload || [],
+
+  getBatchRequest: (state) => state.operation.listBatch.data,
+  getFinishMaterial: (state) => state.operation.getJumlahProduksi.payload || [],
+  getFinishMaterialRes: (state) => state.operation.finishMaterial,
 };
 
 /* ------------- Reducers ------------- */
 
 export const setWorking = (state, {data}) => {
-  return state.merge({...state, isWorking: data});
+  return {...state, isWorking: data};
 };
 
 export const setDetailMaterial = (state, {data}) => {
@@ -119,109 +138,142 @@ export const setDetailMaterial = (state, {data}) => {
     }
   });
 
-  return state.merge({
+  return {
     ...state,
     detailMaterial: data,
     getDetailBatch: {payload: arr},
-  });
+  };
+};
+
+export const setFinishMaterial = (state, {data}) => {
+  return {
+    ...state,
+    finishMaterial: data,
+  };
 };
 
 export const addOperation = (state, {data}) => {
-  return state.merge({...state, operations: [...state.operations, data]});
+  return {...state, operations: [...state.operations, data]};
 };
 
 export const setCurrentOperation = (state, {data}) => {
-  return state.merge({...state, currentOperation: data});
+  return {...state, currentOperation: data};
 };
 
 export const setStartGas = (state, {data}) => {
-  return state.merge({...state, startGas: data});
+  return {...state, startGas: data};
 };
 
 export const setEndGas = (state, {data}) => {
-  return state.merge({...state, endGas: data});
+  return {...state, endGas: data};
 };
 
 export const setJumlahProduksi = (state, {data}) => {
-  return state.merge({...state, jumlahProduks: data});
+  return {...state, jumlahProduks: data};
 };
 
-export const removeOperationsReducer = (state) =>
-  state.merge({...state, ...INITIAL_STATE});
+export const removeOperationsReducer = (state) => {
+  return {...state, ...INITIAL_STATE};
+};
 
 export const removeOperationsExcBatchReducer = (state) => {
-  console.tron.log('wew state', state);
-  const listBatch = [...state.listBatch.payload];
-  return state.merge({
+  const listBatch = state.listBatch;
+  const listKitchen = state.listKitchen;
+  return {
     ...state,
     ...INITIAL_STATE,
-    listBatch: {payload: listBatch},
-  });
+    listBatch,
+    listKitchen,
+  };
 };
 
-export const getListBatchRequest = (state, {data}) =>
-  state.merge({...state, listBatch: {fetching: true, data}});
-export const getListBatchSuccess = (state, {payload}) =>
-  state.merge({
+export const getListBatchRequest = (state, {data}) => {
+  return {...state, listBatch: {fetching: true, data}};
+};
+export const getListBatchSuccess = (state, {payload}) => {
+  return {
     ...state,
-    listBatch: {fetching: false, error: null, payload: payload.batches},
-  });
-export const getListBatchFailure = (state, {error}) =>
-  state.merge({...state, listBatch: {fetching: false, error}});
+    listBatch: {
+      ...state.listBatch,
+      fetching: false,
+      error: null,
+      payload: payload.batches,
+    },
+  };
+};
+export const getListBatchFailure = (state, {error}) => {
+  return {...state, listBatch: {fetching: false, error}};
+};
 
-export const getListKitchenRequest = (state, {data}) =>
-  state.merge({...state, listKitchen: {fetching: true, data}});
-export const getListKitchenSuccess = (state, {payload}) =>
-  state.merge({
+export const getListKitchenRequest = (state, {data}) => {
+  return {...state, listKitchen: {fetching: true, data}};
+};
+export const getListKitchenSuccess = (state, {payload}) => {
+  return {
     ...state,
     listKitchen: {fetching: false, error: null, payload: payload.kitchens},
-  });
-export const getListKitchenFailure = (state, {error}) =>
-  state.merge({...state, listKitchen: {fetching: false, error}});
+  };
+};
+export const getListKitchenFailure = (state, {error}) => {
+  return {...state, listKitchen: {fetching: false, error}};
+};
 
-export const startOperationRequest = (state, {data}) =>
-  state.merge({...state, startOperation: {fetching: true, data}});
-export const startOperationSuccess = (state, {payload}) =>
-  state.merge({
+export const startOperationRequest = (state, {data}) => {
+  return {...state, startOperation: {fetching: true, data}};
+};
+export const startOperationSuccess = (state, {payload}) => {
+  return {
     ...state,
     startOperation: {fetching: false, error: null, payload},
     progressDetailId: payload.progress_detail_id,
-  });
-export const startOperationFailure = (state, {error}) =>
-  state.merge({...state, startOperation: {fetching: false, error}});
+  };
+};
+export const startOperationFailure = (state, {error}) => {
+  return {...state, startOperation: {fetching: false, error}};
+};
 
-export const stopOperationRequest = (state, {data}) =>
-  state.merge({...state, stopOperation: {fetching: true, data}});
-export const stopOperationSuccess = (state, {payload}) =>
-  state.merge({
+export const stopOperationRequest = (state, {data}) => {
+  return {...state, stopOperation: {fetching: true, data}};
+};
+export const stopOperationSuccess = (state, {payload}) => {
+  return {
     ...state,
     stopOperation: {fetching: false, error: null, payload},
-  });
-export const stopOperationFailure = (state, {error}) =>
-  state.merge({...state, stopOperation: {fetching: false, error}});
+  };
+};
+export const stopOperationFailure = (state, {error}) => {
+  return {...state, stopOperation: {fetching: false, error}};
+};
 
-export const finishOperationRequest = (state, {data}) =>
-  state.merge({...state, finishOperation: {fetching: true, data}});
-export const finishOperationSuccess = (state, {payload}) =>
-  state.merge({
+export const finishOperationRequest = (state, {data}) => {
+  return {...state, finishOperation: {fetching: true, data}};
+};
+export const finishOperationSuccess = (state, {payload}) => {
+  return {
     ...state,
     finishOperation: {fetching: false, error: null, payload},
-  });
-export const finishOperationFailure = (state, {error}) =>
-  state.merge({...state, finishOperation: {fetching: false, error}});
+  };
+};
+export const finishOperationFailure = (state, {error}) => {
+  return {...state, finishOperation: {fetching: false, error}};
+};
 
-export const getListReasonRequest = (state, {data}) =>
-  state.merge({...state, getListReason: {fetching: true, data}});
-export const getListReasonSuccess = (state, {payload}) =>
-  state.merge({
+export const getListReasonRequest = (state, {data}) => {
+  return {...state, getListReason: {fetching: true, data}};
+};
+export const getListReasonSuccess = (state, {payload}) => {
+  return {
     ...state,
     getListReason: {fetching: false, error: null, payload: payload.reasons},
-  });
-export const getListReasonFailure = (state, {error}) =>
-  state.merge({...state, getListReason: {fetching: false, error}});
+  };
+};
+export const getListReasonFailure = (state, {error}) => {
+  return {...state, getListReason: {fetching: false, error}};
+};
 
-export const getListOperationRequest = (state, {data}) =>
-  state.merge({...state, getListOperation: {fetching: true, data}});
+export const getListOperationRequest = (state, {data}) => {
+  return {...state, getListOperation: {fetching: true, data}};
+};
 export const getListOperationSuccess = (state, {payload}) => {
   const array = payload.process
     .filter((item) => item.wc_code !== '-')
@@ -268,30 +320,35 @@ export const getListOperationSuccess = (state, {payload}) => {
         icon,
       };
     });
-  return state.merge({
+  return {
     ...state,
     getListOperation: {
       fetching: false,
       error: null,
       payload: array,
     },
-  });
+  };
 };
-export const getListOperationFailure = (state, {error}) =>
-  state.merge({...state, getListOperation: {fetching: false, error}});
+export const getListOperationFailure = (state, {error}) => {
+  return {...state, getListOperation: {fetching: false, error}};
+};
 
-export const beginOperationRequest = (state, {data}) =>
-  state.merge({...state, beginOperation: {fetching: true, data}});
-export const beginOperationSuccess = (state, {payload}) =>
-  state.merge({
+export const beginOperationRequest = (state, {data}) => {
+  return {...state, beginOperation: {fetching: true, data}};
+};
+export const beginOperationSuccess = (state, {payload}) => {
+  return {
     ...state,
     beginOperation: {fetching: false, error: null, payload},
-  });
-export const beginOperationFailure = (state, {error}) =>
-  state.merge({...state, beginOperation: {fetching: false, error}});
+  };
+};
+export const beginOperationFailure = (state, {error}) => {
+  return {...state, beginOperation: {fetching: false, error}};
+};
 
-export const getDetailBatchRequest = (state, {data}) =>
-  state.merge({...state, getDetailBatch: {fetching: true, data}});
+export const getDetailBatchRequest = (state, {data}) => {
+  return {...state, getDetailBatch: {fetching: true, data}};
+};
 export const getDetailBatchSuccess = (state, {payload}) => {
   const array = payload.detail.map((item) => {
     return {
@@ -299,13 +356,46 @@ export const getDetailBatchSuccess = (state, {payload}) => {
       wod_qty_req: parseInt(item.wod_qty_req, 10),
     };
   });
-  return state.merge({
+  return {
     ...state,
     getDetailBatch: {fetching: false, error: null, payload: array},
-  });
+  };
 };
-export const getDetailBatchFailure = (state, {error}) =>
-  state.merge({...state, getDetailBatch: {fetching: false, error}});
+export const getDetailBatchFailure = (state, {error}) => {
+  return {...state, getDetailBatch: {fetching: false, error}};
+};
+
+export const getJumlahProduksiRequest = (state, {data}) => {
+  return {...state, getJumlahProduksi: {fetching: true, data}};
+};
+export const getJumlahProduksiSuccess = (state, {payload}) => {
+  const array = payload.detail.map((item) => {
+    return {
+      ...item,
+      wop_qty_open: parseInt(item.wop_qty_open, 10),
+    };
+  });
+  return {
+    ...state,
+    getJumlahProduksi: {fetching: false, error: null, payload: array},
+  };
+};
+export const getJumlahProduksiFailure = (state, {error}) => {
+  return {...state, getJumlahProduksi: {fetching: false, error}};
+};
+
+export const updateBatchRequest = (state, {data}) => {
+  return {...state, updateBatch: {fetching: true, data}};
+};
+export const updateBatchSuccess = (state, {payload}) => {
+  return {
+    ...state,
+    updateBatch: {fetching: false, error: null, payload},
+  };
+};
+export const updateBatchFailure = (state, {error}) => {
+  return {...state, updateBatch: {fetching: false, error}};
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -317,6 +407,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_START_GAS]: setStartGas,
   [Types.SET_END_GAS]: setEndGas,
   [Types.SET_JUMLAH_PRODUKSI]: setJumlahProduksi,
+  [Types.SET_FINISH_MATERIAL]: setFinishMaterial,
 
   [Types.REMOVE_OPERATIONS]: removeOperationsReducer,
   [Types.REMOVE_OPERATIONS_EXC_BATCH]: removeOperationsExcBatchReducer,
@@ -353,7 +444,15 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.BEGIN_OPERATION_SUCCESS]: beginOperationSuccess,
   [Types.BEGIN_OPERATION_FAILURE]: beginOperationFailure,
 
+  [Types.GET_JUMLAH_PRODUKSI_REQUEST]: getJumlahProduksiRequest,
+  [Types.GET_JUMLAH_PRODUKSI_SUCCESS]: getJumlahProduksiSuccess,
+  [Types.GET_JUMLAH_PRODUKSI_FAILURE]: getJumlahProduksiFailure,
+
   [Types.GET_DETAIL_BATCH_REQUEST]: getDetailBatchRequest,
   [Types.GET_DETAIL_BATCH_SUCCESS]: getDetailBatchSuccess,
   [Types.GET_DETAIL_BATCH_FAILURE]: getDetailBatchFailure,
+
+  [Types.UPDATE_BATCH_REQUEST]: updateBatchRequest,
+  [Types.UPDATE_BATCH_SUCCESS]: updateBatchSuccess,
+  [Types.UPDATE_BATCH_FAILURE]: updateBatchFailure,
 });

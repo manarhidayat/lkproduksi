@@ -65,6 +65,7 @@ class HomeScreen extends Component {
     this.renderItem = this.renderItem.bind(this);
     this.onPressLogout = this.onPressLogout.bind(this);
     this.onPressFinish = this.onPressFinish.bind(this);
+    this.onFinish = this.onFinish.bind(this);
   }
 
   componentDidMount() {
@@ -82,15 +83,32 @@ class HomeScreen extends Component {
     }, 100);
   }
 
-  onPressFinish(gasMeter, jumlahProduksi) {
-    const {finishOperationRequest, progressId, setEndGas, setJumlahProduksi} = this.props;
+  onPressFinish() {
+    const {getJumlahProduksiRequest, operations, batch} = this.props;
+    const finishing = operations[operations.length - 1];
+    console.tron.log('wew batch', batch)
+
+    getJumlahProduksiRequest(batch.woi_oid, () => {
+      this.modalFinish.show();
+    });
+  }
+
+  onFinish(gasMeter) {
+    const {
+      finishOperationRequest,
+      progressId,
+      setEndGas,
+      operations,
+      finishMaterial,
+    } = this.props;
+    const finishing = operations[operations.length - 1];
 
     setEndGas(gasMeter);
-    setJumlahProduksi(jumlahProduksi);
     finishOperationRequest({
       progress_id: progressId,
       gas_end: gasMeter,
-      jumlah_produksi: jumlahProduksi,
+      process_id: finishing.wc_id,
+      detail_material: finishMaterial,
     });
   }
 
@@ -156,11 +174,9 @@ class HomeScreen extends Component {
           />
           <ModalFinish
             setRef={(r) => (this.modalFinish = r)}
-            onDone={(gasMeter, jumlahProduksi) =>
-              this.onPressFinish(gasMeter, jumlahProduksi)
-            }
+            onDone={(gasMeter) => this.onFinish(gasMeter)}
           />
-          <FullButton onPress={() => this.modalFinish.show()} text="SELESAI" />
+          <FullButton onPress={() => this.onPressFinish()} text="SELESAI" />
         </View>
       </SafeAreaView>
     );
@@ -173,12 +189,26 @@ const selector = createSelector(
     OperationSelectors.isWorking,
     OperationSelectors.getListOperation,
     OperationSelectors.getProgressId,
+    OperationSelectors.getOperations,
+    OperationSelectors.getFinishMaterialRes,
+    SessionSelectors.selectBatch
   ],
-  (currentOperation, isWorking, operations, progressId) => ({
+  (
     currentOperation,
     isWorking,
     operations,
     progressId,
+    listOperation,
+    finishMaterial,
+    batch
+  ) => ({
+    currentOperation,
+    isWorking,
+    operations,
+    progressId,
+    listOperation,
+    finishMaterial,
+    batch
   })
 );
 
@@ -194,11 +224,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(OperationActions.getListOperationRequest(params)),
   finishOperationRequest: (params) =>
     dispatch(OperationActions.finishOperationRequest(params)),
+  getJumlahProduksiRequest: (params, callback) =>
+    dispatch(OperationActions.getJumlahProduksiRequest(params, callback)),
 
-  setEndGas: (params) =>
-    dispatch(OperationActions.setEndGas(params)),
-  setJumlahProduksi: (params) =>
-    dispatch(OperationActions.setJumlahProduksi(params)),
+  setEndGas: (params) => dispatch(OperationActions.setEndGas(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

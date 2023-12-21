@@ -191,11 +191,6 @@ class TextUtil {
     return Math.floor(seconds) + ' seconds ago';
   }
 
-  blurName(name) {
-    name = name.slice(0, -3);
-    name = name + '***';
-    return name;
-  }
 }
 
 export default new TextUtil();

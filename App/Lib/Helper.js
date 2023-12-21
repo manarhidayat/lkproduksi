@@ -33,7 +33,7 @@ export function getStatusOperation(item) {
       lastProses = item.last_process;
       break;
     case 'W':
-      status = 'Menunggu';
+      status = 'Menunggu Disetujui';
       statusColor = 'orange';
       statusBackground = '#F8E1D1';
       lastProses = item.last_process;

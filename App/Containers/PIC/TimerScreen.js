@@ -108,11 +108,15 @@ class TimerScreen extends Component {
     this.props.getListReasonRequest();
 
     setTimeout(() => {
-      const {navigation, isWorking} = this.props;
+      const {navigation, isWorking, currentOperation} = this.props;
       navigation.setParams({hideBackButton: false});
 
       if (isWorking) {
         this.onPressStart();
+
+        if (currentOperation && currentOperation.notes) {
+          this.setState({notes: currentOperation.notes});
+        }
       }
 
       this.navListener = navigation.addListener('beforeRemove', (e) => {
@@ -143,7 +147,18 @@ class TimerScreen extends Component {
     setCurrentOperation({...currentOperation, notes: comment});
   }
 
-  onPressStart() {
+  onShowStopModal() {
+    const {route, currentOperation} = this.props;
+    const operation = route.params?.item;
+    const item = operation || currentOperation;
+
+    this.modalStopTimer.show(
+      parseInt(item.wc_avg_time, 10) * 60 < this.timerRef.getTimer() &&
+        !currentOperation.notes
+    );
+  }
+
+  onPressStart(detailMaterial) {
     const {
       setWorking,
       setCurrentOperation,
@@ -151,47 +166,48 @@ class TimerScreen extends Component {
       isWorking,
       currentOperation,
       startOperationRequest,
-      detailMaterial,
+      // detailMaterial,
       progressId,
     } = this.props;
     const item = route.params?.item || currentOperation;
+    const {navigation} = this.props;
+    navigation.setParams({hideBackButton: true});
 
     let startTime = new Date();
-    if (this.timerRef) {
-      if (isWorking) {
-        this.timerRef.restartTimer();
-        startTime = currentOperation.startTime;
-      } else {
-        this.timerRef.startTimer(true);
-      }
-
-      const {navigation} = this.props;
-      navigation.setParams({hideBackButton: true});
-    }
     this.isPlaying = true;
     this.setState({startTime});
 
-    const operation = {
-      ...item,
-      startTime,
-    };
-    setCurrentOperation(operation);
+    if (isWorking) {
+      this.timerRef.restartTimer();
+      startTime = currentOperation.startTime;
+    } else {
+      this.timerRef.startTimer(true);
 
-    if (!isWorking) {
+      let operation = {
+        ...item,
+        startTime,
+      };
+      if (item.wc_is_material === 'Y') {
+        operation = {
+          ...operation,
+          detailMaterial,
+        };
+      }
+
       const params = {
         progress_id: progressId,
         process_id: item.wc_id,
-        // "start_time" : "1701440508",
         is_material: item.wc_is_material,
         detail_material: item.wc_is_material === 'Y' ? detailMaterial : [],
       };
-      startOperationRequest(params);
-    }
 
-    setWorking(true);
+      setCurrentOperation(operation);
+      startOperationRequest(params);
+      setWorking(true);
+    }
   }
 
-  onPressStop() {
+  onPressStop(comment) {
     const {
       setWorking,
       setCurrentOperation,
@@ -201,24 +217,15 @@ class TimerScreen extends Component {
       progressDetailId,
     } = this.props;
     const {notes} = this.state;
-    if (this.timerRef) {
-      this.timerRef.stopTimer();
-    }
-    this.isPlaying = false;
-
-    setWorking(false);
-    const operation = {...currentOperation, endTime: new Date()};
-    addOperation(operation);
-    setCurrentOperation(null);
-    NavigationServices.pop();
-
+    
+    let operation = {...currentOperation, endTime: new Date()};
     let params = {
       progress_detail_id: progressDetailId,
       reason_id: null,
       other_reason: null,
     };
 
-    if (notes) {
+    if (notes && notes.reason) {
       params = {
         ...params,
         reason_id: notes ? notes.reason.code_id : '',
@@ -226,7 +233,29 @@ class TimerScreen extends Component {
       };
     }
 
+    if (comment && comment.reason) {
+      params = {
+        ...params,
+        reason_id: comment ? comment.reason.code_id : '',
+        other_reason:
+          comment && comment.reasonOther ? comment.reasonOther : '-',
+      };
+      operation = {
+        ...operation,
+        notes: comment,
+      };
+    }
+
+    if (this.timerRef) {
+      this.timerRef.stopTimer();
+    }
+    this.isPlaying = false;
+    setWorking(false);
+    addOperation(operation);
+    setCurrentOperation(null);
     stopOperationRequest(params);
+
+    NavigationServices.pop();
   }
 
   setTimesCaution() {
@@ -239,7 +268,7 @@ class TimerScreen extends Component {
     if (this.modalAddComment.isVisible()) {
       return;
     }
- 
+
     this.timerRef.setCautionAlreadyCall();
     this.modalCautionTimer.show();
   }
@@ -253,8 +282,8 @@ class TimerScreen extends Component {
         <Text style={{fontWeight: 'bold'}}>Catatan</Text>
         <Spacer height={10} />
         <View style={styles.contentComment}>
-          <Text>{notes.reason.code_name}</Text>
-          <Text>{notes.reason.reasonOther}</Text>
+          <Text>{notes.reason ? notes.reason.code_name : ''}</Text>
+          <Text>{notes.reasonOther}</Text>
         </View>
       </View>
     );
@@ -315,7 +344,7 @@ class TimerScreen extends Component {
               <View style={styles.alignCenter}>
                 <TouchableOpacity
                   disabled={!this.isPlaying}
-                  onPress={() => this.modalStopTimer.show()}
+                  onPress={() => this.onShowStopModal()}
                   style={styles.btnStart}>
                   <Entypo name="controller-stop" size={30} color={'red'} />
                 </TouchableOpacity>
@@ -339,14 +368,19 @@ class TimerScreen extends Component {
           {notes && this.renderComment()}
           <ModalStartTimer
             setRef={(r) => (this.modalStartTimer = r)}
-            onDone={() => this.onPressStart()}
+            onDone={(detailMaterial) => this.onPressStart(detailMaterial)}
             useMaterial={item.wc_is_material === 'Y'}
             title={'Mulai Proses'}
             desc={'Apakah Anda akan memulai proses?'}
           />
           <ModalStartTimer
             setRef={(r) => (this.modalStopTimer = r)}
-            onDone={() => this.onPressStop()}
+            onDone={(comment) => {
+              if (comment) {
+                this.onAddComment(comment);
+              }
+              this.onPressStop(comment);
+            }}
             title={'Hentikan Proses'}
             desc={'Apakah Anda akan menghentikan proses'}
           />
@@ -357,6 +391,9 @@ class TimerScreen extends Component {
           <ModalCautionTimer
             setRef={(r) => (this.modalCautionTimer = r)}
             onStop={() => this.onPressStop()}
+            cautionTime={
+              item.wc_avg_time ? parseInt(item.wc_avg_time, 10) : '0'
+            }
           />
         </View>
       </SafeAreaView>

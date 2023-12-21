@@ -9,6 +9,7 @@ import Input from './Input';
 import Spacer from './Spacer';
 import Text from './Text';
 import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
+import RNRestart from 'react-native-restart';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -52,7 +53,7 @@ class ModalSetupUrl extends PureComponent {
       setRef(this);
     }
 
-    const url = await MMKVStoragePersistHelper.getItem('url');
+    const url = MMKVStoragePersistHelper.getString('url');
     this.setState({url});
   }
 
@@ -72,7 +73,9 @@ class ModalSetupUrl extends PureComponent {
 
   handleSubmit(values) {
     MMKVStoragePersistHelper.setItem('url', values.url);
-    this.setState({visible: false, url: values.url});
+    this.setState({visible: false, url: values.url}, () => {
+      RNRestart.restart()
+    });
   }
 
   renderForm(props) {
