@@ -8,9 +8,9 @@ const {Types, Creators} = createActions({
   doLoginSuccess: ['payload'],
   doLoginFailure: ['error'],
 
-  doLoginAzureRequest: ['data'],
-  doLoginAzureSuccess: ['payload'],
-  doLoginAzureFailure: ['error']
+  changePasswordRequest: ['data'],
+  changePasswordSuccess: ['payload'],
+  changePasswordFailure: ['error']
 });
 
 export const AuthTypes = Types;
@@ -20,7 +20,7 @@ export default Creators;
 
 export const INITIAL_STATE = Immutable({
   doLogin: {fetching: false, data: null, error: null, payload: null},
-  doLoginAzure: {fetching: false, data: null, error: null, payload: null}
+  changePassword: {fetching: false, data: null, error: null, payload: null}
 });
 
 /* ------------- Reducers ------------- */
@@ -32,15 +32,15 @@ export const doLoginSuccess = (state, {payload}) =>
 export const doLoginFailure = (state, {error}) =>
   state.merge({...state, doLogin: {fetching: false, error}});
 
-export const doLoginAzureRequest = (state, {data}) =>
-  state.merge({...state, doLoginAzure: {fetching: true, data}});
-export const doLoginAzureSuccess = (state, {payload}) =>
+export const changePasswordRequest = (state, {data}) =>
+  state.merge({...state, changePassword: {fetching: true, data}});
+export const changePasswordSuccess = (state, {payload}) =>
   state.merge({
     ...state,
-    doLoginAzure: {fetching: false, error: null, payload}
+    changePassword: {fetching: false, error: null, payload}
   });
-export const doLoginAzureFailure = (state, {error}) =>
-  state.merge({...state, doLoginAzure: {fetching: false, error}});
+export const changePasswordFailure = (state, {error}) =>
+  state.merge({...state, changePassword: {fetching: false, error}});
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -49,7 +49,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.DO_LOGIN_SUCCESS]: doLoginSuccess,
   [Types.DO_LOGIN_FAILURE]: doLoginFailure,
 
-  [Types.DO_LOGIN_AZURE_REQUEST]: doLoginAzureRequest,
-  [Types.DO_LOGIN_AZURE_SUCCESS]: doLoginAzureSuccess,
-  [Types.DO_LOGIN_AZURE_FAILURE]: doLoginAzureFailure
+  [Types.CHANGE_PASSWORD_REQUEST]: changePasswordRequest,
+  [Types.CHANGE_PASSWORD_SUCCESS]: changePasswordSuccess,
+  [Types.CHANGE_PASSWORD_FAILURE]: changePasswordFailure
 });

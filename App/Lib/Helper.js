@@ -10,10 +10,10 @@ export function getStatusOperation(item) {
   let lastProses = '';
 
   if (item.start) {
-    start = moment(item.start, 'yyyy-MM-dd HH:mm:ss').format('HH:mm');
+    start = moment(item.start, 'yyyy-MM-DD HH:mm:ss').format('D MMM YYYY, HH.mm');
   }
   if (item.end) {
-    end = moment(item.end, 'yyyy-MM-dd HH:mm:ss').format('HH:mm, MMM DD');
+    end = moment(item.end, 'yyyy-MM-DD HH:mm:ss').format('D MMM YYYY, HH.mm');
   }
   if (item.start && item.end === null) {
     end = 'Sekarang';
@@ -42,23 +42,25 @@ export function getStatusOperation(item) {
       status = 'Disetujui';
       statusColor = 'green';
       statusBackground = '#D2FECC';
-      lastProses = Math.round(
-        (moment(item.end, 'yyyy-MM-dd HH:mm:ss') -
-          moment(item.start, 'yyyy-MM-dd HH:mm:ss')) /
-          1000
-      );
-      lastProses = TextUtil.formatTimeCountDown(lastProses);
+      // lastProses = Math.round(
+      //   (moment(item.end, 'yyyy-MM-dd HH:mm:ss') -
+      //     moment(item.start, 'yyyy-MM-dd HH:mm:ss')) /
+      //     1000
+      // );
+      // lastProses = TextUtil.formatTimeCountDown(lastProses);
+      lastProses = item.last_process;
       break;
     case 'D':
       status = 'Ditolak';
       statusColor = 'red';
       statusBackground = '#FED2CC';
-      lastProses = Math.round(
-        (moment(item.end, 'yyyy-MM-dd HH:mm:ss') -
-          moment(item.start, 'yyyy-MM-dd HH:mm:ss')) /
-          1000
-      );
-      lastProses = TextUtil.formatTimeCountDown(lastProses);
+      // lastProses = Math.round(
+      //   (moment(item.end, 'yyyy-MM-dd HH:mm:ss') -
+      //     moment(item.start, 'yyyy-MM-dd HH:mm:ss')) /
+      //     1000
+      // );
+      // lastProses = TextUtil.formatTimeCountDown(lastProses);
+      lastProses = item.last_process;
       break;
   }
 

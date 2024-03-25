@@ -6,7 +6,8 @@ export const NAVIGATION_NAME = {
     profile: 'home.profile'
   },
   AUTH: {
-    login: 'auth.login'
+    login: 'auth.login',
+    changePassword: 'auth.changePassword'
   },
 
   OVERLAY: {

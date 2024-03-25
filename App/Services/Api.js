@@ -67,7 +67,7 @@ const create = (baseURL = API_URL) => {
   //
 
   const doLogin = (data) => api.post('/public/auth/login', data);
-  const doLoginAzure = (data) => api.post('/signin', data);
+  const changePassword = (data) => api.post('/public/auth/changePassword', data);
 
   const getListBatch = (data) => api.get('/public/batches', data);
   const getListKitchen = (data) => api.get('/public/kitchens', data);
@@ -103,7 +103,7 @@ const create = (baseURL = API_URL) => {
   return {
     // a list of the API functions from step 2
     doLogin,
-    doLoginAzure,
+    changePassword,
 
     getListBatch,
     getListKitchen,

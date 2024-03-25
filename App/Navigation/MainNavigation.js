@@ -8,6 +8,7 @@ import {NAVIGATION_NAME} from './NavigationName';
 
 import SelectBatchScreen from '../Containers/PIC/SelectBatchScreen';
 import FormBatchScreen from '../Containers/PIC/FormBatchScreen';
+import ChangePasswordScreen from '../Containers/Auth/ChangePasswordScreen';
 import HomeScreen from '../Containers/PIC/HomeScreen';
 import TimerScreen from '../Containers/PIC/TimerScreen';
 import TimelineScreen from '../Containers/PIC/TimelineScreen';
@@ -18,6 +19,7 @@ import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import NavigationServices from './NavigationServices';
 
 const Stack = createNativeStackNavigator();
 
@@ -101,6 +103,15 @@ class MainNavigation extends PureComponent {
           }}
         />
         <Stack.Screen
+          name={NAVIGATION_NAME.AUTH.changePassword}
+          component={ChangePasswordScreen}
+          options={({route}) => {
+            return {
+              title: 'Ganti Password',
+            };
+          }}
+        />
+        <Stack.Screen
           name={NAVIGATION_NAME.PIC.timer}
           component={TimerScreen}
           options={({route}) => {
@@ -119,14 +130,17 @@ class MainNavigation extends PureComponent {
           name={NAVIGATION_NAME.PIC.home}
           component={HomeScreen}
           options={({route}) => {
-            const onPressLogout = route?.params?.onPressLogout;
-
             return {
               title: 'Proses',
               headerRight: () => {
                 return (
-                  <TouchableOpacity onPress={onPressLogout}>
-                    <Icon name="logout" size={20} color={'red'} />
+                  <TouchableOpacity
+                    onPress={() =>
+                      NavigationServices.push(
+                        NAVIGATION_NAME.AUTH.changePassword
+                      )
+                    }>
+                    <Icon name="lock-reset" size={20} color={'black'} />
                   </TouchableOpacity>
                 );
               },

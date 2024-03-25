@@ -123,19 +123,17 @@ class ModalStartTimer extends PureComponent {
 
     let detailMaterial = [];
     detailBatch.map((item) => {
-      // if (values[item.pt_code]) {
-      if (values[item.pt_code] > item.wod_qty_req) {
-        Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
-        validated = false;
-        return;
-      }
+      // if (values[item.pt_code] > item.wod_qty_req) {
+      //   Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
+      //   validated = false;
+      //   return;
+      // }
       detailMaterial.push({
         ...item,
         material_id: item.pt_id,
         qty_open: `${item.wod_qty_req}`,
         qty_use: values[item.pt_code] || '0',
       });
-      // }
     });
 
     if (!validated) {
@@ -306,7 +304,7 @@ class ModalStartTimer extends PureComponent {
               {useMaterial ? (
                 <Formik
                   onSubmit={this.handleSubmit}
-                  validationSchema={Yup.object().shape(schema)}
+                  // validationSchema={Yup.object().shape(schema)}
                   render={this.renderForm}
                 />
               ) : useReason ? (

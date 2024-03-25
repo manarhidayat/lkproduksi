@@ -152,6 +152,8 @@ class TimerScreen extends Component {
     const operation = route.params?.item;
     const item = operation || currentOperation;
 
+    console.tron.log('wew item.wc_avg_time', item)
+
     this.modalStopTimer.show(
       parseInt(item.wc_avg_time, 10) * 60 < this.timerRef.getTimer() &&
         !currentOperation.notes
@@ -217,7 +219,7 @@ class TimerScreen extends Component {
       progressDetailId,
     } = this.props;
     const {notes} = this.state;
-    
+
     let operation = {...currentOperation, endTime: new Date()};
     let params = {
       progress_detail_id: progressDetailId,
@@ -390,7 +392,8 @@ class TimerScreen extends Component {
           />
           <ModalCautionTimer
             setRef={(r) => (this.modalCautionTimer = r)}
-            onStop={() => this.onPressStop()}
+            // onStop={() => this.onPressStop()}
+            onStop={() => this.onShowStopModal()}
             cautionTime={
               item.wc_avg_time ? parseInt(item.wc_avg_time, 10) : '0'
             }

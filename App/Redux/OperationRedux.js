@@ -114,7 +114,11 @@ export const OperationSelectors = {
   getListOperation: (state) => state.operation.getListOperation.payload || [],
 
   getBatchRequest: (state) => state.operation.listBatch.data,
-  getFinishMaterial: (state) => state.operation.getJumlahProduksi.payload || [],
+  getFinishMaterial: (state) =>
+    state.operation.getJumlahProduksi &&
+    state.operation.getJumlahProduksi.payload
+      ? state.operation.getJumlahProduksi.payload
+      : [],
   getFinishMaterialRes: (state) => state.operation.finishMaterial,
 };
 

@@ -73,6 +73,10 @@ export function* finishOperation(api, action) {
     ]);
     NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
   } else {
+    yield all([
+      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.timeline)),
+    ]);
+    NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
     yield put(OperationActions.finishOperationFailure(response));
   }
 }

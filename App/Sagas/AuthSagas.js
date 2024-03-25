@@ -53,28 +53,18 @@ export function* doLogin(api, action) {
   }
 }
 
-export function* doLoginAzure(api, action) {
+export function* changePassword(api, action) {
   const {data} = action;
-  const response = yield call(api.doLoginAzure, data);
+  LoadingHelper.show();
+  const response = yield call(api.changePassword, data);
+  LoadingHelper.hide();
 
   if (response.ok) {
-    const {token, user, role} = response.data ? response.data.data : {};
-    api.api.setHeaders({
-      token,
-    });
-    const headers = {
-      token,
-    };
-
-    yield all([
-      yield put(AuthActions.doLoginSuccess(response.data)),
-      yield put(SessionActions.saveUserData(user)),
-      yield put(SessionActions.saveUserRole(role)),
-      yield put(SessionActions.saveUserHeaders(headers)),
-      yield put(SessionActions.setLogin(true)),
-    ]);
+    yield all([yield put(AuthActions.changePasswordSuccess(response.data))]);
+    Alert.alert('Sukses', 'Ubah Password Berhasil');
+    NavigationServices.pop();
   } else {
-    Alert.alert('Peringatan', 'Login gagal');
+    Alert.alert('Peringatan', 'Invalid usernama or password');
   }
-  yield put(AuthActions.doLoginAzureFailure(response));
+  yield put(AuthActions.changePasswordFailure(response));
 }

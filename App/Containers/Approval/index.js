@@ -102,13 +102,16 @@ const schema = Yup.object().shape({
 class ApprovalScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      params: '',
+    };
     this.renderItem = this.renderItem.bind(this);
     this.renderEmpty = this.renderEmpty.bind(this);
     this.onPressLogout = this.onPressLogout.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.renderHeaderItem = this.renderHeaderItem.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onPressFilter = this.onPressFilter.bind(this);
   }
 
   componentDidMount() {
@@ -133,6 +136,11 @@ class ApprovalScreen extends Component {
     getResumeBatchRequest({start_date, end_date});
   }
 
+  onPressFilter(item) {
+    const {params} = this.state;
+    this.setState({params: params === item ? '' : item});
+  }
+
   onPressLogout() {
     Alert.alert(
       'Peringatan',
@@ -155,9 +163,15 @@ class ApprovalScreen extends Component {
     );
   }
 
-  renderHeaderItem({item, index}) {
+  renderHeaderItem({item}) {
+    const {params} = this.state;
     return (
-      <View style={styles.contentHeader}>
+      <TouchableOpacity
+        onPress={() => this.onPressFilter(item.id)}
+        style={[
+          styles.contentHeader,
+          {borderColor: params === item.id ? Colors.primary : Colors.border},
+        ]}>
         <Text style={{fontSize: 32}}>{item.value}</Text>
         <Spacer height={10} />
         <View style={styles.flexRow}>
@@ -165,7 +179,7 @@ class ApprovalScreen extends Component {
           <Spacer width={10} />
           <Text style={{flex: 1}}>{item.title}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -173,26 +187,31 @@ class ApprovalScreen extends Component {
     const {resume} = this.props;
     const array = [
       {
+        id: 'Q',
         title: 'Belum diproses',
         value: resume.queue,
         icon: <Icon3 name="exclamationcircleo" size={20} color={'grey'} />,
       },
       {
+        id: 'I',
         title: 'Diproses',
         value: resume.in_progress,
         icon: <Icon2 name="timer-sand" size={20} color={'black'} />,
       },
       {
+        id: 'W',
         title: 'Menunggu Disetujui',
         value: resume.waiting,
         icon: <Icon3 name="questioncircleo" size={20} color={'orange'} />,
       },
       {
+        id: 'A',
         title: 'Disetujui',
         value: resume.approved,
         icon: <Icon3 name="checkcircleo" size={20} color={'green'} />,
       },
       {
+        id: 'D',
         title: 'Ditolak',
         value: resume.decline,
         icon: <Icon3 name="closecircleo" size={20} color={'red'} />,
@@ -243,7 +262,7 @@ class ApprovalScreen extends Component {
         <Text style={styles.textBatch}>{item.woi_remarks}</Text>
         <Spacer height={10} />
         <View style={[styles.flexRow, {justifyContent: 'space-between'}]}>
-          <Text>
+          <Text style={{flex: 0.8}}>
             {start} - {end}
           </Text>
           <View style={styles.flexRow}>
@@ -314,8 +333,21 @@ class ApprovalScreen extends Component {
     );
   }
 
+  getData() {
+    const {params} = this.state;
+    const {listResume} = this.props;
+
+    if (params === 'Q') {
+      return listResume.filter((item) => item.wocp_status === null);
+    } else if (params !== '') {
+      return listResume.filter((item) => item.wocp_status === params);
+    }
+
+    return listResume;
+  }
+
   render() {
-    const {user, listResume} = this.props;
+    const {user} = this.props;
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.content}>
@@ -343,7 +375,7 @@ class ApprovalScreen extends Component {
           />
           <FlatList
             contentContainerStyle={{flexGrow: 1, paddingBottom: 200}}
-            data={listResume}
+            data={this.getData()}
             renderItem={this.renderItem}
             ListEmptyComponent={this.renderEmpty}
             ListHeaderComponent={this.renderHeader}
@@ -359,11 +391,13 @@ const selector = createSelector(
     SessionSelectors.selectUser,
     DashboardSelectors.getResume,
     DashboardSelectors.getListResume,
+    DashboardSelectors.getResumeRequest,
   ],
-  (user, resume, listResume) => ({
+  (user, resume, listResume, resumeRequest) => ({
     user,
     resume,
     listResume,
+    resumeRequest,
   })
 );
 

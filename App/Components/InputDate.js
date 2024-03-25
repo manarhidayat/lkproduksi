@@ -69,6 +69,10 @@ class InputDate extends Component {
       <Text style={[styles.label, {marginBottom: 5}]}>{title}</Text>
     ) : null;
 
+    console.tron.log('wew value', value)
+    const isValid = value && value !== undefined && value !== '';
+    const text = isValid ? Moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY') : '';
+
     return (
       <View style={containerStyle}>
         {label}
@@ -90,7 +94,7 @@ class InputDate extends Component {
               {placeholder}
             </Text>
           ) : (
-            <Text style={{marginLeft: 3, color: 'black'}}>{value}</Text>
+            <Text style={{marginLeft: 3, color: 'black'}}>{text}</Text>
           )}
         </TouchableOpacity>
         {showError ? <Text style={styles.error}>{error}</Text> : null}

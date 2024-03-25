@@ -12,7 +12,7 @@ import {ApprovalTypes} from '../Redux/ApprovalRedux';
 /* ------------- Sagas ------------- */
 
 import {startup} from './StartupSagas';
-import {doLogin, doLoginAzure} from './AuthSagas';
+import {doLogin, changePassword} from './AuthSagas';
 
 import {
   getListBatch,
@@ -44,7 +44,7 @@ export default function* root() {
     takeLatest(StartupTypes.STARTUP, startup, api),
 
     takeLatest(AuthTypes.LOGIN_REQUEST, doLogin, api),
-    takeLatest(AuthTypes.DO_LOGIN_AZURE_REQUEST, doLoginAzure, api),
+    takeLatest(AuthTypes.CHANGE_PASSWORD_REQUEST, changePassword, api),
 
     takeLatest(OperationTypes.GET_LIST_BATCH_REQUEST, getListBatch, api),
     takeLatest(OperationTypes.GET_LIST_KITCHEN_REQUEST, getListKitchen, api),

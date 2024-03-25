@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
 
 class DetailApprovalScreen extends Component {
   modalMaterialNote = undefined;
+  totalIdle = 0;
 
   constructor(props) {
     super(props);
@@ -97,6 +98,7 @@ class DetailApprovalScreen extends Component {
   componentDidMount() {
     const {route, getTimelineBatchRequest} = this.props;
     const item = route?.params?.item;
+    // this.totalIdle = 0;
     getTimelineBatchRequest({woi_oid: item.woi_oid});
   }
 
@@ -165,6 +167,9 @@ class DetailApprovalScreen extends Component {
           1000
       );
     }
+    console.tron.log('wew 2', idleTime);
+
+    this.totalIdle = this.totalIdle + idleTime;
 
     return (
       <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
@@ -192,6 +197,7 @@ class DetailApprovalScreen extends Component {
               <View />
             </View>
           )}
+
           <Spacer height={20} />
         </View>
         <View style={{flex: 2, alignItems: 'center'}}>
@@ -204,7 +210,7 @@ class DetailApprovalScreen extends Component {
             {item.notes && item.notes.reason ? item.notes.reason.code_name : ''}
           </Text> */}
           <Spacer height={6} />
-          {item.notes || item.materials.length > 0 ? (
+          {item.wocpd_reason_desc || item.materials.length > 0 ? (
             // <Text>{item.notes.reason.code_name}</Text>
             <TouchableOpacity onPress={() => this.modalMaterialNote.show(item)}>
               {/* <Icon name="exclamationcircleo" size={20} color={'black'} /> */}
@@ -230,12 +236,41 @@ class DetailApprovalScreen extends Component {
     );
   }
 
+  getTotalIdleTime() {
+    const {timeline} = this.props;
+    let total = 0;
+
+    timeline &&
+      timeline.map((item, index) => {
+        let idleTime = 0;
+        const startTime = item.wocpd_start_time;
+
+        if (index !== 0) {
+          idleTime = Math.round(
+            (new Date(startTime).getTime() -
+              new Date(timeline[index - 1].wocpd_stop_time).getTime()) /
+              1000
+          );
+        }
+
+        total = total + idleTime;
+      });
+
+    return total;
+  }
+
   render() {
     const {user, detail, timeline, notes} = this.props;
     const item = detail;
 
     const {start, end, status, statusColor, statusBackground, lastProses} =
       getStatusOperation(item);
+
+    const timer = Math.round(
+      (new Date(item.end).getTime() - new Date(item.start).getTime()) / 1000
+    );
+
+    console.tron.log('wew 1', this.totalIdle);
 
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -290,15 +325,53 @@ class DetailApprovalScreen extends Component {
                 )}
               </Text>
             </View>
+            <View style={styles.flexDirection}>
+              <Text>Gas Use</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                {TextUtil.formatMoney(
+                  parseInt(detail.wocp_gas_start, 10) -
+                    (detail.wocp_gas_stop
+                      ? parseInt(detail.wocp_gas_stop, 10)
+                      : 0)
+                )}
+              </Text>
+            </View>
+
+            <Spacer height={30} />
+
+            <View style={{alignItems: 'center'}}>
+              <Text>Total Waktu</Text>
+              <Spacer height={10} />
+              <View style={{flexDirection: 'row'}}>
+                <Text>{timer > 3599 ? 'Jam' : 'Mnt'}</Text>
+                <Spacer width={60} />
+                <Text>{timer > 3599 ? 'Mnt' : 'Dtk'}</Text>
+                {timer > 3599 && (
+                  <>
+                    <Spacer width={60} />
+                    <Text>Dtk</Text>
+                  </>
+                )}
+              </View>
+              <Text style={{fontSize: 56, fontWeight: 'bold'}}>
+                {TextUtil.formatTimeCountDown(timer)}
+              </Text>
+              <Text>Total Idle</Text>
+              <Spacer height={6} />
+              <Text style={{fontSize: 21, fontWeight: 'bold'}}>
+                {TextUtil.formatTimeCountDown(this.getTotalIdleTime())}
+              </Text>
+            </View>
+
             <Spacer height={20} />
             <Text style={styles.textBold}>Timeline</Text>
             <Spacer height={10} />
             {timeline &&
               timeline.map((item, index) => this.renderItem(item, index))}
             <Spacer height={20} />
-            <Text style={styles.textBold}>{notes.length} Catatan</Text>
+            {/* <Text style={styles.textBold}>{notes.length} Catatan</Text>
             {notes.length > 0 &&
-              notes.map((item, index) => this.renderItemNote(item, index))}
+              notes.map((item, index) => this.renderItemNote(item, index))} */}
           </View>
         </ScrollView>
         <ModalMaterialNote setRef={(r) => (this.modalMaterialNote = r)} />

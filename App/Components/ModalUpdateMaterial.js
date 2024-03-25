@@ -118,32 +118,37 @@ class ModalUpdateMaterial extends PureComponent {
       updateBatchRequest,
       getTimelineBatchRequest,
       batch,
+      finishMaterial
     } = this.props;
+    const {materials} = this.state;
 
     const {detailBatch} = this.props;
     let validated = true;
 
     let detailMaterial = [];
     detailBatch.map((item) => {
-      if (values[item.pt_id]) {
-        if (values[item.pt_id] > item.wod_qty_req) {
-          Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
-          validated = false;
-          return;
-        }
-        detailMaterial.push({
-          material_id: item.pt_id,
-          qty_use: values[item.pt_id],
-        });
-      }
+      // if (values[item.pt_id] > item.wod_qty_req) {
+      //   Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
+      //   validated = false;
+      //   return;
+      // }
+      detailMaterial.push({
+        material_id: item.pt_id,
+        qty_use: values[item.pt_id] || '0',
+      });
     });
 
     if (!validated) {
       return;
     }
 
+    let wocpdm_wocpd_oid = detailDashboard.wocp_oid;
+    if (materials.length > 0) {
+      wocpdm_wocpd_oid = materials[0].wocpdm_wocpd_oid;
+    }
+
     const params = {
-      wocpdm_wocpd_oid: detailDashboard.wocp_oid,
+      wocpdm_wocpd_oid,
       detail_material: detailMaterial,
     };
 
@@ -154,35 +159,35 @@ class ModalUpdateMaterial extends PureComponent {
   }
 
   renderForm(props) {
-    const {detailBatch} = this.props;
+    const {finishMaterial} = this.props;
     return (
       <View style={styles.content}>
         <Text style={styles.title}>Masukan Material</Text>
         <Spacer height={10} />
         <ScrollView>
           <View style={styles.content2}>
-            {detailBatch.length > 0 && (
+            {finishMaterial.length > 0 && (
               <View style={[styles.row, styles.titleContainer]}>
                 <Text style={[styles.textTitle, {flex: 1}]}>Material</Text>
-                <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text>
-                <Text style={[styles.textTitle, {flex: 0.5}]}>Actual</Text>
+                {/* <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text> */}
+                <Text style={[styles.textTitle, {flex: 0.5}]}></Text>
               </View>
             )}
-            {detailBatch.map((item) => {
+            {finishMaterial.map((item) => {
               return (
                 <View style={styles.row}>
                   <Text style={styles.textLabel}>{item.pt_desc1}</Text>
-                  <Input
+                  {/* <Input
                     placeholder=" "
                     name={item.pt_id}
                     keyboardType="number-pad"
                     editable={false}
                     containerStyle={styles.inputPlan}
-                    value={`${item.wod_qty_req}`}
+                    value={`${item.wop_qty_open}`}
                     error={props.errors.baseMetalPlan}
                     setFieldValue={props.setFieldValue}
                     setFieldTouched={() => {}}
-                  />
+                  /> */}
                   <Spacer width={10} />
                   <Input
                     placeholder=" "
@@ -263,12 +268,14 @@ const selector = createSelector(
     SessionSelectors.selectBatch,
     DashboardSelectors.getDetailDashboard,
     DashboardSelectors.getTimeline,
+    OperationSelectors.getFinishMaterial,
   ],
-  (detailBatch, batch, detailDashboard, timeline) => ({
+  (detailBatch, batch, detailDashboard, timeline, finishMaterial) => ({
     detailBatch,
     batch,
     detailDashboard,
-    timeline
+    timeline,
+    finishMaterial,
   })
 );
 

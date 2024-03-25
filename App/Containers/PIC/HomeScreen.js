@@ -80,13 +80,12 @@ class HomeScreen extends Component {
       }
 
       NavigationServices.setParams({onPressLogout: this.onPressLogout});
-    }, 100);
+    }, 500);
   }
 
   onPressFinish() {
     const {getJumlahProduksiRequest, operations, batch} = this.props;
     const finishing = operations[operations.length - 1];
-    console.tron.log('wew batch', batch)
 
     getJumlahProduksiRequest(batch.woi_oid, () => {
       this.modalFinish.show();

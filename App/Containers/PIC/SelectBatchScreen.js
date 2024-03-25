@@ -196,7 +196,11 @@ class SelectBatchScreen extends Component {
           <Spacer height={8} />
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text>{item.woi_code}</Text>
-            <Text>{item.woi_date}</Text>
+            <Text>
+              {item.woi_date
+                ? moment(item.woi_date, 'YYYY-MM-DD').format('DD-MM-YYYY')
+                : '-'}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>

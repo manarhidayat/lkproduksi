@@ -117,19 +117,17 @@ class ModalFinish extends PureComponent {
 
     let detailMaterial = [];
     finishMaterial.map((item) => {
-      if (values[item.pt_code]) {
-        if (values[item.pt_code] > item.wop_qty_open) {
-          Alert.alert('Peringatan', 'Actual tidak boleh lebih besar dari Plan');
-          validated = false;
-          return;
-        }
-        detailMaterial.push({
-          ...item,
-          material_id: item.pt_id,
-          qty_open: `${item.wop_qty_open}`,
-          qty_use: values[item.pt_code],
-        });
-      }
+      // if (values[item.pt_code] < 0) {
+      //   Alert.alert('Peringatan', 'Actual tidak boleh kurang dari 0');
+      //   validated = false;
+      //   return;
+      // }
+      detailMaterial.push({
+        ...item,
+        material_id: item.pt_id,
+        qty_open: `${item.wop_qty_open}`,
+        qty_use: values[item.pt_code] || '0',
+      });
     });
 
     if (!validated) {
@@ -172,15 +170,15 @@ class ModalFinish extends PureComponent {
             {finishMaterial.length > 0 && (
               <View style={[styles.row, styles.titleContainer]}>
                 <Text style={[styles.textTitle, {flex: 1}]}>Material</Text>
-                <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text>
-                <Text style={[styles.textTitle, {flex: 0.5}]}>Actual</Text>
+                {/* <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text> */}
+                <Text style={[styles.textTitle, {flex: 0.5}]} />
               </View>
             )}
             {finishMaterial.map((item) => {
               return (
                 <View style={styles.row}>
                   <Text style={styles.textLabel}>{item.pt_desc1}</Text>
-                  <Input
+                  {/* <Input
                     placeholder=" "
                     name={item.pt_id}
                     keyboardType="number-pad"
@@ -190,7 +188,7 @@ class ModalFinish extends PureComponent {
                     error={props.errors.baseMetalPlan}
                     setFieldValue={props.setFieldValue}
                     setFieldTouched={() => {}}
-                  />
+                  /> */}
                   <Spacer width={10} />
                   <Input
                     placeholder=" "
@@ -234,6 +232,7 @@ class ModalFinish extends PureComponent {
 
   render() {
     const {visible} = this.state;
+    const {finishMaterial} = this.props;
     return (
       <>
         <Modal

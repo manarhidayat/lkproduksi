@@ -11,6 +11,7 @@
  *************************************************************/
 
 import {call, put, all, select} from 'redux-saga/effects';
+import LoadingHelper from '../Lib/LoadingHelper';
 
 import DashboardActions from '../Redux/DashboardRedux';
 
@@ -27,7 +28,9 @@ export function* getResumeBatch(api, action) {
 
 export function* getTimelineBatch(api, action) {
   const {data} = action;
+  LoadingHelper.show();
   const response = yield call(api.getTimelineBatch, data);
+  LoadingHelper.hide();
 
   if (response.ok && response.data) {
     yield put(DashboardActions.getTimelineBatchSuccess(response.data));

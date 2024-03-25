@@ -72,16 +72,20 @@ const styles = StyleSheet.create({
 class TimelineScreen extends Component {
   modalMaterialNote = undefined;
   modalUpdateMaterial = undefined;
+  totalIdle = 0;
 
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      totalIdle: 0
+    };
   }
 
   componentDidMount() {
-    const {batch, getTimelineBatchRequest} = this.props;
+    const {batch, getTimelineBatchRequest, getJumlahProduksiRequest} = this.props;
     setTimeout(() => {
+      getJumlahProduksiRequest(batch.woi_oid);
       getTimelineBatchRequest({woi_oid: batch.woi_oid});
     }, 100);
   }
@@ -105,6 +109,11 @@ class TimelineScreen extends Component {
           1000
       );
     }
+
+    this.totalIdle = this.totalIdle + idleTime;
+    // if (isLast) {
+    //   this.setState({totalIdle: this.totalIdle});
+    // }
 
     return (
       <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
@@ -150,7 +159,7 @@ class TimelineScreen extends Component {
         <View style={{flex: 4, alignItems: 'flex-end'}}>
           <Text style={styles.title}>{item.wc_desc}</Text>
           <Spacer height={6} />
-          {item.notes || item.materials.length > 0 ? (
+          {!isLast && (item.notes || item.materials.length > 0) ? (
             <TouchableOpacity onPress={() => this.modalMaterialNote.show(item)}>
               <Text style={{color: Colors.primary}}>Lihat Detail</Text>
             </TouchableOpacity>
@@ -158,10 +167,12 @@ class TimelineScreen extends Component {
             <View />
           )}
           <Spacer height={6} />
-          <TouchableOpacity
-            onPress={() => this.modalUpdateMaterial.show(item.materials)}>
-            <Icon name="edit" size={20} color={Colors.primary} />
-          </TouchableOpacity>
+          {isLast && (
+            <TouchableOpacity
+              onPress={() => this.modalUpdateMaterial.show(item.materials)}>
+              <Icon name="edit" size={20} color={Colors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );
@@ -180,6 +191,7 @@ class TimelineScreen extends Component {
   }
 
   render() {
+    const {totalIdle} = this.state;
     const {operations, batch, detail, timeline, notes, detailBatch} =
       this.props;
 
@@ -219,6 +231,12 @@ class TimelineScreen extends Component {
               {TextUtil.formatTimeCountDown(timer)}
             </Text>
 
+            <Text>Total Idle</Text>
+            <Spacer height={6} />
+            <Text style={{fontSize: 21, fontWeight: 'bold'}}>
+              {TextUtil.formatTimeCountDown(this.totalIdle)}
+            </Text>
+
             <View style={styles.flexDirection}>
               <Text>Gas Start</Text>
               <Text style={{fontWeight: 'bold'}}>
@@ -236,6 +254,17 @@ class TimelineScreen extends Component {
                   detail.wocp_gas_stop
                     ? parseInt(detail.wocp_gas_stop, 10)
                     : '-'
+                )}
+              </Text>
+            </View>
+            <View style={styles.flexDirection}>
+              <Text>Gas Use</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                {TextUtil.formatMoney(
+                  parseInt(detail.wocp_gas_start, 10) -
+                    (detail.wocp_gas_stop
+                      ? parseInt(detail.wocp_gas_stop, 10)
+                      : 0)
                 )}
               </Text>
             </View>
@@ -304,6 +333,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(DashboardActions.getTimelineBatchRequest(params)),
   updateBatchRequest: (params) =>
     dispatch(OperationActions.updateBatchRequest(params)),
+  getJumlahProduksiRequest: (params, callback) =>
+    dispatch(OperationActions.getJumlahProduksiRequest(params, callback)),
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineScreen);
