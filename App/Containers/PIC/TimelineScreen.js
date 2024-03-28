@@ -78,16 +78,41 @@ class TimelineScreen extends Component {
     super(props);
 
     this.state = {
-      totalIdle: 0
+      totalIdle: 0,
     };
   }
 
   componentDidMount() {
-    const {batch, getTimelineBatchRequest, getJumlahProduksiRequest} = this.props;
+    const {batch, getTimelineBatchRequest, getJumlahProduksiRequest} =
+      this.props;
     setTimeout(() => {
       getJumlahProduksiRequest(batch.woi_oid);
       getTimelineBatchRequest({woi_oid: batch.woi_oid});
     }, 100);
+  }
+
+  getTotalIdle() {
+    const {timeline} = this.props;
+    let totalIdle = 0;
+
+    for (let index = 0; index < timeline.length; index++) {
+      const item = timeline[index];
+      const startTime = item.wocpd_start_time;
+      const endTime = item.wocpd_stop_time;
+
+      if (index !== 0) {
+        let idleTime = 0;
+
+        idleTime = Math.round(
+          (new Date(startTime).getTime() -
+            new Date(timeline[index - 1].wocpd_stop_time).getTime()) /
+            1000
+        );
+        totalIdle = totalIdle + idleTime;
+      }
+    }
+
+    return TextUtil.formatTimeCountDown(totalIdle);
   }
 
   renderItem(item, index) {
@@ -167,12 +192,12 @@ class TimelineScreen extends Component {
             <View />
           )}
           <Spacer height={6} />
-          {isLast && (
+          {/* {isLast && (
             <TouchableOpacity
               onPress={() => this.modalUpdateMaterial.show(item.materials)}>
               <Icon name="edit" size={20} color={Colors.primary} />
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
       </View>
     );
@@ -234,7 +259,8 @@ class TimelineScreen extends Component {
             <Text>Total Idle</Text>
             <Spacer height={6} />
             <Text style={{fontSize: 21, fontWeight: 'bold'}}>
-              {TextUtil.formatTimeCountDown(this.totalIdle)}
+              {this.getTotalIdle()}
+              {/* {TextUtil.formatTimeCountDown(this.totalIdle)} */}
             </Text>
 
             <View style={styles.flexDirection}>
@@ -335,7 +361,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(OperationActions.updateBatchRequest(params)),
   getJumlahProduksiRequest: (params, callback) =>
     dispatch(OperationActions.getJumlahProduksiRequest(params, callback)),
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineScreen);

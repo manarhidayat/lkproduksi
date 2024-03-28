@@ -165,12 +165,11 @@ class ModalFinish extends PureComponent {
           setFieldValue={props.setFieldValue}
           setFieldTouched={() => {}}
         /> */}
-        <ScrollView>
+        {/* <ScrollView>
           <View style={styles.content}>
             {finishMaterial.length > 0 && (
               <View style={[styles.row, styles.titleContainer]}>
                 <Text style={[styles.textTitle, {flex: 1}]}>Material</Text>
-                {/* <Text style={[styles.textTitle, {flex: 0.5}]}>Plan</Text> */}
                 <Text style={[styles.textTitle, {flex: 0.5}]} />
               </View>
             )}
@@ -178,17 +177,6 @@ class ModalFinish extends PureComponent {
               return (
                 <View style={styles.row}>
                   <Text style={styles.textLabel}>{item.pt_desc1}</Text>
-                  {/* <Input
-                    placeholder=" "
-                    name={item.pt_id}
-                    keyboardType="number-pad"
-                    editable={false}
-                    containerStyle={styles.inputPlan}
-                    value={`${item.wop_qty_open}`}
-                    error={props.errors.baseMetalPlan}
-                    setFieldValue={props.setFieldValue}
-                    setFieldTouched={() => {}}
-                  /> */}
                   <Spacer width={10} />
                   <Input
                     placeholder=" "
@@ -204,7 +192,7 @@ class ModalFinish extends PureComponent {
               );
             })}
           </View>
-        </ScrollView>
+        </ScrollView> */}
 
         <View style={styles.bottom}>
           <FullButton

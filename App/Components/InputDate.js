@@ -12,7 +12,7 @@ class InputDate extends Component {
     super(props);
     this.state = {
       visible: false,
-      selected: props.value
+      selected: props.value,
     };
 
     this.handleDatePicked = this.handleDatePicked.bind(this);
@@ -69,9 +69,10 @@ class InputDate extends Component {
       <Text style={[styles.label, {marginBottom: 5}]}>{title}</Text>
     ) : null;
 
-    console.tron.log('wew value', value)
     const isValid = value && value !== undefined && value !== '';
-    const text = isValid ? Moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY') : '';
+    const text = isValid
+      ? Moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      : '';
 
     return (
       <View style={containerStyle}>
@@ -84,7 +85,7 @@ class InputDate extends Component {
               height: 47,
               width: '100%',
               flexDirection: 'row',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
             },
           ]}
           onPress={this.showModal.bind(this, true)}>
@@ -113,7 +114,7 @@ InputDate.defaultProps = {
   data: [],
   renderItem: (item) => {},
   onSelect: (item) => {},
-  style: {}
+  style: {},
 };
 
 export default InputDate;

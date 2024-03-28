@@ -74,6 +74,7 @@ class Timer extends PureComponent {
 
   stopTimer() {
     if (this.clockCall) {
+      console.tron.log('wew masuk');
       clearInterval(this.clockCall);
     }
   }

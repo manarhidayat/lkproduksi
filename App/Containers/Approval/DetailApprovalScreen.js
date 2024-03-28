@@ -167,7 +167,6 @@ class DetailApprovalScreen extends Component {
           1000
       );
     }
-    console.tron.log('wew 2', idleTime);
 
     this.totalIdle = this.totalIdle + idleTime;
 
@@ -269,8 +268,6 @@ class DetailApprovalScreen extends Component {
     const timer = Math.round(
       (new Date(item.end).getTime() - new Date(item.start).getTime()) / 1000
     );
-
-    console.tron.log('wew 1', this.totalIdle);
 
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>

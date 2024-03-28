@@ -152,8 +152,6 @@ class TimerScreen extends Component {
     const operation = route.params?.item;
     const item = operation || currentOperation;
 
-    console.tron.log('wew item.wc_avg_time', item)
-
     this.modalStopTimer.show(
       parseInt(item.wc_avg_time, 10) * 60 < this.timerRef.getTimer() &&
         !currentOperation.notes
@@ -257,7 +255,9 @@ class TimerScreen extends Component {
     setCurrentOperation(null);
     stopOperationRequest(params);
 
-    NavigationServices.pop();
+    setTimeout(() => {
+      NavigationServices.pop();
+    }, 100);
   }
 
   setTimesCaution() {
@@ -371,7 +371,7 @@ class TimerScreen extends Component {
           <ModalStartTimer
             setRef={(r) => (this.modalStartTimer = r)}
             onDone={(detailMaterial) => this.onPressStart(detailMaterial)}
-            useMaterial={item.wc_is_material === 'Y'}
+            // useMaterial={item.wc_is_material === 'Y'}
             title={'Mulai Proses'}
             desc={'Apakah Anda akan memulai proses?'}
           />
