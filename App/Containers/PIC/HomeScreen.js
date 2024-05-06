@@ -99,16 +99,36 @@ class HomeScreen extends Component {
       setEndGas,
       operations,
       finishMaterial,
+      progressDetailId,
+      stopOperationRequest,
     } = this.props;
     const finishing = operations[operations.length - 1];
 
-    setEndGas(gasMeter);
-    finishOperationRequest({
-      progress_id: progressId,
-      gas_end: gasMeter,
-      process_id: finishing.wc_id,
-      detail_material: finishMaterial,
-    });
+    if (progressDetailId) {
+      let params = {
+        progress_detail_id: progressDetailId,
+        reason_id: null,
+        other_reason: null,
+      };
+
+      stopOperationRequest(params, () => {
+        setEndGas(gasMeter);
+        finishOperationRequest({
+          progress_id: progressId,
+          gas_end: gasMeter,
+          process_id: finishing.wc_id,
+          detail_material: finishMaterial,
+        });
+      });
+    } else {
+      setEndGas(gasMeter);
+      finishOperationRequest({
+        progress_id: progressId,
+        gas_end: gasMeter,
+        process_id: finishing.wc_id,
+        detail_material: finishMaterial,
+      });
+    }
   }
 
   onPressLogout() {
@@ -135,9 +155,12 @@ class HomeScreen extends Component {
   }
 
   renderItem({item, index}) {
-    if (index === 11) {
+    if (item.wc_desc === 'FINISHING') {
       return <View style={{width: 80}} />;
     }
+    // if (index === 11) {
+    //   return <View style={{width: 80}} />;
+    // }
 
     return (
       <TouchableOpacity
@@ -190,7 +213,8 @@ const selector = createSelector(
     OperationSelectors.getProgressId,
     OperationSelectors.getOperations,
     OperationSelectors.getFinishMaterialRes,
-    SessionSelectors.selectBatch
+    SessionSelectors.selectBatch,
+    OperationSelectors.getProgressDetailId,
   ],
   (
     currentOperation,
@@ -199,7 +223,8 @@ const selector = createSelector(
     progressId,
     listOperation,
     finishMaterial,
-    batch
+    batch,
+    progressDetailId
   ) => ({
     currentOperation,
     isWorking,
@@ -207,7 +232,8 @@ const selector = createSelector(
     progressId,
     listOperation,
     finishMaterial,
-    batch
+    batch,
+    progressDetailId,
   })
 );
 
@@ -227,6 +253,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(OperationActions.getJumlahProduksiRequest(params, callback)),
 
   setEndGas: (params) => dispatch(OperationActions.setEndGas(params)),
+  stopOperationRequest: (params, callback) =>
+    dispatch(OperationActions.stopOperationRequest(params, callback)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

@@ -67,7 +67,8 @@ const create = (baseURL = API_URL) => {
   //
 
   const doLogin = (data) => api.post('/public/auth/login', data);
-  const changePassword = (data) => api.post('/public/auth/changePassword', data);
+  const changePassword = (data) =>
+    api.post('/public/auth/changePassword', data);
 
   const getListBatch = (data) => api.get('/public/batches', data);
   const getListKitchen = (data) => api.get('/public/kitchens', data);
@@ -83,7 +84,8 @@ const create = (baseURL = API_URL) => {
   const updateBatch = (data) => api.post(`/public/progress/updateresult`, data);
 
   const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
-  const getTimelineBatch = (data) => api.post(`/public/dashboard/resume/detail`, data);
+  const getTimelineBatch = (data) =>
+    api.post(`/public/dashboard/resume/detail`, data);
 
   const approve = (data) => api.post('/public/progress/approve', data);
   const decline = (data) => api.post('/public/progress/decline', data);

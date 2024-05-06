@@ -198,7 +198,8 @@ class TimerScreen extends Component {
         progress_id: progressId,
         process_id: item.wc_id,
         is_material: item.wc_is_material,
-        detail_material: item.wc_is_material === 'Y' ? detailMaterial : [],
+        // detail_material: item.wc_is_material === 'Y' ? detailMaterial : [],
+        detail_material: [],
       };
 
       setCurrentOperation(operation);
