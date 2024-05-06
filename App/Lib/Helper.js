@@ -10,13 +10,16 @@ export function getStatusOperation(item) {
   let lastProses = '';
 
   if (item.start) {
-    start = moment(item.start, 'yyyy-MM-DD HH:mm:ss').format('D MMM YYYY, HH.mm');
+    start = moment(item.start, 'yyyy-MM-DD HH:mm:ss').format(
+      'D MMM YYYY, HH.mm'
+    );
   }
   if (item.end) {
     end = moment(item.end, 'yyyy-MM-DD HH:mm:ss').format('D MMM YYYY, HH.mm');
   }
   if (item.start && item.end === null) {
-    end = 'Sekarang';
+    end = '';
+    // end = 'Sekarang';
   }
 
   switch (item.wocp_status) {

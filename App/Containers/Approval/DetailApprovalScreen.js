@@ -180,7 +180,8 @@ class DetailApprovalScreen extends Component {
           )}
           <Text style={{fontWeight: 'bold'}}>
             {moment(startTime).format('HH:mm')} -{' '}
-            {endTime ? moment(endTime).format('HH:mm') : 'Sekarang'}
+            {/* {endTime ? moment(endTime).format('HH:mm') : 'Sekarang'} */}
+            {endTime ? moment(endTime).format('HH:mm') : ''}
           </Text>
           <Text style={{color: 'grey'}}>
             {moment(startTime).format('ddd, DD MMM')}
@@ -244,7 +245,7 @@ class DetailApprovalScreen extends Component {
         let idleTime = 0;
         const startTime = item.wocpd_start_time;
 
-        if (index !== 0) {
+        if (index !== 0 && timeline[index - 1].wocpd_stop_time !== null) {
           idleTime = Math.round(
             (new Date(startTime).getTime() -
               new Date(timeline[index - 1].wocpd_stop_time).getTime()) /

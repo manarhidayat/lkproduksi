@@ -173,8 +173,12 @@ class SelectBatchScreen extends Component {
 
     return (
       <TouchableOpacity
-        onPress={() =>
-          status === '' ? this.setState({batchSelected: item}) : {}
+        onPress={
+          () => (status === '' ? this.setState({batchSelected: item}) : {})
+          // {
+          //   this.props.saveBatch(item);
+          //   NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
+          // }
         }
         style={[styles.row, style]}>
         <View style={{flex: 1}}>

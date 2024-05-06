@@ -88,7 +88,25 @@ class TimelineScreen extends Component {
     setTimeout(() => {
       getJumlahProduksiRequest(batch.woi_oid);
       getTimelineBatchRequest({woi_oid: batch.woi_oid});
+      // getJumlahProduksiRequest('1823be9b-7fdc-4207-bb80-f7329f1ed173');
+      // getTimelineBatchRequest({
+      //   woi_oid: '1823be9b-7fdc-4207-bb80-f7329f1ed173',
+      // });
+
+      const {navigation} = this.props;
+
+      this.navListener = navigation.addListener('beforeRemove', (e) => {
+        if (this.isPlaying) {
+          e.preventDefault();
+        }
+      });
     }, 100);
+  }
+
+  componentWillUnmount() {
+    if (this.navListener) {
+      this.navListener();
+    }
   }
 
   getTotalIdle() {
@@ -100,7 +118,7 @@ class TimelineScreen extends Component {
       const startTime = item.wocpd_start_time;
       const endTime = item.wocpd_stop_time;
 
-      if (index !== 0) {
+      if (index !== 0 && timeline[index - 1].wocpd_stop_time !== null) {
         let idleTime = 0;
 
         idleTime = Math.round(
@@ -152,12 +170,15 @@ class TimelineScreen extends Component {
           <Text style={{fontWeight: 'bold'}}>
             {moment(startTime).format('HH:mm')}
             {startTime !== endTime && (
+              <>{endTime ? ` - ${moment(endTime).format('HH:mm')}` : ' - '}</>
+            )}
+            {/* {startTime !== endTime && (
               <>
                 {endTime
                   ? ` - ${moment(endTime).format('HH:mm')}`
                   : ' - Sekarang'}
               </>
-            )}
+            )} */}
           </Text>
           <Text style={{color: 'grey'}}>
             {moment(startTime).format('ddd, DD MMM')}
@@ -216,26 +237,30 @@ class TimelineScreen extends Component {
   }
 
   render() {
-    const {totalIdle} = this.state;
     const {operations, batch, detail, timeline, notes, detailBatch} =
       this.props;
 
-    let timer = 0;
-    if (operations.length > 0) {
-      const startTime = operations[0].startTime;
-      const endTime = operations[operations.length - 1].endTime;
+    // let timer = 0;
+    // if (operations.length > 0) {
+    //   const startTime = operations[0].startTime;
+    //   const endTime = operations[operations.length - 1].endTime;
 
-      timer = Math.round(
-        (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000
-      );
-      // timer = 15091;
-    }
+    //   timer = Math.round(
+    //     (new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000
+    //   );
+    //   // timer = 15091;
+    // }
+    const item = detail;
+
+    const timer = Math.round(
+      (new Date(item.end).getTime() - new Date(item.start).getTime()) / 1000
+    );
 
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <ScrollView>
           <View style={styles.content}>
-            <Text style={{fontSize: 21}}>{batch.woi_remarks}</Text>
+            {/* <Text style={{fontSize: 21}}>{batch.woi_remarks}</Text> */}
             <Text style={{fontWeight: '600', fontSize: 21}}>Batch Selesai</Text>
             <Spacer height={30} />
 

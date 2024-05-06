@@ -10,9 +10,10 @@
  *    you'll need to define a constant in that file.
  *************************************************************/
 
+import {Alert} from 'react-native';
 import {call, put, all, select} from 'redux-saga/effects';
-import { TYPE_ONBOARDING } from '../Lib/Constans';
-import { NAVIGATION_NAME } from '../Navigation/NavigationName';
+import {TYPE_ONBOARDING} from '../Lib/Constans';
+import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import NavigationServices from '../Navigation/NavigationServices';
 
 import OperationActions from '../Redux/OperationRedux';
@@ -52,11 +53,17 @@ export function* startOperation(api, action) {
 }
 
 export function* stopOperation(api, action) {
-  const {data} = action;
+  const {data, callback} = action;
   const response = yield call(api.stopOperation, data);
 
   if (response.ok && response.data) {
     yield put(OperationActions.stopOperationSuccess(response.data));
+    if (callback) {
+      callback();
+    }
+    if (!response.data.result) {
+      Alert.alert('Stop Proses Error', JSON.stringify(response.data));
+    }
   } else {
     yield put(OperationActions.stopOperationFailure(response));
   }
@@ -69,7 +76,7 @@ export function* finishOperation(api, action) {
   if (response.ok && response.data) {
     yield all([
       yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.timeline)),
-      yield put(OperationActions.finishOperationSuccess(response.data))
+      yield put(OperationActions.finishOperationSuccess(response.data)),
     ]);
     NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
   } else {
@@ -111,7 +118,7 @@ export function* beginOperation(api, action) {
     // yield put(OperationActions.beginOperationSuccess(response.data));
     yield all([
       yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.home)),
-      yield put(OperationActions.beginOperationSuccess(response.data))
+      yield put(OperationActions.beginOperationSuccess(response.data)),
     ]);
     NavigationServices.navigate(NAVIGATION_NAME.PIC.home);
   } else {

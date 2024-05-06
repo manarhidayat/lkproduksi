@@ -31,7 +31,7 @@ class App extends PureComponent {
 
     return (
       <>
-        <StatusBar barStyle="dark-content" backgroundColor={Colors.primary}/>
+        <StatusBar barStyle="dark-content" backgroundColor={Colors.primary} />
         <NavigationContainer
           ref={(r) => {
             this.navigation = r;
@@ -42,7 +42,7 @@ class App extends PureComponent {
             const currentRoute = NavigationServices.getCurrentRoute();
             console.tron.send('state.action.complete', {
               name: `NAVIGATE/${currentRoute.name}`,
-              action: currentRoute
+              action: currentRoute,
             });
           }}>
           <GestureHandlerRootView style={{flex: 1}}>
@@ -65,7 +65,7 @@ const selector = createSelector(
     return {
       isLogin,
       boarding,
-      user
+      user,
     };
   }
 );

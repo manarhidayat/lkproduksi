@@ -30,7 +30,7 @@ const {Types, Creators} = createActions({
   startOperationSuccess: ['payload'],
   startOperationFailure: ['error'],
 
-  stopOperationRequest: ['data'],
+  stopOperationRequest: ['data', 'callback'],
   stopOperationSuccess: ['payload'],
   stopOperationFailure: ['error'],
 
