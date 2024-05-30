@@ -60,6 +60,13 @@ const styles = StyleSheet.create({
     width: 160,
     alignItems: 'center',
   },
+  btnReset: {
+    borderColor: 'red',
+    borderWidth: 1,
+    paddingVertical: 4,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+  },
 });
 
 const schema = Yup.object().shape({
@@ -152,6 +159,22 @@ class SelectBatchScreen extends Component {
     });
   }
 
+  onPressReset(item) {
+    Alert.alert(
+      'Peringatan',
+      'Apakah Anda yakin akan me-reset Proses ini?',
+      [
+        {
+          text: 'Tidak',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Ya', onPress: () => this.props.resetBatchRequest(item.woi_oid)},
+      ],
+      {cancelable: false}
+    );
+  }
+
   renderEmpty() {
     return (
       <View style={styles.empty}>
@@ -177,7 +200,7 @@ class SelectBatchScreen extends Component {
           () => (status === '' ? this.setState({batchSelected: item}) : {})
           // {
           //   this.props.saveBatch(item);
-          //   NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
+          //   NavigationServices.navigate(NAVIGATION_NAME.PIC.home);
           // }
         }
         style={[styles.row, style]}>
@@ -187,13 +210,24 @@ class SelectBatchScreen extends Component {
             <>
               <Spacer height={8} />
               <View
-                style={[
-                  styles.containerStatus,
-                  {backgroundColor: statusBackground},
-                ]}>
-                <Text style={{fontWeight: 'bold', color: statusColor}}>
-                  {status}
-                </Text>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View
+                  style={[
+                    styles.containerStatus,
+                    {backgroundColor: statusBackground},
+                  ]}>
+                  <Text style={{fontWeight: 'bold', color: statusColor}}>
+                    {status}
+                  </Text>
+                </View>
+                {item.wocp_status === 'I' ||
+                  (item.wocp_status === 'W' && (
+                    <TouchableOpacity
+                      style={styles.btnReset}
+                      onPress={() => this.onPressReset(item)}>
+                      <Text style={{color: 'red'}}>Reset</Text>
+                    </TouchableOpacity>
+                  ))}
               </View>
             </>
           )}
@@ -351,6 +385,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(OperationActions.getListKitchenRequest(params)),
   getListBatchRequest: (params) =>
     dispatch(OperationActions.getListBatchRequest(params)),
+  resetBatchRequest: (params) =>
+    dispatch(OperationActions.resetBatchRequest(params)),
 
   setLogin: (params) => dispatch(SessionActions.setLogin(params)),
   removeSession: (params) => dispatch(SessionActions.removeSession(params)),

@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    flex: 1,
   },
 });
 
@@ -63,12 +64,18 @@ class HomeScreen extends Component {
     this.state = {};
 
     this.renderItem = this.renderItem.bind(this);
+    this.renderEmpty = this.renderEmpty.bind(this);
+    this.onRefresh = this.onRefresh.bind(this);
     this.onPressLogout = this.onPressLogout.bind(this);
     this.onPressFinish = this.onPressFinish.bind(this);
     this.onFinish = this.onFinish.bind(this);
   }
 
   componentDidMount() {
+    this.onRefresh();
+  }
+
+  onRefresh() {
     setTimeout(() => {
       const {isWorking, currentOperation, getListOperationRequest} = this.props;
       getListOperationRequest();
@@ -81,6 +88,20 @@ class HomeScreen extends Component {
 
       NavigationServices.setParams({onPressLogout: this.onPressLogout});
     }, 500);
+  }
+
+  renderEmpty() {
+    return (
+      <View style={{alignItems: 'center'}}>
+        <FullButton
+          onPress={() => this.onRefresh()}
+          text="REFRESH"
+          style={{width: 200}}
+        />
+        <Spacer height={10} />
+        <Text>Gagal memuat proses, mohon di refresh</Text>
+      </View>
+    );
   }
 
   onPressFinish() {
@@ -185,12 +206,17 @@ class HomeScreen extends Component {
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.content}>
           <FlatList
+            onRefresh={this.onRefresh}
+            refreshing={false}
             data={operations}
             renderItem={this.renderItem}
+            ListEmptyComponent={this.renderEmpty}
             numColumns={3}
             contentContainerStyle={{
               flexGrow: 1,
               paddingHorizontal: 20,
+              justifyContent: 'center',
+              // alignItems: 'center',
             }}
             columnWrapperStyle={{justifyContent: 'space-between'}}
           />

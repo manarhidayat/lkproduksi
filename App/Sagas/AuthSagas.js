@@ -47,7 +47,7 @@ export function* doLogin(api, action) {
     const message =
       response.data && response.data.error
         ? response.data.error
-        : 'Login Gagal';
+        : 'Gagal login, mohon periksa koneksi dan url Anda';
     Alert.alert('Peringatan', message);
     yield put(AuthActions.doLoginFailure(response));
   }

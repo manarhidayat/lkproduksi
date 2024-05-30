@@ -16,7 +16,7 @@ import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import NavigationServices from '../Navigation/NavigationServices';
 
-import OperationActions from '../Redux/OperationRedux';
+import OperationActions, {OperationSelectors} from '../Redux/OperationRedux';
 import SessionActions from '../Redux/SessionRedux';
 
 export function* getListBatch(api, action) {
@@ -106,6 +106,7 @@ export function* getListOperation(api, action) {
   if (response.ok && response.data) {
     yield put(OperationActions.getListOperationSuccess(response.data));
   } else {
+    Alert.alert('Peringatan', 'Tidak ada response dari Server');
     yield put(OperationActions.getListOperationFailure(response));
   }
 }
@@ -162,5 +163,21 @@ export function* updateBatch(api, action) {
     }
   } else {
     yield put(OperationActions.updateBatchFailure(response));
+  }
+}
+
+export function* resetBatch(api, action) {
+  const {data, callback} = action;
+  const response = yield call(api.resetBatch, data);
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.resetBatchSuccess(response.data));
+    if (callback) {
+      callback();
+    }
+    const batchRequest = yield select(OperationSelectors.getBatchRequest, {});
+    yield put(OperationActions.getListBatchRequest(batchRequest));
+  } else {
+    yield put(OperationActions.resetBatchFailure(response));
   }
 }

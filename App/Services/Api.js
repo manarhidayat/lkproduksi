@@ -81,11 +81,12 @@ const create = (baseURL = API_URL) => {
   const beginOperation = (data) => api.post('/public/progress/begin', data);
   const getDetailBatch = (data) => api.get(`/public/batches/${data.id}`, data);
   const getJumlahProduksi = (id) => api.get(`/public/progress/result/${id}`);
-  const updateBatch = (data) => api.post(`/public/progress/updateresult`, data);
+  const updateBatch = (data) => api.post('/public/progress/updateresult', data);
+  const resetBatch = (data) => api.get('/public/batch/reset/' + data, data);
 
   const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
   const getTimelineBatch = (data) =>
-    api.post(`/public/dashboard/resume/detail`, data);
+    api.post('/public/dashboard/resume/detail', data);
 
   const approve = (data) => api.post('/public/progress/approve', data);
   const decline = (data) => api.post('/public/progress/decline', data);
@@ -119,6 +120,7 @@ const create = (baseURL = API_URL) => {
     getDetailBatch,
     getJumlahProduksi,
     updateBatch,
+    resetBatch,
 
     getResumeBatch,
     getTimelineBatch,
