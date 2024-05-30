@@ -6,8 +6,6 @@ import API from '../Services/Api';
 import {StartupTypes} from '../Redux/StartupRedux';
 import {AuthTypes} from '../Redux/AuthRedux';
 import {OperationTypes} from '../Redux/OperationRedux';
-import {DashboardTypes} from '../Redux/DashboardRedux';
-import {ApprovalTypes} from '../Redux/ApprovalRedux';
 
 /* ------------- Sagas ------------- */
 
@@ -15,20 +13,11 @@ import {startup} from './StartupSagas';
 import {doLogin, changePassword} from './AuthSagas';
 
 import {
-  getListBatch,
-  getListKitchen,
-  startOperation,
-  stopOperation,
-  finishOperation,
-  getListReason,
-  beginOperation,
-  getDetailBatch,
-  getListOperation,
-  getJumlahProduksi,
-  updateBatch
+  getLocations,
+  getReports,
+  getSetupLoading,
+  postOperation,
 } from './OperationSagas';
-import {approve, decline} from './ApprovalSagas';
-import {getResumeBatch, getTimelineBatch} from './DashboardSagas';
 
 /* ------------- API ------------- */
 
@@ -46,31 +35,9 @@ export default function* root() {
     takeLatest(AuthTypes.LOGIN_REQUEST, doLogin, api),
     takeLatest(AuthTypes.CHANGE_PASSWORD_REQUEST, changePassword, api),
 
-    takeLatest(OperationTypes.GET_LIST_BATCH_REQUEST, getListBatch, api),
-    takeLatest(OperationTypes.GET_LIST_KITCHEN_REQUEST, getListKitchen, api),
-    takeLatest(OperationTypes.START_OPERATION_REQUEST, startOperation, api),
-    takeLatest(OperationTypes.STOP_OPERATION_REQUEST, stopOperation, api),
-    takeLatest(OperationTypes.FINISH_OPERATION_REQUEST, finishOperation, api),
-
-    takeLatest(OperationTypes.GET_LIST_REASON_REQUEST, getListReason, api),
-    takeLatest(
-      OperationTypes.GET_LIST_OPERATION_REQUEST,
-      getListOperation,
-      api
-    ),
-    takeLatest(OperationTypes.BEGIN_OPERATION_REQUEST, beginOperation, api),
-    takeLatest(OperationTypes.GET_DETAIL_BATCH_REQUEST, getDetailBatch, api),
-    takeLatest(OperationTypes.GET_JUMLAH_PRODUKSI_REQUEST, getJumlahProduksi, api),
-    takeLatest(OperationTypes.UPDATE_BATCH_REQUEST, updateBatch, api),
-
-    takeLatest(DashboardTypes.GET_RESUME_BATCH_REQUEST, getResumeBatch, api),
-    takeLatest(
-      DashboardTypes.GET_TIMELINE_BATCH_REQUEST,
-      getTimelineBatch,
-      api
-    ),
-
-    takeLatest(ApprovalTypes.APPROVE_REQUEST, approve, api),
-    takeLatest(ApprovalTypes.DECLINE_REQUEST, decline, api),
+    takeLatest(OperationTypes.POST_OPERATION_REQUEST, postOperation, api),
+    takeLatest(OperationTypes.GET_LOCATIONS_REQUEST, getLocations, api),
+    takeLatest(OperationTypes.GET_REPORTS_REQUEST, getReports, api),
+    takeLatest(OperationTypes.GET_SETUP_LOADING_REQUEST, getSetupLoading, api),
   ]);
 }

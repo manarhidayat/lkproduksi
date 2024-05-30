@@ -21,7 +21,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'LKProduksibyMacid' do
+target 'MacIdFrozen' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -43,13 +43,16 @@ target 'LKProduksibyMacid' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'FirebaseCore', :modular_headers => true
-  pod 'Firebase/Messaging'
-  pod 'Firebase', :modular_headers => true
-  pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
+  # pod 'FirebaseCore', :modular_headers => true
+  # pod 'Firebase/Messaging'
+  # pod 'Firebase', :modular_headers => true
+  # pod 'FirebaseCoreInternal', :modular_headers => true
+  # pod 'GoogleUtilities', :modular_headers => true
 
-  target 'LKProduksibyMacidTests' do
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+
+  target 'MacIdFrozenTests' do
     inherit! :complete
     # Pods for testing
   end

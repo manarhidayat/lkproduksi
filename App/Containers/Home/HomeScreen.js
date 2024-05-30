@@ -14,7 +14,6 @@ import Text from '../../Components/Text';
 import NavigationServices from '../../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import {SessionSelectors} from '../../Redux/SessionRedux';
-import DashboardActions from '../../Redux/DashboardRedux';
 import {version} from '../../../package.json';
 
 const styles = StyleSheet.create({
@@ -29,20 +28,11 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 16,
-    paddingTop: 0,
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderColor: Colors.border,
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 30,
-    marginBottom: 10,
-  },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -55,8 +45,14 @@ class HomeScreen extends Component {
     this.state = {};
   }
 
-  componentDidMount() {
-    this.props.getResumeBatchRequest();
+  componentDidMount() {}
+
+  onPressScan(type) {
+    if (type === 'L') {
+      NavigationServices.push(NAVIGATION_NAME.HOME.setupLoading, {type});
+    } else {
+      NavigationServices.push(NAVIGATION_NAME.HOME.scan, {type});
+    }
   }
 
   render() {
@@ -64,57 +60,36 @@ class HomeScreen extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.header}>
-          <View style={styles.row}>
-            <Image
-              source={{uri: user.profile_photo_url}}
-              style={styles.avatar}
-            />
-            <Text>{version}</Text>
-          </View>
-          <Text>Halo,</Text>
-          <Text>{user.name}</Text>
+          <Text>Pilih tipe: </Text>
         </View>
 
         <TouchableOpacity
-          onPress={() => NavigationServices.push(NAVIGATION_NAME.HOME.profile)}
+          onPress={() => this.onPressScan('P')}
           style={styles.menu}>
-          <Icon name="account" size={20} style={{marginRight: 10}} />
-          <Text>Profile</Text>
+          <Icon name="car-cruise-control" size={20} style={{marginRight: 10}} />
+          <Text>Preparing</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {}
-            // NavigationServices.push(NAVIGATION_NAME.INVENTORY.list)
-          }
+          onPress={() => this.onPressScan('L')}
           style={styles.menu}>
-          <Icon name="garage" size={25} style={{marginRight: 5}} />
-          <Text>Active Item</Text>
+          <Icon name="loading" size={25} style={{marginRight: 5}} />
+          <Text>Loading</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => NavigationServices.push(NAVIGATION_NAME.ACTIVITY.list)}
+          onPress={() => this.onPressScan('D')}
           style={styles.menu}>
-          <Icon
-            name="format-list-bulleted"
-            size={20}
-            style={{marginRight: 10}}
-          />
-          <Text>Activity</Text>
+          <Icon name="archive-lock-open" size={20} style={{marginRight: 10}} />
+          <Text>Disassembly</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
   }
 }
-const selector = createSelector(
-  [SessionSelectors.selectMachine, SessionSelectors.selectUser],
-  (machine, user) => ({
-    machine,
-    user,
-  })
-);
+const selector = createSelector([SessionSelectors.selectUser], (user) => ({
+  user,
+}));
 
-const mapDispatchToProps = (dispatch) => ({
-  getResumeBatchRequest: (params) =>
-    dispatch(DashboardActions.getResumeBatchRequest(params)),
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 const mapStateToProps = (state) => selector(state);
 

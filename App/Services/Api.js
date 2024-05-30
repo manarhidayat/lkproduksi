@@ -25,6 +25,8 @@ const create = (baseURL = API_URL) => {
     // here are some default headers
     headers: {
       'Content-Type': 'application/json',
+      // 'Content-Type':
+      //   'multipart/form-data; boundary=<calculated when request is sent></calculated>',
       Accept: 'application/json',
     },
     // 10 second timeout...
@@ -66,29 +68,15 @@ const create = (baseURL = API_URL) => {
   // way at this level.
   //
 
-  const doLogin = (data) => api.post('/public/auth/login', data);
+  const doLogin = (data) => api.post('/login', data);
   const changePassword = (data) =>
     api.post('/public/auth/changePassword', data);
 
-  const getListBatch = (data) => api.get('/public/batches', data);
-  const getListKitchen = (data) => api.get('/public/kitchens', data);
-  const startOperation = (data) => api.post('/public/progress/start', data);
-  const stopOperation = (data) => api.post('/public/progress/stop', data);
-  const finishOperation = (data) => api.post('/public/progress/end', data);
+  const postOperation = (data) => api.post('/save', data);
 
-  const getListReason = (data) => api.get('/public/reasons', data);
-  const getListOperation = (data) => api.get('/public/process', data);
-  const beginOperation = (data) => api.post('/public/progress/begin', data);
-  const getDetailBatch = (data) => api.get(`/public/batches/${data.id}`, data);
-  const getJumlahProduksi = (id) => api.get(`/public/progress/result/${id}`);
-  const updateBatch = (data) => api.post(`/public/progress/updateresult`, data);
-
-  const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
-  const getTimelineBatch = (data) =>
-    api.post(`/public/dashboard/resume/detail`, data);
-
-  const approve = (data) => api.post('/public/progress/approve', data);
-  const decline = (data) => api.post('/public/progress/decline', data);
+  const getLocations = (data) => api.get('/get_location', data);
+  const getReports = (data) => api.get('/save', data);
+  const getSetupLoading = (data) => api.get('/get_penyiapan', data);
 
   // ------
   // STEP 3
@@ -107,24 +95,10 @@ const create = (baseURL = API_URL) => {
     doLogin,
     changePassword,
 
-    getListBatch,
-    getListKitchen,
-    startOperation,
-    stopOperation,
-    finishOperation,
-
-    getListReason,
-    getListOperation,
-    beginOperation,
-    getDetailBatch,
-    getJumlahProduksi,
-    updateBatch,
-
-    getResumeBatch,
-    getTimelineBatch,
-
-    approve,
-    decline,
+    postOperation,
+    getLocations,
+    getReports,
+    getSetupLoading,
 
     api,
   };

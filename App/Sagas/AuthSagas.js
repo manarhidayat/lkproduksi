@@ -18,7 +18,6 @@ import SessionActions from '../Redux/SessionRedux';
 import NavigationServices from '../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import LoadingHelper from '../Lib/LoadingHelper';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
 
 export function* doLogin(api, action) {
   const {data} = action;
@@ -27,8 +26,8 @@ export function* doLogin(api, action) {
   const response = yield call(api.doLogin, data);
   LoadingHelper.hide();
 
-  if (response.ok) {
-    const {token, data} = response.data ? response.data : {};
+  if (response.ok && response.data && response.data.status) {
+    const {token} = response.data ? response.data : {};
     api.api.setHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -40,14 +39,12 @@ export function* doLogin(api, action) {
       yield put(AuthActions.doLoginSuccess(response.data)),
       yield put(SessionActions.saveUserHeaders(headers)),
       yield put(SessionActions.setLogin(true)),
-      yield put(SessionActions.saveUserData(data)),
-      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.selectBatch)),
     ]);
   } else {
     const message =
-      response.data && response.data.error
-        ? response.data.error
-        : 'Login Gagal';
+      response.data && response.data.message
+        ? response.data.message
+        : 'Gagal login, mohon periksa koneksi dan url Anda';
     Alert.alert('Peringatan', message);
     yield put(AuthActions.doLoginFailure(response));
   }

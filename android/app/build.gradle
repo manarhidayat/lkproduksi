@@ -93,13 +93,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.macid.lkproduksi"
+    namespace "com.macid.frozen"
     defaultConfig {
-        applicationId "com.macid.lkproduksi"
+        applicationId "com.macid.frozen"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3
         versionName "1.0.0"
+
     }
 
     splits {

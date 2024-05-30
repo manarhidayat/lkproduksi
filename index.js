@@ -10,7 +10,7 @@ import InitialStorage from './App/Modules/InitialStorage';
 
 import AppNavigation from './App/Navigation';
 
-AppRegistry.registerRunnable(appName, async initialProps => {
+AppRegistry.registerRunnable(appName, async (initialProps) => {
   try {
     await InitialStorage.init();
     AppRegistry.registerComponent(appName, () => AppNavigation);

@@ -9,22 +9,17 @@ import {connect} from 'react-redux';
 import {Colors} from '../Themes';
 import MainNavigation from '../Navigation/MainNavigation';
 import AuthNavigation from '../Navigation/AuthNavigation';
-import ApprovalNavigation from '../Navigation/ApprovalNavigation';
 import DropDownAlertContainer from './DropDownAlertContainer';
 
 class App extends PureComponent {
   navigation = React.createRef();
 
   render() {
-    const {isLogin, user} = this.props;
+    const {isLogin} = this.props;
     let rootNav = null;
 
-    if (isLogin && user) {
-      if (user.role === 'P') {
-        rootNav = <MainNavigation />;
-      } else {
-        rootNav = <ApprovalNavigation />;
-      }
+    if (isLogin) {
+      rootNav = <MainNavigation />;
     } else {
       rootNav = <AuthNavigation />;
     }

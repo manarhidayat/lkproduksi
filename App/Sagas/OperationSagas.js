@@ -12,155 +12,71 @@
 
 import {Alert} from 'react-native';
 import {call, put, all, select} from 'redux-saga/effects';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import NavigationServices from '../Navigation/NavigationServices';
 
 import OperationActions from '../Redux/OperationRedux';
 import SessionActions from '../Redux/SessionRedux';
+import LoadingHelper from '../Lib/LoadingHelper';
 
-export function* getListBatch(api, action) {
-  const {data} = action;
-  const response = yield call(api.getListBatch, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getListBatchSuccess(response.data));
-  } else {
-    yield put(OperationActions.getListBatchFailure(response));
-  }
-}
-
-export function* getListKitchen(api, action) {
-  const {data} = action;
-  const response = yield call(api.getListKitchen, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getListKitchenSuccess(response.data));
-  } else {
-    yield put(OperationActions.getListKitchenFailure(response));
-  }
-}
-
-export function* startOperation(api, action) {
-  const {data} = action;
-  const response = yield call(api.startOperation, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.startOperationSuccess(response.data));
-  } else {
-    yield put(OperationActions.startOperationFailure(response));
-  }
-}
-
-export function* stopOperation(api, action) {
+export function* postOperation(api, action) {
   const {data, callback} = action;
-  const response = yield call(api.stopOperation, data);
+  LoadingHelper.show();
+  const response = yield call(api.postOperation, data);
+  LoadingHelper.hide();
 
-  if (response.ok && response.data) {
-    yield put(OperationActions.stopOperationSuccess(response.data));
-    if (callback) {
-      callback();
-    }
-    if (!response.data.result) {
-      Alert.alert('Stop Proses Error', JSON.stringify(response.data));
-    }
-  } else {
-    yield put(OperationActions.stopOperationFailure(response));
-  }
-}
-
-export function* finishOperation(api, action) {
-  const {data} = action;
-  const response = yield call(api.finishOperation, data);
-
-  if (response.ok && response.data) {
-    yield all([
-      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.timeline)),
-      yield put(OperationActions.finishOperationSuccess(response.data)),
-    ]);
-    NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
-  } else {
-    yield all([
-      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.timeline)),
-    ]);
-    NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline);
-    yield put(OperationActions.finishOperationFailure(response));
-  }
-}
-
-export function* getListReason(api, action) {
-  const {data} = action;
-  const response = yield call(api.getListReason, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getListReasonSuccess(response.data));
-  } else {
-    yield put(OperationActions.getListReasonFailure(response));
-  }
-}
-
-export function* getListOperation(api, action) {
-  const {data} = action;
-  const response = yield call(api.getListOperation, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getListOperationSuccess(response.data));
-  } else {
-    yield put(OperationActions.getListOperationFailure(response));
-  }
-}
-
-export function* beginOperation(api, action) {
-  const {data} = action;
-  const response = yield call(api.beginOperation, data);
-
-  if (response.ok && response.data) {
-    // yield put(OperationActions.beginOperationSuccess(response.data));
-    yield all([
-      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.home)),
-      yield put(OperationActions.beginOperationSuccess(response.data)),
-    ]);
-    NavigationServices.navigate(NAVIGATION_NAME.PIC.home);
-  } else {
-    yield put(OperationActions.beginOperationFailure(response));
-  }
-}
-
-export function* getDetailBatch(api, action) {
-  const {data} = action;
-  const response = yield call(api.getDetailBatch, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getDetailBatchSuccess(response.data));
-  } else {
-    yield put(OperationActions.getDetailBatchFailure(response));
-  }
-}
-
-export function* getJumlahProduksi(api, action) {
-  const {data, callback} = action;
-  const response = yield call(api.getJumlahProduksi, data);
-
-  if (response.ok && response.data) {
-    yield put(OperationActions.getJumlahProduksiSuccess(response.data));
+  if (response.ok) {
+    yield put(OperationActions.postOperationSuccess(response.data));
     if (callback) {
       callback();
     }
   } else {
-    yield put(OperationActions.getJumlahProduksiFailure(response));
+    yield put(OperationActions.postOperationFailure(response));
   }
 }
 
-export function* updateBatch(api, action) {
+export function* getLocations(api, action) {
   const {data, callback} = action;
-  const response = yield call(api.updateBatch, data);
+  const response = yield call(api.getLocations, data);
 
   if (response.ok && response.data) {
-    yield put(OperationActions.updateBatchSuccess(response.data));
+    yield put(OperationActions.getLocationsSuccess(response.data.data));
     if (callback) {
       callback();
     }
   } else {
-    yield put(OperationActions.updateBatchFailure(response));
+    yield put(OperationActions.getLocationsFailure(response));
+  }
+}
+
+export function* getReports(api, action) {
+  const {data, callback} = action;
+  LoadingHelper.show();
+  const response = yield call(api.getReports, data);
+  LoadingHelper.hide();
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.getReportsSuccess(response.data.data));
+    if (callback) {
+      callback();
+    }
+  } else {
+    yield put(OperationActions.getReportsFailure(response));
+  }
+}
+
+export function* getSetupLoading(api, action) {
+  const {data, callback} = action;
+  LoadingHelper.show();
+  const response = yield call(api.getSetupLoading, data);
+  LoadingHelper.hide();
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.getSetupLoadingSuccess(response.data.data));
+    if (callback) {
+      callback();
+    }
+  } else {
+    yield put(OperationActions.getSetupLoadingFailure(response));
   }
 }

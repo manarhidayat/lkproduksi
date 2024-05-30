@@ -44,7 +44,6 @@ export const SessionSelectors = {
   selectHeader: (state) => state.session.headers,
   selectRole: (state) => state.session.role,
 
-  selectBatch: (state) => state.session.batch,
   selectKitchen: (state) => state.session.kitchen,
   selectTimer: (state) => state.session.timer,
   isLogin: (state) => state.session.isLogin,

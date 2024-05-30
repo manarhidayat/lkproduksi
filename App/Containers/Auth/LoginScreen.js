@@ -5,7 +5,11 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  Platform,
+  Alert,
+  Linking,
 } from 'react-native';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {connect} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -23,10 +27,9 @@ import Spacer from '../../Components/Spacer';
 import ModalSetupUrl from '../../Components/ModalSetupUrl';
 
 const schema = Yup.object().shape({
-  usernama: Yup.string()
-    .required('Mohon lengkapi Usernama Anda'),
+  usernama: Yup.string().required('Mohon lengkapi Usernama Anda'),
   password: Yup.string()
-    .min(6, 'Min 6 Karakter')
+    .min(2, 'Min 2 Karakter')
     .required('Mohon lengkapi Kata Sandi Anda'),
 });
 
@@ -48,6 +51,79 @@ class LoginScreen extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderForm = this.renderForm.bind(this);
+  }
+
+  componentDidMount() {
+    check(
+      Platform.select({
+        ios: PERMISSIONS.IOS.CAMERA,
+        android: PERMISSIONS.ANDROID.CAMERA,
+      })
+    ).then((result) => {
+      switch (result) {
+        case RESULTS.GRANTED: {
+          // granted
+          break;
+        }
+        case RESULTS.DENIED: {
+          setTimeout(() => {
+            request(
+              Platform.select({
+                ios: PERMISSIONS.IOS.CAMERA,
+                android: PERMISSIONS.ANDROID.CAMERA,
+              })
+            ).then((result2) => {
+              switch (result2) {
+                case RESULTS.GRANTED: {
+                  // granted
+                  break;
+                }
+                case RESULTS.DENIED:
+                case RESULTS.BLOCKED: {
+                  Alert.alert(
+                    'Permission denied',
+                    'you need to grant camera permission in the settings to continue',
+                    [
+                      {
+                        onPress: async () => {
+                          await Linking.openSettings();
+                        },
+                        text: 'ok',
+                        style: 'default',
+                      },
+                    ]
+                  );
+                  break;
+                }
+                default: {
+                  break;
+                }
+              }
+            });
+          }, 300);
+          break;
+        }
+        case RESULTS.BLOCKED: {
+          Alert.alert(
+            'Permission denied',
+            'you need to grant camera permission in the settings to continue',
+            [
+              {
+                onPress: async () => {
+                  await Linking.openSettings();
+                },
+                text: 'ok',
+                style: 'default',
+              },
+            ]
+          );
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    });
   }
 
   async handleSubmit(values) {
@@ -127,7 +203,7 @@ class LoginScreen extends Component {
                 fontSize: Fonts.size.regular,
                 fontFamily: Fonts.type.bold,
               }}>
-              LK Produksi by Mac-id
+              Mac Id Frozen
             </Text>
           </View>
           <Text
@@ -168,8 +244,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   loginRequest: (data) => dispatch(AuthActions.loginRequest(data)),
-  setLogin: (params) => dispatch(SessionActions.setLogin(params)),
-  setTypeBoarding: (params) => dispatch(SessionActions.setTypeBoarding(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

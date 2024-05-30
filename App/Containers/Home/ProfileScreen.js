@@ -30,27 +30,16 @@ class ProfileScreen extends Component {
     super(props);
     this.state = {};
     this.onPressLogout = this.onPressLogout.bind(this);
-    this.onChooseMachine = this.onChooseMachine.bind(this);
+    this.onChangePwd = this.onChangePwd.bind(this);
   }
 
-  onChooseMachine() {
-    const {activitiesNotUploaded} = this.props;
-    if (activitiesNotUploaded.length > 0) {
-      Alert.alert('Warning', 'Make sure all activites has uploaded');
-    } else {
-      NavigationServices.navigate(NAVIGATION_NAME.HOME.chooseMachine);
-    }
+  onChangePwd() {
+    NavigationServices.push(NAVIGATION_NAME.AUTH.changePassword);
   }
 
   onPressLogout() {
-    const {activitiesNotUploaded} = this.props;
-
-    if (activitiesNotUploaded.length > 0) {
-      Alert.alert('Warning', 'Make sure all activites has uploaded');
-    } else {
-      this.props.setLogin(false);
-      this.props.removeSession();
-    }
+    this.props.setLogin(false);
+    this.props.removeSession();
   }
 
   render() {
@@ -59,8 +48,8 @@ class ProfileScreen extends Component {
         <View style={styles.menu}>
           <Text>Profile</Text>
         </View>
-        <TouchableOpacity onPress={this.onChooseMachine} style={styles.menu}>
-          <Text>Choose Machine</Text>
+        <TouchableOpacity onPress={this.onChangePwd} style={styles.menu}>
+          <Text>Ganti Password</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={this.onPressLogout} style={styles.menu}>
           <Text style={{color: 'red'}}>Logout</Text>

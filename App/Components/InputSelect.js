@@ -43,7 +43,7 @@ class InputSelect extends Component {
 
   renderItem({item, index}) {
     const {selected} = this.state;
-    const {isInventory, code_name} = this.props;
+    const {isInventory, code_name, loc_desc} = this.props;
     let isSelected = selected.id === item.id;
 
     let name = item.name;
@@ -54,6 +54,11 @@ class InputSelect extends Component {
     if (code_name) {
       name = item.code_name;
       isSelected = selected.code_id === item.code_id;
+    }
+
+    if (loc_desc) {
+      name = item.loc_desc;
+      isSelected = selected.loc_id === item.loc_id;
     }
 
     return (
@@ -75,7 +80,8 @@ class InputSelect extends Component {
         list = data.filter((item) =>
           item.item_name.toLowerCase().includes(search.toLowerCase())
         );
-      } if (code_name) {
+      }
+      if (code_name) {
         list = data.filter((item) =>
           item.code_name.toLowerCase().includes(search.toLowerCase())
         );
@@ -158,7 +164,7 @@ class InputSelect extends Component {
     const showError = !!(error && error.length > 0);
 
     return (
-      <View style={[containerStyle, {marginBottom: 10,}]}>
+      <View style={[containerStyle, {marginBottom: 10}]}>
         {title ? (
           <Text style={[styles.label, {marginBottom: 5}]}>{title}</Text>
         ) : null}

@@ -1,47 +1,33 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {PureComponent} from 'react';
-import {TouchableOpacity, Text, View, Alert} from 'react-native';
+import {TouchableOpacity, View, Alert} from 'react-native';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import {NAVIGATION_NAME} from './NavigationName';
 
-import SelectBatchScreen from '../Containers/PIC/SelectBatchScreen';
-import FormBatchScreen from '../Containers/PIC/FormBatchScreen';
 import ChangePasswordScreen from '../Containers/Auth/ChangePasswordScreen';
-import HomeScreen from '../Containers/PIC/HomeScreen';
-import TimerScreen from '../Containers/PIC/TimerScreen';
-import TimelineScreen from '../Containers/PIC/TimelineScreen';
+import HomeScreen from '../Containers/Home/HomeScreen';
+import ReportScreen from '../Containers/Home/ReportScreen';
+import ScanScreen from '../Containers/Home/ScanScreen';
+import ProfileScreen from '../Containers/Home/ProfileScreen';
+import ChooseSetupLoadingScreen from '../Containers/Home/ChooseSetupLoadingScreen';
 
 import SessionActions, {SessionSelectors} from '../Redux/SessionRedux';
-import OperationActions from '../Redux/OperationRedux';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationServices from './NavigationServices';
+import Text from '../Components/Text';
 
 const Stack = createNativeStackNavigator();
 
 class MainNavigation extends PureComponent {
   render() {
-    const {boarding} = this.props;
-    let initialRouteName = NAVIGATION_NAME.PIC.selectBatch;
-    // if (boarding === TYPE_ONBOARDING.timer) {
-    //   initialRouteName = NAVIGATION_NAME.PIC.timer;
-    // }
-    if (boarding === TYPE_ONBOARDING.home) {
-      initialRouteName = NAVIGATION_NAME.PIC.home;
-    }
-    if (boarding === TYPE_ONBOARDING.timeline) {
-      initialRouteName = NAVIGATION_NAME.PIC.timeline;
-    }
-
-    // initialRouteName = NAVIGATION_NAME.PIC.home;
-
     return (
       <Stack.Navigator
-        initialRouteName={initialRouteName}
+        initialRouteName={NAVIGATION_NAME.HOME.home}
         screenOptions={{
           headerBackTitleVisible: false,
           headerTitleStyle: {
@@ -52,57 +38,6 @@ class MainNavigation extends PureComponent {
           freezeOnBlur: true,
         }}>
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.selectBatch}
-          component={SelectBatchScreen}
-          options={({route}) => {
-            const onPressLogout = route?.params?.onPressLogout;
-
-            return {
-              title: 'Pilih Batch & Kitchen',
-              headerRight: () => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      Alert.alert(
-                        'Peringatan',
-                        'Apakan Anda akan keluar aplikasi?',
-                        [
-                          {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                          },
-                          {
-                            text: 'OK',
-                            onPress: () => {
-                              this.props.setLogin(false);
-                              this.props.removeSession();
-                              this.props.removeOperations();
-                            },
-                          },
-                        ],
-                        {cancelable: false}
-                      );
-                    }}>
-                    <Icon name="logout" size={20} color={'red'} />
-                  </TouchableOpacity>
-                );
-              },
-            };
-          }}
-        />
-        <Stack.Screen
-          name={NAVIGATION_NAME.PIC.formBatch}
-          component={FormBatchScreen}
-          options={({route}) => {
-            const batch = route?.params?.batch;
-
-            return {
-              title: batch ? batch.woi_remarks : '',
-            };
-          }}
-        />
-        <Stack.Screen
           name={NAVIGATION_NAME.AUTH.changePassword}
           component={ChangePasswordScreen}
           options={({route}) => {
@@ -112,35 +47,36 @@ class MainNavigation extends PureComponent {
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.timer}
-          component={TimerScreen}
+          name={NAVIGATION_NAME.HOME.profile}
+          component={ProfileScreen}
           options={({route}) => {
-            const title = route?.params?.item
-              ? route?.params?.item.wc_desc
-              : '';
-            const hideBackButton = route?.params?.hideBackButton;
-
             return {
-              title: title,
-              headerLeft: () => (hideBackButton ? <View /> : undefined),
+              title: 'Profile',
             };
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.home}
+          name={NAVIGATION_NAME.HOME.setupLoading}
+          component={ChooseSetupLoadingScreen}
+          options={({route}) => {
+            return {
+              title: 'Pilih No. Penetepan',
+            };
+          }}
+        />
+        <Stack.Screen
+          name={NAVIGATION_NAME.HOME.home}
           component={HomeScreen}
           options={({route}) => {
             return {
-              title: 'Proses',
+              title: 'Home',
               headerRight: () => {
                 return (
                   <TouchableOpacity
                     onPress={() =>
-                      NavigationServices.push(
-                        NAVIGATION_NAME.AUTH.changePassword
-                      )
+                      NavigationServices.push(NAVIGATION_NAME.HOME.profile)
                     }>
-                    <Icon name="lock-reset" size={20} color={'black'} />
+                    <Icon name="account" size={20} color={'black'} />
                   </TouchableOpacity>
                 );
               },
@@ -149,9 +85,61 @@ class MainNavigation extends PureComponent {
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.timeline}
-          component={TimelineScreen}
-          options={{headerShown: false}}
+          name={NAVIGATION_NAME.HOME.reports}
+          component={ReportScreen}
+          options={({route}) => {
+            return {
+              title: 'Reports',
+            };
+          }}
+        />
+        <Stack.Screen
+          name={NAVIGATION_NAME.HOME.scan}
+          component={ScanScreen}
+          options={({route}) => {
+            const onPressCart = route?.params?.onPressCart;
+            const count = route?.params?.count;
+            const type = route?.params?.type;
+            let title = 'Preparing';
+            if (type === 'L') {
+              title = 'Loading';
+            }
+            if (type === 'D') {
+              title = 'Dissambling';
+            }
+            return {
+              title: 'Scan ' + title,
+              headerRight: () => {
+                return (
+                  <TouchableOpacity onPress={() => onPressCart()}>
+                    <Icon name="cart" size={20} color={'black'} />
+                    {count > 0 && (
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: 'red',
+                          borderRadius: 6,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          position: 'absolute',
+                          right: -10,
+                          bottom: -10,
+                        }}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontSize: 9,
+                            fontWeight: 'bold',
+                          }}>
+                          {count}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              },
+            };
+          }}
         />
       </Stack.Navigator>
     );
@@ -176,8 +164,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   setLogin: (params) => dispatch(SessionActions.setLogin(params)),
   removeSession: (params) => dispatch(SessionActions.removeSession(params)),
-  removeOperations: (params) =>
-    dispatch(OperationActions.removeOperations(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainNavigation);
