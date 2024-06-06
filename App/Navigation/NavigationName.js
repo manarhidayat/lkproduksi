@@ -5,6 +5,7 @@ export const NAVIGATION_NAME = {
     scan: 'home.scan',
     profile: 'home.profile',
     reports: 'home.reports',
+    detailReport: 'home.detailReport',
     setupLoading: 'home.setupLoading',
   },
   AUTH: {

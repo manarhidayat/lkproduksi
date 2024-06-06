@@ -78,7 +78,7 @@ class ChooseSetupLoadingScreen extends Component {
   }
 
   addToCart() {
-    const {addLoading} = this.props;
+    const {addLoading, removeAllLoading} = this.props;
     const {cartSelected} = this.state;
     if (cartSelected === null) {
       Alert.alert('Peringatan', 'Mohon pilih dulu no. penetapan');
@@ -87,13 +87,21 @@ class ChooseSetupLoadingScreen extends Component {
 
     const {detail} = cartSelected;
 
+    removeAllLoading();
+
     for (let i = 0; i < detail.length; i++) {
       if (detail[i].rifd_qr_code) {
-        const params = getDataQr(detail[i].rifd_qr_code);
+        const params = {
+          ...getDataQr(detail[i].rifd_qr_code),
+          rifd_oid: detail[i].rifd_oid,
+        };
         addLoading(params);
       }
     }
-    NavigationServices.replace(NAVIGATION_NAME.HOME.scan, {type: 'L'});
+    NavigationServices.replace(NAVIGATION_NAME.HOME.scan, {
+      type: 'L',
+      cartLoading: cartSelected,
+    });
   }
 
   handleSubmit(values) {
@@ -228,6 +236,7 @@ const mapDispatchToProps = (dispatch) => ({
   getSetupLoadingRequest: (data) =>
     dispatch(OperationActions.getSetupLoadingRequest(data)),
   addLoading: (data) => dispatch(OperationActions.addLoading(data)),
+  removeAllLoading: () => dispatch(OperationActions.removeAllLoading()),
 });
 
 const mapStateToProps = (state) => selector(state);

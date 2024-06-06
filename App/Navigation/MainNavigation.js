@@ -11,6 +11,7 @@ import {NAVIGATION_NAME} from './NavigationName';
 import ChangePasswordScreen from '../Containers/Auth/ChangePasswordScreen';
 import HomeScreen from '../Containers/Home/HomeScreen';
 import ReportScreen from '../Containers/Home/ReportScreen';
+import DetailReportScreen from '../Containers/Home/DetailReportScreen';
 import ScanScreen from '../Containers/Home/ScanScreen';
 import ProfileScreen from '../Containers/Home/ProfileScreen';
 import ChooseSetupLoadingScreen from '../Containers/Home/ChooseSetupLoadingScreen';
@@ -90,6 +91,15 @@ class MainNavigation extends PureComponent {
           options={({route}) => {
             return {
               title: 'Reports',
+            };
+          }}
+        />
+        <Stack.Screen
+          name={NAVIGATION_NAME.HOME.detailReport}
+          component={DetailReportScreen}
+          options={({route}) => {
+            return {
+              title: 'Detail Report',
             };
           }}
         />

@@ -73,9 +73,10 @@ const create = (baseURL = API_URL) => {
     api.post('/public/auth/changePassword', data);
 
   const postOperation = (data) => api.post('/save', data);
+  const postLoading = (data) => api.post('/save_loading', data);
 
   const getLocations = (data) => api.get('/get_location', data);
-  const getReports = (data) => api.get('/save', data);
+  const getReports = (data) => api.get('/get_report', data);
   const getSetupLoading = (data) => api.get('/get_penyiapan', data);
 
   // ------
@@ -96,6 +97,7 @@ const create = (baseURL = API_URL) => {
     changePassword,
 
     postOperation,
+    postLoading,
     getLocations,
     getReports,
     getSetupLoading,

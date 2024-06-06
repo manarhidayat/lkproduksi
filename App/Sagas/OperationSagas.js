@@ -28,10 +28,26 @@ export function* postOperation(api, action) {
   if (response.ok) {
     yield put(OperationActions.postOperationSuccess(response.data));
     if (callback) {
-      callback();
+      callback(response.data.status);
     }
   } else {
     yield put(OperationActions.postOperationFailure(response));
+  }
+}
+
+export function* postLoading(api, action) {
+  const {data, callback} = action;
+  LoadingHelper.show();
+  const response = yield call(api.postLoading, data);
+  LoadingHelper.hide();
+
+  if (response.ok) {
+    yield put(OperationActions.postLoadingSuccess(response.data));
+    if (callback) {
+      callback(response.data.status);
+    }
+  } else {
+    yield put(OperationActions.postLoadingFailure(response));
   }
 }
 

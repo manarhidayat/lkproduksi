@@ -11,7 +11,7 @@ export default class MyInput extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFocused: false
+      isFocused: false,
     };
   }
 
@@ -55,7 +55,11 @@ export default class MyInput extends Component {
         <View
           style={[
             styles.container,
-            {borderColor: this.state.isFocused ? Colors.primary : Colors.greyLight},
+            {
+              borderColor: this.state.isFocused
+                ? Colors.primary
+                : Colors.greyLight,
+            },
           ]}>
           {leftIcon !== undefined ? (
             <View style={{marginLeft: 15}}>{leftIcon}</View>
@@ -67,7 +71,11 @@ export default class MyInput extends Component {
               onFocus={() => this.setState({isFocused: true})}
               onBlur={() => this.setState({isFocused: false})}
               allowFontScaling={false}
-              style={[styles.input, style, {color: 'black'}]}
+              style={[
+                styles.input,
+                style,
+                {color: editable ? 'black' : 'grey'},
+              ]}
               ref={name}
               defaultValue={defaultValue}
               selectTextOnFocus={selectTextOnFocus}

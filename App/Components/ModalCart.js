@@ -18,6 +18,7 @@ import Text from './Text';
 
 import OperationActions, {OperationSelectors} from '../Redux/OperationRedux';
 import InputSelect from './InputSelect';
+import NavigationServices from '../Navigation/NavigationServices';
 
 const styles = StyleSheet.create({
   modalContainer: {},
@@ -100,7 +101,8 @@ class ModalCart extends PureComponent {
   }
 
   onSend() {
-    const {preparings, loadings, dissamblings, type, onScanMore} = this.props;
+    const {preparings, loadings, dissamblings, type, onScanMore, cartLoading} =
+      this.props;
     const {location} = this.state;
 
     if (!location.loc_id) {
@@ -126,18 +128,58 @@ class ModalCart extends PureComponent {
       });
     }
 
-    const params = {
+    let params = {
       type: type,
       rif_loc_to_id: location.loc_id,
       detail: data,
     };
 
-    this.setState({visible: false, isList: true}, () => {
-      this.props.postOperationRequest(params);
-      if (onScanMore) {
-        onScanMore();
-      }
-    });
+    if (type === 'L') {
+      params = {
+        rif_oid: cartLoading.rif_oid,
+        ...params,
+      };
+
+      this.setState({visible: false, isList: true}, () => {
+        this.props.postLoadingRequest(params, (status) => {
+          this.alert(status);
+        });
+      });
+    } else {
+      this.setState({visible: false, isList: true}, () => {
+        this.props.postOperationRequest(params, (status) => {
+          this.alert(status);
+        });
+      });
+    }
+  }
+
+  alert(status) {
+    const {onScanMore} = this.props;
+    if (status) {
+      Alert.alert(
+        'Simpan Cart Berhasil!',
+        'Apakah Anda akan men-scan lagi??',
+        [
+          {
+            text: 'Kembali ke Home',
+            onPress: () => NavigationServices.pop(),
+            style: 'cancel',
+          },
+          {
+            text: 'Scan Lagi',
+            onPress: () => {
+              if (onScanMore) {
+                onScanMore();
+              }
+            },
+          },
+        ],
+        {cancelable: false}
+      );
+    } else {
+      Alert.alert('Simpan Cart Gagal!');
+    }
   }
 
   onSave() {
@@ -216,11 +258,15 @@ class ModalCart extends PureComponent {
             <Text style={{fontWeight: 'bold'}}>: {item.pt_code}</Text>
             <Text style={{fontWeight: 'bold'}}>: {item.pt_desc1}</Text>
             <Text style={{fontWeight: 'bold'}}>: {item.batch}</Text>
-            <Text style={{fontWeight: 'bold'}}>: {item.pack}</Text>
+            <Text style={{fontWeight: 'bold'}}>
+              : {item.pcs} {item.pack}
+            </Text>
             <Text style={{fontWeight: 'bold'}}>: {item.loc_desc}</Text>
             <Text style={{fontWeight: 'bold'}}>: {item.in_date}</Text>
             <Text style={{fontWeight: 'bold'}}>: {item.exp_date}</Text>
-            <Text style={{fontWeight: 'bold'}}>: {item.qty}</Text>
+            <Text style={{fontWeight: 'bold'}}>
+              : {item.qty} {item.um}
+            </Text>
             <Text style={{fontWeight: 'bold'}}>: {item.catatan}</Text>
           </View>
         </View>
@@ -391,15 +437,21 @@ class ModalCart extends PureComponent {
                     <Text>Location</Text>
                     <Text>In Date</Text>
                     <Text>Expire Date</Text>
+                    <Text>Quantity</Text>
                   </View>
                   <View style={{}}>
                     <Text style={{fontWeight: 'bold'}}>: {qr.pt_code}</Text>
                     <Text style={{fontWeight: 'bold'}}>: {qr.pt_desc1}</Text>
                     <Text style={{fontWeight: 'bold'}}>: {qr.batch}</Text>
-                    <Text style={{fontWeight: 'bold'}}>: {qr.pack}</Text>
+                    <Text style={{fontWeight: 'bold'}}>
+                      : {qr.pcs} {qr.pack}
+                    </Text>
                     <Text style={{fontWeight: 'bold'}}>: {qr.loc_desc}</Text>
                     <Text style={{fontWeight: 'bold'}}>: {qr.in_date}</Text>
                     <Text style={{fontWeight: 'bold'}}>: {qr.exp_date}</Text>
+                    <Text style={{fontWeight: 'bold'}}>
+                      : {qr.qty} {qr.um}
+                    </Text>
                   </View>
                 </View>
                 <Input
@@ -467,8 +519,10 @@ const mapDispatchToProps = (dispatch) => ({
   deleteDissambling: (data) =>
     dispatch(OperationActions.deleteDissambling(data)),
 
-  postOperationRequest: (data) =>
-    dispatch(OperationActions.postOperationRequest(data)),
+  postOperationRequest: (data, callback) =>
+    dispatch(OperationActions.postOperationRequest(data, callback)),
+  postLoadingRequest: (data, callback) =>
+    dispatch(OperationActions.postLoadingRequest(data, callback)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalCart);

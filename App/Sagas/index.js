@@ -16,6 +16,7 @@ import {
   getLocations,
   getReports,
   getSetupLoading,
+  postLoading,
   postOperation,
 } from './OperationSagas';
 
@@ -36,6 +37,7 @@ export default function* root() {
     takeLatest(AuthTypes.CHANGE_PASSWORD_REQUEST, changePassword, api),
 
     takeLatest(OperationTypes.POST_OPERATION_REQUEST, postOperation, api),
+    takeLatest(OperationTypes.POST_LOADING_REQUEST, postLoading, api),
     takeLatest(OperationTypes.GET_LOCATIONS_REQUEST, getLocations, api),
     takeLatest(OperationTypes.GET_REPORTS_REQUEST, getReports, api),
     takeLatest(OperationTypes.GET_SETUP_LOADING_REQUEST, getSetupLoading, api),

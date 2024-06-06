@@ -48,9 +48,9 @@ class ProfileScreen extends Component {
         <View style={styles.menu}>
           <Text>Profile</Text>
         </View>
-        <TouchableOpacity onPress={this.onChangePwd} style={styles.menu}>
+        {/* <TouchableOpacity onPress={this.onChangePwd} style={styles.menu}>
           <Text>Ganti Password</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity onPress={this.onPressLogout} style={styles.menu}>
           <Text style={{color: 'red'}}>Logout</Text>
         </TouchableOpacity>

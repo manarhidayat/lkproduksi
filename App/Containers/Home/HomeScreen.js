@@ -59,6 +59,14 @@ class HomeScreen extends Component {
     const {user} = this.props;
     return (
       <SafeAreaView style={{flex: 1}}>
+        <TouchableOpacity
+          onPress={() =>
+            NavigationServices.push(NAVIGATION_NAME.HOME.reports, {})
+          }
+          style={styles.menu}>
+          {/* <Icon name="car-cruise-control" size={20} style={{marginRight: 10}} /> */}
+          <Text>Report</Text>
+        </TouchableOpacity>
         <View style={styles.header}>
           <Text>Pilih tipe: </Text>
         </View>

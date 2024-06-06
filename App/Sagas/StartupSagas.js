@@ -8,6 +8,7 @@ export function* startup(api) {
   if (isLogin) {
     const headers = yield select(SessionSelectors.selectHeader);
     if (headers && !headers.Authorization.includes('undefined')) {
+      console.tron.log('wew headers', headers);
       api.api.setHeaders({
         ...headers,
       });

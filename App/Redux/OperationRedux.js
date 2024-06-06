@@ -10,6 +10,7 @@ const {Types, Creators} = createActions({
   addLoading: ['data'],
   editLoading: ['data'],
   deleteLoading: ['data'],
+  removeAllLoading: ['data'],
   addDissambling: ['data'],
   editDissambling: ['data'],
   deleteDissambling: ['data'],
@@ -17,6 +18,10 @@ const {Types, Creators} = createActions({
   postOperationRequest: ['data', 'callback'],
   postOperationSuccess: ['payload'],
   postOperationFailure: ['error'],
+
+  postLoadingRequest: ['data', 'callback'],
+  postLoadingSuccess: ['payload'],
+  postLoadingFailure: ['error'],
 
   getLocationsRequest: ['data', 'callback'],
   getLocationsSuccess: ['payload'],
@@ -42,6 +47,7 @@ export const INITIAL_STATE = Immutable({
   dissamblings: [],
 
   postOperation: {fetching: false, data: null, error: null, payload: null},
+  postLoading: {fetching: false, data: null, error: null, payload: null},
 
   getReports: {fetching: false, data: null, error: null, payload: []},
   getLocations: {fetching: false, data: null, error: null, payload: []},
@@ -53,9 +59,14 @@ export const OperationSelectors = {
   getLoading: (state) => state.operation.loadings,
   getDissambling: (state) => state.operation.dissamblings,
 
-  getLocations: (state) => state.operation.getLocations.payload,
-  getReports: (state) => state.operation.getReports.payload,
-  getSetupLoading: (state) => state.operation.getSetupLoading.payload,
+  getLocations: (state) =>
+    state.operation.getLocations ? state.operation.getLocations.payload : [],
+  getReports: (state) =>
+    state.operation.getReports ? state.operation.getReports.payload : [],
+  getSetupLoading: (state) =>
+    state.operation.getSetupLoading
+      ? state.operation.getSetupLoading.payload
+      : [],
 };
 
 /* ------------- Reducers ------------- */
@@ -98,6 +109,9 @@ export const deleteLoading = (state, {data}) => {
   let loadings = state.loadings.filter((item) => item.rifd_qr_code !== data);
 
   return {...state, loadings};
+};
+export const removeAllLoading = (state, {data}) => {
+  return {...state, loadings: []};
 };
 
 export const addDissambling = (state, {data}) => {
@@ -152,6 +166,19 @@ export const postOperationSuccess = (state, {payload}) => {
 export const postOperationFailure = (state, {error}) => {
   return {...state, postOperation: {fetching: false, error}};
 };
+export const postLoadingRequest = (state, {data}) => {
+  return {...state, postLoading: {fetching: true, data}};
+};
+export const postLoadingSuccess = (state, {payload}) => {
+  return {
+    ...state,
+    loadings: [],
+    postLoading: {fetching: false, error: null, payload},
+  };
+};
+export const postLoadingFailure = (state, {error}) => {
+  return {...state, postLoading: {fetching: false, error}};
+};
 
 export const getLocationsRequest = (state, {data}) => {
   return {...state, getLocations: {fetching: true, data}};
@@ -202,6 +229,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.ADD_LOADING]: addLoading,
   [Types.EDIT_LOADING]: editLoading,
   [Types.DELETE_LOADING]: deleteLoading,
+  [Types.REMOVE_ALL_LOADING]: removeAllLoading,
 
   [Types.ADD_DISSAMBLING]: addDissambling,
   [Types.EDIT_DISSAMBLING]: editDissambling,
@@ -210,6 +238,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.POST_OPERATION_REQUEST]: postOperationRequest,
   [Types.POST_OPERATION_SUCCESS]: postOperationSuccess,
   [Types.POST_OPERATION_FAILURE]: postOperationFailure,
+
+  [Types.POST_LOADING_REQUEST]: postLoadingRequest,
+  [Types.POST_LOADING_SUCCESS]: postLoadingSuccess,
+  [Types.POST_LOADING_FAILURE]: postLoadingFailure,
 
   [Types.GET_LOCATIONS_REQUEST]: getLocationsRequest,
   [Types.GET_LOCATIONS_SUCCESS]: getLocationsSuccess,

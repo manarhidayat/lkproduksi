@@ -6,9 +6,8 @@ import sagaPlugin from 'reactotron-redux-saga';
 
 if (Config.useReactotron) {
   // https://github.com/infinitered/reactotron for more options!
-  Reactotron
-    // .configure({name: 'DMS', host: '192.168.1.3'})
-    .configure({name: 'DMS'})
+  Reactotron.configure({name: 'DMS', host: '192.168.1.13'})
+    // .configure({name: 'DMS'})
     .useReactNative()
     .use(reduxPlugin({onRestore: Immutable}))
     .use(sagaPlugin())

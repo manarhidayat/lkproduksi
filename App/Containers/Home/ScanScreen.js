@@ -105,8 +105,22 @@ class ScanScreen extends Component {
         editLoading(params);
         this.modalCart.show(params, true, true);
       } else {
-        const params = getDataQr(result);
-        this.modalCart.show(params, true);
+        // const params = getDataQr(result);
+        // this.modalCart.show(params, true);
+        Alert.alert(
+          'Peringatan',
+          'QR Code tidak ditemukan',
+          [
+            {
+              text: 'Ok',
+              onPress: () => {
+                this.hasScan = false;
+              },
+            },
+          ],
+          {cancelable: false}
+        );
+        return;
       }
     }
   };
@@ -114,10 +128,11 @@ class ScanScreen extends Component {
   render() {
     const {route} = this.props;
     const type = route.params.type;
+    const cartLoading = route.params.cartLoading;
 
     return (
       <SafeAreaView style={{flex: 1}}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             // const params = {
             //   pt_id: 266,
@@ -137,11 +152,12 @@ class ScanScreen extends Component {
             // };
             // this.modalCart.show(params, true);
             this.onSuccess(
-              '235_FZ0007_AYAM WHOLE 1,1-1,2 FZ_P240526008ML51b_1100_991403_KG_1100_991508_Ekor_100018_Frozen_26/05/2024_26/05/2024'
+              // '235_FZ0007_AYAM WHOLE 1,1-1,2 FZ_P240526008ML51b_1100 wew _991403_KG_1100_991508_Ekor_100018_Frozen_26/05/2024_26/05/2024'
+              '101387_FZ0414_BLP Pot. Dadu FZ_TMS_19_991403_KG_10_991556_EKOR_100033_Gudang K_10/04/2024_18/12/2025'
             );
           }}>
           <Text>Dummy scan</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <CodeScanner
           onBarCodeRead={(result) => {
             if (result && !this.hasScan) {
@@ -153,8 +169,12 @@ class ScanScreen extends Component {
         <ModalCart
           setRef={(r) => (this.modalCart = r)}
           type={type}
+          cartLoading={cartLoading}
           onHide={() => this.setCart()}
-          onScanMore={() => (this.hasScan = false)}
+          onScanMore={() => {
+            this.hasScan = false;
+            this.setCart();
+          }}
         />
       </SafeAreaView>
     );
