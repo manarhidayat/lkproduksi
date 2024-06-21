@@ -81,7 +81,7 @@ export function getDataQr(result) {
     if (i === 0) {
       params = {
         ...params,
-        pt_id: parseInt(words[0], 10),
+        pt_id: parseFloat(words[0], 10),
       };
     }
     if (i === 1) {
@@ -111,7 +111,7 @@ export function getDataQr(result) {
     if (i === 5) {
       params = {
         ...params,
-        um_id: parseInt(words[5], 10),
+        um_id: parseFloat(words[5], 10),
       };
     }
     if (i === 6) {
@@ -123,13 +123,13 @@ export function getDataQr(result) {
     if (i === 7) {
       params = {
         ...params,
-        pcs: parseInt(words[7], 10),
+        pcs: parseFloat(words[7], 10),
       };
     }
     if (i === 8) {
       params = {
         ...params,
-        pack_id: parseInt(words[8], 10),
+        pack_id: parseFloat(words[8], 10),
       };
     }
     if (i === 9) {
@@ -141,7 +141,7 @@ export function getDataQr(result) {
     if (i === 10) {
       params = {
         ...params,
-        loc_id: parseInt(words[10], 10),
+        loc_id: parseFloat(words[10], 10),
       };
     }
     if (i === 11) {
@@ -160,6 +160,18 @@ export function getDataQr(result) {
       params = {
         ...params,
         exp_date: words[13],
+      };
+    }
+    if (i === 14) {
+      params = {
+        ...params,
+        customer: words[14],
+      };
+    }
+    if (i === 15) {
+      params = {
+        ...params,
+        remark: words[15],
       };
     }
   }

@@ -64,6 +64,8 @@ class DetailReportScreen extends Component {
                   <Text>Expire Date</Text>
                   <Text>Qty</Text>
                   <Text>Notes</Text>
+                  <Text>Customer</Text>
+                  <Text>Remark</Text>
                 </View>
                 <View style={{}}>
                   <Text style={{fontWeight: 'bold'}}>: {item.pt_code}</Text>
@@ -79,6 +81,8 @@ class DetailReportScreen extends Component {
                     : {item.qty} {item.um}
                   </Text>
                   <Text style={{fontWeight: 'bold'}}>: {item.catatan}</Text>
+                  <Text style={{fontWeight: 'bold'}}>: {item.customer}</Text>
+                  <Text style={{fontWeight: 'bold'}}>: {item.remark}</Text>
                 </View>
               </View>
             );

@@ -170,6 +170,14 @@ class ReportScreen extends Component {
   renderItem({item}) {
     const {cartSelected} = this.state;
     const isSelected = cartSelected && cartSelected.pt_code === item.pt_code;
+    const {detail} = item;
+    let desc = '';
+    for (let i = 0; i < detail.length; i++) {
+      if (i !== 0) {
+        desc = desc + ', ';
+      }
+      desc = desc + detail[i].pt_desc1;
+    }
     return (
       <TouchableOpacity
         onPress={() =>
@@ -185,6 +193,7 @@ class ReportScreen extends Component {
         <Text>{item.pt_code}</Text>
         <Text>{item.rif_date}</Text>
         <Text>{item.rif_remarks}</Text>
+        <Text>Ket: {desc}</Text>
       </TouchableOpacity>
     );
   }

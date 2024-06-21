@@ -114,17 +114,17 @@ class ModalCart extends PureComponent {
 
     if (type === 'P') {
       data = preparings.map((item, index) => {
-        return {...item, qty: parseInt(item.qty, 10), rifd_seq: index + 1};
+        return {...item, qty: parseFloat(item.qty, 10), rifd_seq: index + 1};
       });
     }
     if (type === 'L') {
       data = loadings.map((item, index) => {
-        return {...item, qty: parseInt(item.qty, 10), rifd_seq: index + 1};
+        return {...item, qty: parseFloat(item.qty, 10), rifd_seq: index + 1};
       });
     }
     if (type === 'D') {
       data = dissamblings.map((item, index) => {
-        return {...item, qty: parseInt(item.qty, 10), rifd_seq: index + 1};
+        return {...item, qty: parseFloat(item.qty, 10), rifd_seq: index + 1};
       });
     }
 
@@ -253,6 +253,8 @@ class ModalCart extends PureComponent {
             <Text>Expire Date</Text>
             <Text>Qty</Text>
             <Text>Notes</Text>
+            <Text>Customer</Text>
+            <Text>Remark</Text>
           </View>
           <View style={{}}>
             <Text style={{fontWeight: 'bold'}}>: {item.pt_code}</Text>
@@ -268,6 +270,8 @@ class ModalCart extends PureComponent {
               : {item.qty} {item.um}
             </Text>
             <Text style={{fontWeight: 'bold'}}>: {item.catatan}</Text>
+            <Text style={{fontWeight: 'bold'}}>: {item.customer}</Text>
+            <Text style={{fontWeight: 'bold'}}>: {item.remark}</Text>
           </View>
         </View>
         <View
@@ -438,6 +442,8 @@ class ModalCart extends PureComponent {
                     <Text>In Date</Text>
                     <Text>Expire Date</Text>
                     <Text>Quantity</Text>
+                    <Text>Customer</Text>
+                    <Text>Remark</Text>
                   </View>
                   <View style={{}}>
                     <Text style={{fontWeight: 'bold'}}>: {qr.pt_code}</Text>
@@ -452,6 +458,8 @@ class ModalCart extends PureComponent {
                     <Text style={{fontWeight: 'bold'}}>
                       : {qr.qty} {qr.um}
                     </Text>
+                    <Text style={{fontWeight: 'bold'}}>: {qr.customer}</Text>
+                    <Text style={{fontWeight: 'bold'}}>: {qr.remark}</Text>
                   </View>
                 </View>
                 <Input
