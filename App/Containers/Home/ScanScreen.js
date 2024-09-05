@@ -170,7 +170,10 @@ class ScanScreen extends Component {
           setRef={(r) => (this.modalCart = r)}
           type={type}
           cartLoading={cartLoading}
-          onHide={() => this.setCart()}
+          onHide={() => {
+            this.hasScan = false;
+            this.setCart();
+          }}
           onScanMore={() => {
             this.hasScan = false;
             this.setCart();

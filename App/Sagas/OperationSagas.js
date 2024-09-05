@@ -28,7 +28,11 @@ export function* postOperation(api, action) {
   if (response.ok) {
     yield put(OperationActions.postOperationSuccess(response.data));
     if (callback) {
-      callback(response.data.status);
+      if (response.data.status) {
+        callback(response.data.status);
+      } else {
+        Alert.alert('', response.data.message);
+      }
     }
   } else {
     yield put(OperationActions.postOperationFailure(response));
