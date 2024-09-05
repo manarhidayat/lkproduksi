@@ -8,6 +8,7 @@ import AuthActions from '../Redux/AuthRedux';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import StoreHelper from '../Services/StoreHelper';
 import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
+import {Alert} from 'react-native';
 
 // our "constructor"
 const create = (baseURL = API_URL) => {
@@ -47,7 +48,11 @@ const create = (baseURL = API_URL) => {
           NavigationServices.dispatch(AuthActions.doLogOut());
           NavigationServices.push(NAVIGATION_NAME.AUTH.login);
         }
+      } else {
+        Alert.alert('server error / tidak bisa menghubungkan ke server');
       }
+    } else {
+      Alert.alert('server error / tidak bisa menghubungkan ke server');
     }
   });
 

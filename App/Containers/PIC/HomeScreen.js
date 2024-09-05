@@ -109,7 +109,9 @@ class HomeScreen extends Component {
     const finishing = operations[operations.length - 1];
 
     getJumlahProduksiRequest(batch.woi_oid, () => {
-      this.modalFinish.show();
+      setTimeout(() => {
+        this.modalFinish.show();
+      }, 500);
     });
   }
 

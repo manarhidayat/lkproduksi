@@ -13,6 +13,7 @@
 import {Alert} from 'react-native';
 import {call, put, all, select} from 'redux-saga/effects';
 import {TYPE_ONBOARDING} from '../Lib/Constans';
+import LoadingHelper from '../Lib/LoadingHelper';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import NavigationServices from '../Navigation/NavigationServices';
 
@@ -57,6 +58,7 @@ export function* stopOperation(api, action) {
   const response = yield call(api.stopOperation, data);
 
   if (response.ok && response.data) {
+    // Alert.alert('', JSON.stringify(response.data));
     yield put(OperationActions.stopOperationSuccess(response.data));
     if (callback) {
       callback();
@@ -71,7 +73,9 @@ export function* stopOperation(api, action) {
 
 export function* finishOperation(api, action) {
   const {data} = action;
+  LoadingHelper.show();
   const response = yield call(api.finishOperation, data);
+  LoadingHelper.hide();
 
   if (response.ok && response.data) {
     yield all([
@@ -140,7 +144,9 @@ export function* getDetailBatch(api, action) {
 
 export function* getJumlahProduksi(api, action) {
   const {data, callback} = action;
+  // LoadingHelper.show();
   const response = yield call(api.getJumlahProduksi, data);
+  // LoadingHelper.hide();
 
   if (response.ok && response.data) {
     yield put(OperationActions.getJumlahProduksiSuccess(response.data));
