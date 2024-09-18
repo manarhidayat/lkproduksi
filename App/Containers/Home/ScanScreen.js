@@ -83,7 +83,24 @@ class ScanScreen extends Component {
       }
 
       const params = getDataQr(result);
-      this.modalCart.show(params, true);
+      if (params.pt_id) {
+        this.modalCart.show(params, true);
+      } else {
+        Alert.alert(
+          'Peringatan',
+          'QR Code tidak ditemukan',
+          [
+            {
+              text: 'Ok',
+              onPress: () => {
+                this.hasScan = false;
+              },
+            },
+          ],
+          {cancelable: false}
+        );
+        return;
+      }
     }
     if (type === 'D' && dissamblings) {
       if (dissamblings.some((item) => item.rifd_qr_code === result)) {
@@ -92,7 +109,24 @@ class ScanScreen extends Component {
       }
 
       const params = getDataQr(result);
-      this.modalCart.show(params, true);
+      if (params.pt_id) {
+        this.modalCart.show(params, true);
+      } else {
+        Alert.alert(
+          'Peringatan',
+          'QR Code tidak ditemukan',
+          [
+            {
+              text: 'Ok',
+              onPress: () => {
+                this.hasScan = false;
+              },
+            },
+          ],
+          {cancelable: false}
+        );
+        return;
+      }
     }
     if (type === 'L' && loadings) {
       const loading = loadings.filter((item) => item.rifd_qr_code === result);

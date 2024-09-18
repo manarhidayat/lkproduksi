@@ -9,6 +9,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import packageJson from '../../../package.json';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {connect} from 'react-redux';
 import {Formik} from 'formik';
@@ -231,6 +232,12 @@ class LoginScreen extends Component {
           <Spacer width={10} />
           <Text>Setup URL</Text>
         </TouchableOpacity>
+
+        <View style={{position: 'absolute', bottom: 20, width: '100%'}}>
+          <Text style={{textAlign: 'center'}}>
+            version: {packageJson.version}
+          </Text>
+        </View>
 
         <ModalSetupUrl setRef={(r) => (this.modalSetupUrl = r)} />
       </SafeAreaView>

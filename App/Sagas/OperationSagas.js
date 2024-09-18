@@ -26,15 +26,17 @@ export function* postOperation(api, action) {
   LoadingHelper.hide();
 
   if (response.ok) {
-    yield put(OperationActions.postOperationSuccess(response.data));
     if (callback) {
       if (response.data.status) {
         callback(response.data.status);
+        yield put(OperationActions.postOperationSuccess(response.data));
       } else {
         Alert.alert('', response.data.message);
+        yield put(OperationActions.postOperationFailure(response));
       }
     }
   } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.postOperationFailure(response));
   }
 }
@@ -51,6 +53,7 @@ export function* postLoading(api, action) {
       callback(response.data.status);
     }
   } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.postLoadingFailure(response));
   }
 }
@@ -65,6 +68,7 @@ export function* getLocations(api, action) {
       callback();
     }
   } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.getLocationsFailure(response));
   }
 }
@@ -81,6 +85,7 @@ export function* getReports(api, action) {
       callback();
     }
   } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.getReportsFailure(response));
   }
 }
@@ -97,6 +102,7 @@ export function* getSetupLoading(api, action) {
       callback();
     }
   } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.getSetupLoadingFailure(response));
   }
 }

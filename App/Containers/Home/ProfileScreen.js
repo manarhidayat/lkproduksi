@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import packageJson from '../../../package.json';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
 
@@ -54,6 +55,11 @@ class ProfileScreen extends Component {
         <TouchableOpacity onPress={this.onPressLogout} style={styles.menu}>
           <Text style={{color: 'red'}}>Logout</Text>
         </TouchableOpacity>
+        <View style={{position: 'absolute', bottom: 20, width: '100%'}}>
+          <Text style={{textAlign: 'center'}}>
+            version: {packageJson.version}
+          </Text>
+        </View>
       </SafeAreaView>
     );
   }
