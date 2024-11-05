@@ -1,8 +1,16 @@
 import React, {Component} from 'react';
-import {StyleSheet, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Alert,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
-import {Colors, Images, Fonts} from '../../Themes';
+import {debounce} from 'throttle-debounce';
 import Text from '../../Components/Text';
 import CodeScanner from '../../Components/CodeScanner';
 import NavigationServices from '../../Navigation/NavigationServices';
@@ -10,6 +18,8 @@ import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import ModalCart from '../../Components/ModalCart';
 import OperationActions, {OperationSelectors} from '../../Redux/OperationRedux';
 import {getDataQr} from '../../Lib/Helper';
+import MyInput from '../../Components/Input';
+import {Colors} from '../../Themes';
 
 const styles = StyleSheet.create({});
 
@@ -19,18 +29,33 @@ class ScanScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      search: '',
+      isLoading: false,
+    };
 
     this.onPressCart = this.onPressCart.bind(this);
+    this.onSearch = debounce(1500, this.onSearch.bind(this));
   }
 
   componentDidMount() {
     this.props.getLocationsRequest();
     setTimeout(() => {
       this.setCart();
+      this.props.setListSearchEmpty([]);
 
       NavigationServices.setParams({onPressCart: this.onPressCart});
     }, 500);
+  }
+
+  onSearch() {
+    const {search} = this.state;
+    if (search.length > 4) {
+      this.setState({isLoading: true});
+      this.props.searchQRRequest({code: search}, () => {
+        this.setState({isLoading: false});
+      });
+    }
   }
 
   setCart() {
@@ -139,8 +164,6 @@ class ScanScreen extends Component {
         editLoading(params);
         this.modalCart.show(params, true, true);
       } else {
-        // const params = getDataQr(result);
-        // this.modalCart.show(params, true);
         Alert.alert(
           'Peringatan',
           'QR Code tidak ditemukan',
@@ -160,7 +183,8 @@ class ScanScreen extends Component {
   };
 
   render() {
-    const {route} = this.props;
+    const {route, resultSearch} = this.props;
+    const {search, isLoading} = this.state;
     const type = route.params.type;
     const cartLoading = route.params.cartLoading;
 
@@ -192,6 +216,59 @@ class ScanScreen extends Component {
           }}>
           <Text>Dummy scan</Text>
         </TouchableOpacity> */}
+        <View style={{padding: 10}}>
+          <MyInput
+            placeholder="Search Code"
+            name="search"
+            title="Search Code"
+            autoCapitalize={'characters'}
+            editable={true}
+            value={search}
+            setFieldValue={(key, value) => {
+              this.setState({search: value}, () => {
+                this.onSearch();
+              });
+            }}
+            setFieldTouched={() => {}}
+          />
+        </View>
+        {isLoading && <ActivityIndicator size="small" color={Colors.primary} />}
+        {search !== '' && (
+          <FlatList
+            // style={{marginBottom: -400}}
+            data={resultSearch ? resultSearch.slice(0, 5) : []}
+            ListEmptyComponent={() => {
+              return (
+                <View
+                  style={{
+                    height: 300,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text>Code tidak ditemukan</Text>
+                </View>
+              );
+            }}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: Colors.border,
+                    borderRadius: 10,
+                    marginBottom: 10,
+                  }}
+                  onPress={() => {
+                    this.onSuccess(item.invc_qr_code);
+                    // this.props.setListSearchEmpty([]);
+                  }}>
+                  <Text>CODE: {item.invc_serial}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        )}
         <CodeScanner
           onBarCodeRead={(result) => {
             if (result && !this.hasScan) {
@@ -222,11 +299,13 @@ const selector = createSelector(
     OperationSelectors.getPreparing,
     OperationSelectors.getLoading,
     OperationSelectors.getDissambling,
+    OperationSelectors.getSearchs,
   ],
-  (preparings, loadings, dissamblings) => ({
+  (preparings, loadings, dissamblings, resultSearch) => ({
     preparings,
     loadings,
     dissamblings,
+    resultSearch,
   })
 );
 
@@ -234,6 +313,10 @@ const mapDispatchToProps = (dispatch) => ({
   getLocationsRequest: (data) =>
     dispatch(OperationActions.getLocationsRequest(data)),
   editLoading: (data) => dispatch(OperationActions.editLoading(data)),
+  searchQRRequest: (data, callback) =>
+    dispatch(OperationActions.searchQRRequest(data, callback)),
+  setListSearchEmpty: (data) =>
+    dispatch(OperationActions.searchQRSuccess(data)),
 });
 
 const mapStateToProps = (state) => selector(state);

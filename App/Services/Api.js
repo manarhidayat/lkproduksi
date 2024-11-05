@@ -78,6 +78,7 @@ const create = (baseURL = API_URL) => {
   const getLocations = (data) => api.get('/get_location', data);
   const getReports = (data) => api.get('/get_report', data);
   const getSetupLoading = (data) => api.get('/get_penyiapan', data);
+  const searchQR = (data) => api.get('/search_qr', data);
 
   // ------
   // STEP 3
@@ -101,6 +102,7 @@ const create = (baseURL = API_URL) => {
     getLocations,
     getReports,
     getSetupLoading,
+    searchQR,
 
     api,
   };

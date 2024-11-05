@@ -34,6 +34,10 @@ const {Types, Creators} = createActions({
   getSetupLoadingRequest: ['data', 'callback'],
   getSetupLoadingSuccess: ['payload'],
   getSetupLoadingFailure: ['error'],
+
+  searchQRRequest: ['data', 'callback'],
+  searchQRSuccess: ['payload'],
+  searchQRFailure: ['error'],
 });
 
 export const OperationTypes = Types;
@@ -52,6 +56,7 @@ export const INITIAL_STATE = Immutable({
   getReports: {fetching: false, data: null, error: null, payload: []},
   getLocations: {fetching: false, data: null, error: null, payload: []},
   getSetupLoading: {fetching: false, data: null, error: null, payload: []},
+  searchQR: {fetching: false, data: null, error: null, payload: []},
 });
 
 export const OperationSelectors = {
@@ -67,6 +72,8 @@ export const OperationSelectors = {
     state.operation.getSetupLoading
       ? state.operation.getSetupLoading.payload
       : [],
+  getSearchs: (state) =>
+    state.operation.searchQR ? state.operation.searchQR.payload : [],
 };
 
 /* ------------- Reducers ------------- */
@@ -219,6 +226,19 @@ export const getSetupLoadingFailure = (state, {error}) => {
   return {...state, getSetupLoading: {fetching: false, error}};
 };
 
+export const searchQRRequest = (state, {data}) => {
+  return {...state, searchQR: {fetching: true, data}};
+};
+export const searchQRSuccess = (state, {payload}) => {
+  return {
+    ...state,
+    searchQR: {fetching: false, error: null, payload},
+  };
+};
+export const searchQRFailure = (state, {error}) => {
+  return {...state, searchQR: {fetching: false, error}};
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -254,4 +274,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_SETUP_LOADING_REQUEST]: getSetupLoadingRequest,
   [Types.GET_SETUP_LOADING_SUCCESS]: getSetupLoadingSuccess,
   [Types.GET_SETUP_LOADING_FAILURE]: getSetupLoadingFailure,
+
+  [Types.SEARCH_QR_REQUEST]: searchQRRequest,
+  [Types.SEARCH_QR_SUCCESS]: searchQRSuccess,
+  [Types.SEARCH_QR_FAILURE]: searchQRFailure,
 });

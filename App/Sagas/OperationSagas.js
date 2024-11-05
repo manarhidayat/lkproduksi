@@ -50,7 +50,7 @@ export function* postLoading(api, action) {
   if (response.ok) {
     yield put(OperationActions.postLoadingSuccess(response.data));
     if (callback) {
-      callback(response.data.status);
+      callback(response.data.status, response.data.message);
     }
   } else {
     Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
@@ -104,5 +104,22 @@ export function* getSetupLoading(api, action) {
   } else {
     Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
     yield put(OperationActions.getSetupLoadingFailure(response));
+  }
+}
+
+export function* searchQR(api, action) {
+  const {data, callback} = action;
+  // LoadingHelper.show();
+  const response = yield call(api.searchQR, data);
+  if (callback) {
+    callback();
+  }
+  // LoadingHelper.hide();
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.searchQRSuccess(response.data.data));
+  } else {
+    Alert.alert('', 'Penyimpanan gagal, periksa koneksi Anda');
+    yield put(OperationActions.searchQRFailure(response));
   }
 }

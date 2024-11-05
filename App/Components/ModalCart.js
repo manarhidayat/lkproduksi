@@ -141,20 +141,20 @@ class ModalCart extends PureComponent {
       };
 
       this.setState({visible: false, isList: true}, () => {
-        this.props.postLoadingRequest(params, (status) => {
-          this.alert(status);
+        this.props.postLoadingRequest(params, (status, message) => {
+          this.alert(status, message);
         });
       });
     } else {
       this.setState({visible: false, isList: true}, () => {
-        this.props.postOperationRequest(params, (status) => {
-          this.alert(status);
+        this.props.postOperationRequest(params, (status, message) => {
+          this.alert(status, message);
         });
       });
     }
   }
 
-  alert(status) {
+  alert(status, message) {
     const {onScanMore} = this.props;
     if (status) {
       Alert.alert(
@@ -178,7 +178,7 @@ class ModalCart extends PureComponent {
         {cancelable: false}
       );
     } else {
-      Alert.alert('Simpan Cart Gagal!');
+      Alert.alert('Simpan Cart Gagal!', message);
     }
   }
 

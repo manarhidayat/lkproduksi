@@ -18,6 +18,7 @@ import {
   getSetupLoading,
   postLoading,
   postOperation,
+  searchQR,
 } from './OperationSagas';
 
 /* ------------- API ------------- */
@@ -41,5 +42,6 @@ export default function* root() {
     takeLatest(OperationTypes.GET_LOCATIONS_REQUEST, getLocations, api),
     takeLatest(OperationTypes.GET_REPORTS_REQUEST, getReports, api),
     takeLatest(OperationTypes.GET_SETUP_LOADING_REQUEST, getSetupLoading, api),
+    takeLatest(OperationTypes.SEARCH_QR_REQUEST, searchQR, api),
   ]);
 }

@@ -192,6 +192,7 @@ class ChooseSetupLoadingScreen extends Component {
   render() {
     const {penetepan} = this.props;
     const {cartSelected} = this.state;
+
     return (
       <View style={{flex: 1, padding: 16}}>
         <Formik
