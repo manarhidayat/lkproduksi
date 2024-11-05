@@ -96,6 +96,9 @@ const create = (baseURL = API_URL) => {
   const approve = (data) => api.post('/public/progress/approve', data);
   const decline = (data) => api.post('/public/progress/decline', data);
 
+  const updateOperation = (data) =>
+    api.post('/public/progress/update_process', data);
+
   // ------
   // STEP 3
   // ------
@@ -132,6 +135,8 @@ const create = (baseURL = API_URL) => {
 
     approve,
     decline,
+
+    updateOperation,
 
     api,
   };

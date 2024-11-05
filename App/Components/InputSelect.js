@@ -43,7 +43,7 @@ class InputSelect extends Component {
 
   renderItem({item, index}) {
     const {selected} = this.state;
-    const {isInventory, code_name} = this.props;
+    const {isInventory, code_name, wc_desc} = this.props;
     let isSelected = selected.id === item.id;
 
     let name = item.name;
@@ -54,6 +54,11 @@ class InputSelect extends Component {
     if (code_name) {
       name = item.code_name;
       isSelected = selected.code_id === item.code_id;
+    }
+
+    if (wc_desc) {
+      name = item.wc_desc;
+      isSelected = selected.wc_oid === item.wc_oid;
     }
 
     return (
@@ -75,7 +80,8 @@ class InputSelect extends Component {
         list = data.filter((item) =>
           item.item_name.toLowerCase().includes(search.toLowerCase())
         );
-      } if (code_name) {
+      }
+      if (code_name) {
         list = data.filter((item) =>
           item.code_name.toLowerCase().includes(search.toLowerCase())
         );
@@ -153,12 +159,19 @@ class InputSelect extends Component {
   }
 
   render() {
-    const {title, value, error, containerStyle, placeholder, editable} =
-      this.props;
+    const {
+      title,
+      value,
+      error,
+      containerStyle,
+      placeholder,
+      editable,
+      textStyle,
+    } = this.props;
     const showError = !!(error && error.length > 0);
 
     return (
-      <View style={[containerStyle, {marginBottom: 10,}]}>
+      <View style={[containerStyle, {marginBottom: 10}]}>
         {title ? (
           <Text style={[styles.label, {marginBottom: 5}]}>{title}</Text>
         ) : null}
@@ -181,12 +194,15 @@ class InputSelect extends Component {
             </Text>
           ) : (
             <Text
-              style={{
-                marginLeft: 3,
-                color: 'black',
-                flexWrap: 'wrap',
-                flex: 1,
-              }}>
+              style={
+                ({
+                  marginLeft: 3,
+                  color: 'black',
+                  flexWrap: 'wrap',
+                  flex: 1,
+                },
+                textStyle)
+              }>
               {value}
             </Text>
           )}

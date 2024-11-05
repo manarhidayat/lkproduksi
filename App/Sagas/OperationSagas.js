@@ -187,3 +187,17 @@ export function* resetBatch(api, action) {
     yield put(OperationActions.resetBatchFailure(response));
   }
 }
+
+export function* updateOperation(api, action) {
+  const {data, callback} = action;
+  const response = yield call(api.updateOperation, data);
+
+  if (response.ok && response.data) {
+    yield put(OperationActions.updateOperationSuccess(response.data));
+    if (callback) {
+      callback();
+    }
+  } else {
+    yield put(OperationActions.updateOperationFailure(response));
+  }
+}

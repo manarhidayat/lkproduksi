@@ -24,6 +24,7 @@ import {NAVIGATION_NAME} from '../../Navigation/NavigationName';
 import {TYPE_ONBOARDING} from '../../Lib/Constans';
 import ModalMaterialNote from '../../Components/ModalMaterialNote';
 import ModalUpdateMaterial from '../../Components/ModalUpdateMaterial';
+import InputSelect from '../../Components/InputSelect';
 
 const styles = StyleSheet.create({
   row: {
@@ -83,11 +84,9 @@ class TimelineScreen extends Component {
   }
 
   componentDidMount() {
-    const {batch, getTimelineBatchRequest, getJumlahProduksiRequest} =
-      this.props;
     setTimeout(() => {
-      getJumlahProduksiRequest(batch.woi_oid);
-      getTimelineBatchRequest({woi_oid: batch.woi_oid});
+      this.getData();
+
       // getJumlahProduksiRequest('1823be9b-7fdc-4207-bb80-f7329f1ed173');
       // getTimelineBatchRequest({
       //   woi_oid: '1823be9b-7fdc-4207-bb80-f7329f1ed173',
@@ -101,6 +100,19 @@ class TimelineScreen extends Component {
         }
       });
     }, 100);
+  }
+
+  getData() {
+    const {batch, getTimelineBatchRequest, getJumlahProduksiRequest, route} =
+      this.props;
+    if (batch && batch.woi_oid) {
+      getJumlahProduksiRequest(batch.woi_oid);
+      getTimelineBatchRequest({woi_oid: batch.woi_oid});
+    } else {
+      const item = route.params.item;
+      getJumlahProduksiRequest(item.woi_oid);
+      getTimelineBatchRequest({woi_oid: item.woi_oid});
+    }
   }
 
   componentWillUnmount() {
@@ -134,7 +146,7 @@ class TimelineScreen extends Component {
   }
 
   renderItem(item, index) {
-    const {timeline} = this.props;
+    const {timeline, listOperation} = this.props;
     const startTime = item.wocpd_start_time;
     const endTime = item.wocpd_stop_time;
 
@@ -203,15 +215,41 @@ class TimelineScreen extends Component {
         </View>
         {/* RIGHT */}
         <View style={{flex: 4, alignItems: 'flex-end'}}>
-          <Text style={styles.title}>{item.wc_desc}</Text>
+          {!isLast ? (
+            // <TouchableOpacity>
+            //   <Text style={{color: Colors.primary}}>Edit Proses</Text>
+            // </TouchableOpacity>
+            <InputSelect
+              name="editProses"
+              placeholder="Edit Proses"
+              editable={true}
+              wc_desc
+              textStyle={styles.title}
+              data={listOperation}
+              containerStyle={{width: 140, marginRight: -20}}
+              value={item ? item.wc_desc : item}
+              onSelect={(itemProses) => {
+                this.props.updateOperationRequest(
+                  {
+                    wocpd_oid: item.wocpd_oid,
+                    wocpd_wc_id: itemProses.wc_id,
+                  },
+                  () => {
+                    this.getData();
+                  }
+                );
+              }}
+            />
+          ) : (
+            <Text style={styles.title}>{item.wc_desc}</Text>
+          )}
+
           <Spacer height={6} />
           {!isLast && (item.notes || item.materials.length > 0) ? (
             <TouchableOpacity onPress={() => this.modalMaterialNote.show(item)}>
               <Text style={{color: Colors.primary}}>Lihat Detail</Text>
             </TouchableOpacity>
-          ) : (
-            <View />
-          )}
+          ) : null}
           <Spacer height={6} />
           {/* {isLast && (
             <TouchableOpacity
@@ -295,7 +333,8 @@ class TimelineScreen extends Component {
                   detail.wocp_gas_start
                     ? parseInt(detail.wocp_gas_start, 10)
                     : '-'
-                )}
+                )}{' '}
+                n/m3
               </Text>
             </View>
             <View style={styles.flexDirection}>
@@ -305,7 +344,8 @@ class TimelineScreen extends Component {
                   detail.wocp_gas_stop
                     ? parseInt(detail.wocp_gas_stop, 10)
                     : '-'
-                )}
+                )}{' '}
+                n/M3
               </Text>
             </View>
             <View style={styles.flexDirection}>
@@ -316,7 +356,8 @@ class TimelineScreen extends Component {
                     (detail.wocp_gas_stop
                       ? parseInt(detail.wocp_gas_stop, 10)
                       : 0)
-                )}
+                )}{' '}
+                n/m3
               </Text>
             </View>
 
@@ -360,8 +401,9 @@ const selector = createSelector(
     DashboardSelectors.getTimeline,
     DashboardSelectors.getNotes,
     OperationSelectors.getDetailBatch,
+    OperationSelectors.getListOperation,
   ],
-  (operations, batch, batchRequest, detail, timeline, notes, detailBatch) => ({
+  (
     operations,
     batch,
     batchRequest,
@@ -369,6 +411,16 @@ const selector = createSelector(
     timeline,
     notes,
     detailBatch,
+    listOperation
+  ) => ({
+    operations,
+    batch,
+    batchRequest,
+    detail,
+    timeline,
+    notes,
+    detailBatch,
+    listOperation,
   })
 );
 
@@ -386,6 +438,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(OperationActions.updateBatchRequest(params)),
   getJumlahProduksiRequest: (params, callback) =>
     dispatch(OperationActions.getJumlahProduksiRequest(params, callback)),
+
+  updateOperationRequest: (params, callback) =>
+    dispatch(OperationActions.updateOperationRequest(params, callback)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineScreen);

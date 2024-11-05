@@ -310,7 +310,8 @@ class DetailApprovalScreen extends Component {
                   detail.wocp_gas_start
                     ? parseInt(detail.wocp_gas_start, 10)
                     : '-'
-                )}
+                )}{' '}
+                n/m3
               </Text>
             </View>
             <View style={styles.flexDirection}>
@@ -320,7 +321,8 @@ class DetailApprovalScreen extends Component {
                   detail.wocp_gas_stop
                     ? parseInt(detail.wocp_gas_stop, 10)
                     : '-'
-                )}
+                )}{' '}
+                n/M3
               </Text>
             </View>
             <View style={styles.flexDirection}>
@@ -331,7 +333,8 @@ class DetailApprovalScreen extends Component {
                     (detail.wocp_gas_stop
                       ? parseInt(detail.wocp_gas_stop, 10)
                       : 0)
-                )}
+                )}{' '}
+                n/m3
               </Text>
             </View>
 

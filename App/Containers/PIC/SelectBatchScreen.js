@@ -67,6 +67,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 6,
   },
+  btnLihat: {
+    borderColor: 'border',
+    borderWidth: 1,
+    paddingVertical: 4,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+  },
 });
 
 const schema = Yup.object().shape({
@@ -175,6 +182,10 @@ class SelectBatchScreen extends Component {
     );
   }
 
+  onPressLihat(item) {
+    NavigationServices.navigate(NAVIGATION_NAME.PIC.timeline, {item});
+  }
+
   renderEmpty() {
     return (
       <View style={styles.empty}>
@@ -222,11 +233,18 @@ class SelectBatchScreen extends Component {
                 </View>
                 {item.wocp_status === 'I' ||
                   (item.wocp_status === 'W' && (
-                    <TouchableOpacity
-                      style={styles.btnReset}
-                      onPress={() => this.onPressReset(item)}>
-                      <Text style={{color: 'red'}}>Reset</Text>
-                    </TouchableOpacity>
+                    <View style={{flexDirection: 'row'}}>
+                      <TouchableOpacity
+                        style={styles.btnLihat}
+                        onPress={() => this.onPressLihat(item)}>
+                        <Text>Lihat</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.btnReset}
+                        onPress={() => this.onPressReset(item)}>
+                        <Text style={{color: 'red'}}>Reset</Text>
+                      </TouchableOpacity>
+                    </View>
                   ))}
               </View>
             </>

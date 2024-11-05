@@ -65,6 +65,10 @@ const {Types, Creators} = createActions({
   resetBatchRequest: ['data', 'callback'],
   resetBatchSuccess: ['payload'],
   resetBatchFailure: ['error'],
+
+  updateOperationRequest: ['data', 'callback'],
+  updateOperationSuccess: ['payload'],
+  updateOperationFailure: ['error'],
 });
 
 export const OperationTypes = Types;
@@ -95,7 +99,9 @@ export const INITIAL_STATE = Immutable({
   getDetailBatch: {fetching: false, data: null, error: null, payload: null},
   getJumlahProduksi: {fetching: false, data: null, error: null, payload: null},
   updateBatch: {fetching: false, data: null, error: null, payload: null},
-  updateBatch: {fetching: false, data: null, error: null, payload: null},
+  resetBatch: {fetching: false, data: null, error: null, payload: null},
+
+  updateOperation: {fetching: false, data: null, error: null, payload: null},
 });
 
 export const OperationSelectors = {
@@ -419,6 +425,19 @@ export const resetBatchFailure = (state, {error}) => {
   return {...state, resetBatch: {fetching: false, error}};
 };
 
+export const updateOperationRequest = (state, {data}) => {
+  return {...state, updateOperation: {fetching: true, data}};
+};
+export const updateOperationSuccess = (state, {payload}) => {
+  return {
+    ...state,
+    updateOperation: {fetching: false, error: null, payload},
+  };
+};
+export const updateOperationFailure = (state, {error}) => {
+  return {...state, updateOperation: {fetching: false, error}};
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -481,4 +500,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.RESET_BATCH_REQUEST]: resetBatchRequest,
   [Types.RESET_BATCH_SUCCESS]: resetBatchSuccess,
   [Types.RESET_BATCH_FAILURE]: resetBatchFailure,
+
+  [Types.UPDATE_OPERATION_REQUEST]: updateOperationRequest,
+  [Types.UPDATE_OPERATION_SUCCESS]: updateOperationSuccess,
+  [Types.UPDATE_OPERATION_FAILURE]: updateOperationFailure,
 });

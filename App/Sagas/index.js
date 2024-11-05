@@ -27,6 +27,7 @@ import {
   getJumlahProduksi,
   updateBatch,
   resetBatch,
+  updateOperation,
 } from './OperationSagas';
 import {approve, decline} from './ApprovalSagas';
 import {getResumeBatch, getTimelineBatch} from './DashboardSagas';
@@ -68,6 +69,8 @@ export default function* root() {
     ),
     takeLatest(OperationTypes.UPDATE_BATCH_REQUEST, updateBatch, api),
     takeLatest(OperationTypes.RESET_BATCH_REQUEST, resetBatch, api),
+
+    takeLatest(OperationTypes.UPDATE_OPERATION_REQUEST, updateOperation, api),
 
     takeLatest(DashboardTypes.GET_RESUME_BATCH_REQUEST, getResumeBatch, api),
     takeLatest(

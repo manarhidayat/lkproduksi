@@ -95,7 +95,7 @@ android {
 
     namespace "com.macid.lkproduksi"
     defaultConfig {
-        applicationId "com.macid.lkproduksi"
+        applicationId "com.macid.lkproduksi3"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3
