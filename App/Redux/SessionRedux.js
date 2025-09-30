@@ -40,7 +40,6 @@ export const INITIAL_STATE = Immutable({
 
 export const SessionSelectors = {
   selectUser: (state) => state.session.user,
-  selectBoarding: (state) => state.session.boarding,
   selectHeader: (state) => state.session.headers,
   selectRole: (state) => state.session.role,
 

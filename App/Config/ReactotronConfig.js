@@ -6,15 +6,15 @@ import sagaPlugin from 'reactotron-redux-saga';
 
 if (Config.useReactotron) {
   // https://github.com/infinitered/reactotron for more options!
-  Reactotron
-    // .configure({name: 'DMS', host: '192.168.1.3'})
-    .configure({name: 'DMS'})
+  Reactotron.configure({name: 'DMS', host: '192.168.1.3'})
+    // .configure({name: 'DMS'})
     .useReactNative()
     .use(reduxPlugin({onRestore: Immutable}))
     .use(sagaPlugin())
     .connect();
 
   // Let's clear Reactotron on every time we load the app
+
   Reactotron.clear();
 
   // Totally hacky, but this allows you to not both importing reactotron-react-native

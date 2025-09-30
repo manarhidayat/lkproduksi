@@ -9,7 +9,6 @@ import {connect} from 'react-redux';
 import {Colors} from '../Themes';
 import MainNavigation from '../Navigation/MainNavigation';
 import AuthNavigation from '../Navigation/AuthNavigation';
-import ApprovalNavigation from '../Navigation/ApprovalNavigation';
 import DropDownAlertContainer from './DropDownAlertContainer';
 
 class App extends PureComponent {
@@ -17,15 +16,8 @@ class App extends PureComponent {
 
   render() {
     const {isLogin, user} = this.props;
-    let rootNav = null;
-
-    if (isLogin && user) {
-      if (user.role === 'P') {
-        rootNav = <MainNavigation />;
-      } else {
-        rootNav = <ApprovalNavigation />;
-      }
-    } else {
+    let rootNav = <MainNavigation />;
+    if (!isLogin) {
       rootNav = <AuthNavigation />;
     }
 
@@ -56,15 +48,10 @@ class App extends PureComponent {
 }
 
 const selector = createSelector(
-  [
-    SessionSelectors.isLogin,
-    SessionSelectors.selectBoarding,
-    SessionSelectors.selectUser,
-  ],
-  (isLogin, boarding, user) => {
+  [SessionSelectors.isLogin, SessionSelectors.selectUser],
+  (isLogin, user) => {
     return {
       isLogin,
-      boarding,
       user,
     };
   }

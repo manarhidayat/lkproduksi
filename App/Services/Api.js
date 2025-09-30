@@ -22,6 +22,7 @@ const create = (baseURL = API_URL) => {
   const url = MMKVStoragePersistHelper.getString('url');
   const api = apisauce.create({
     // base URL is read from the "constructor"
+    // baseURL: baseURL,
     baseURL: url,
     // here are some default headers
     headers: {
@@ -75,30 +76,30 @@ const create = (baseURL = API_URL) => {
   const changePassword = (data) =>
     api.post('/public/auth/changePassword', data);
 
-  const getListBatch = (data) => api.get('/public/batches', data);
-  const getListKitchen = (data) => api.get('/public/kitchens', data);
-  const startOperation = (data) => api.post('/public/progress/start', data);
-  const stopOperation = (data) => api.post('/public/progress/stop', data);
-  const finishOperation = (data) => api.post('/public/progress/end', data);
+  const getEntity = (data) => api.get('/public/common/entity', data);
+  const getBranch = (data) => api.get('/public/common/branch', data);
+  const getCustomer = (data) => api.get('/public/common/customer', data);
+  const createCheckseet = (data) => api.post('/public/checksheet/create', data);
+  const updateCheckseet = (data) => api.post('/public/checksheet/update', data);
+  const deleteCheckseet = (data) => api.post('/public/checksheet/delete', data);
 
-  const getListReason = (data) => api.get('/public/reasons', data);
-  const getListOperation = (data) => api.get('/public/process', data);
-  const beginOperation = (data) => api.post('/public/progress/begin', data);
-  const getDetailBatch = (data) => api.get(`/public/batches/${data.id}`, data);
-  const getJumlahProduksi = (id) => api.get(`/public/progress/result/${id}`);
-  const updateBatch = (data) => api.post('/public/progress/updateresult', data);
-  const resetBatch = (data) => api.get('/public/batch/reset/' + data, data);
-
-  const getResumeBatch = (data) => api.get('/public/dashboard/resume', data);
-  const getTimelineBatch = (data) =>
-    api.post('/public/dashboard/resume/detail', data);
-
-  const approve = (data) => api.post('/public/progress/approve', data);
-  const decline = (data) => api.post('/public/progress/decline', data);
-
-  const updateOperation = (data) =>
-    api.post('/public/progress/update_process', data);
-
+  const getBarang = (data) => api.get('/public/common/barang', data);
+  const getLocation = (data) => api.get('/public/common/location', data);
+  const getChecksheet = (data) => api.get('/public/checksheet', data);
+  const getChecksheetDetail = (data) =>
+    api.get(`/public/checksheet/detail/${data}`, data);
+  const createChecksheetDetail = (data) =>
+    api.post('/public/checksheet/create_detail', data);
+  const updateChecksheetDetail = (data) =>
+    api.post('/public/checksheet/update_detail', data);
+  const deleteChecksheetDetail = (data) =>
+    api.post('/public/checksheet/delete_detail', data);
+  const createChecksheetSerial = (data) =>
+    api.post('/public/checksheet/create_serial', data);
+  const updateChecksheetSerial = (data) =>
+    api.post('/public/checksheet/update_serial', data);
+  const deleteChecksheetSerial = (data) =>
+    api.post('/public/checksheet/delete_serial', data);
   // ------
   // STEP 3
   // ------
@@ -116,27 +117,22 @@ const create = (baseURL = API_URL) => {
     doLogin,
     changePassword,
 
-    getListBatch,
-    getListKitchen,
-    startOperation,
-    stopOperation,
-    finishOperation,
-
-    getListReason,
-    getListOperation,
-    beginOperation,
-    getDetailBatch,
-    getJumlahProduksi,
-    updateBatch,
-    resetBatch,
-
-    getResumeBatch,
-    getTimelineBatch,
-
-    approve,
-    decline,
-
-    updateOperation,
+    getEntity,
+    getBranch,
+    getCustomer,
+    createCheckseet,
+    updateCheckseet,
+    deleteCheckseet,
+    getBarang,
+    getLocation,
+    getChecksheet,
+    getChecksheetDetail,
+    createChecksheetDetail,
+    updateChecksheetDetail,
+    deleteChecksheetDetail,
+    createChecksheetSerial,
+    updateChecksheetSerial,
+    deleteChecksheetSerial,
 
     api,
   };

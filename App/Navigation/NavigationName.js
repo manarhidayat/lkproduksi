@@ -2,28 +2,18 @@ export const NAVIGATION_NAME = {
   APP: 'app',
   HOME: {
     home: 'home',
-    chooseMachine: 'home.chooseMachine',
-    profile: 'home.profile'
+    detailChecksheet: 'detailChecksheet',
+    addChecksheet: 'addChecksheet',
+    addListItem: 'addListItem',
+    addSerial: 'addSerial',
+    detailListItem: 'detailListItem',
   },
   AUTH: {
     login: 'auth.login',
-    changePassword: 'auth.changePassword'
+    changePassword: 'auth.changePassword',
   },
-
   OVERLAY: {
-    loading: 'overlay.loading'
-  },
-
-  PIC: {
-    selectBatch: 'pic.selectBatch',
-    formBatch: 'pic.formBatch',
-    timer: 'pic.timer',
-    home: 'pic.home',
-    timeline: 'pic.timeline',
-  },
-  APPROVAL: {
-    index: 'approval.index',
-    detail: 'approval.detail',
+    loading: 'overlay.loading',
   },
 };
 

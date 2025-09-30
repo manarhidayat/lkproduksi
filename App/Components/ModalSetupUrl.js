@@ -37,7 +37,7 @@ class ModalSetupUrl extends PureComponent {
     super(props);
     this.state = {
       visible: false,
-      url: ''
+      url: 'http://alumindo.ddnsfree.com:9999/api.checksheet/',
     };
 
     this.show = this.show.bind(this);
@@ -54,7 +54,8 @@ class ModalSetupUrl extends PureComponent {
     }
 
     const url = MMKVStoragePersistHelper.getString('url');
-    this.setState({url});
+    this.setState({url: url || this.state.url});
+    // this.setState({url: url});
   }
 
   onDone() {
@@ -74,7 +75,7 @@ class ModalSetupUrl extends PureComponent {
   handleSubmit(values) {
     MMKVStoragePersistHelper.setItem('url', values.url);
     this.setState({visible: false, url: values.url}, () => {
-      RNRestart.restart()
+      RNRestart.restart();
     });
   }
 

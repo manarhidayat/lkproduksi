@@ -23,10 +23,9 @@ import Spacer from '../../Components/Spacer';
 import ModalSetupUrl from '../../Components/ModalSetupUrl';
 
 const schema = Yup.object().shape({
-  usernama: Yup.string()
-    .required('Mohon lengkapi Usernama Anda'),
+  usernama: Yup.string().required('Mohon lengkapi Usernama Anda'),
   password: Yup.string()
-    .min(6, 'Min 6 Karakter')
+    // .min(6, 'Min 6 Karakter')
     .required('Mohon lengkapi Kata Sandi Anda'),
 });
 
@@ -127,7 +126,7 @@ class LoginScreen extends Component {
                 fontSize: Fonts.size.regular,
                 fontFamily: Fonts.type.bold,
               }}>
-              LK Produksi by Mac-id
+              LK Inventory by Mac-id
             </Text>
           </View>
           <Text

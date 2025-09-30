@@ -18,13 +18,21 @@ import SessionActions from '../Redux/SessionRedux';
 import NavigationServices from '../Navigation/NavigationServices';
 import {NAVIGATION_NAME} from '../Navigation/NavigationName';
 import LoadingHelper from '../Lib/LoadingHelper';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
 
 export function* doLogin(api, action) {
   const {data} = action;
 
   LoadingHelper.show();
   const response = yield call(api.doLogin, data);
+  // const response = {
+  //   ok: true,
+  //   data: {
+  //     data: {
+  //       usernama: 'Nama',
+  //     },
+  //     token: 'xxx',
+  //   },
+  // };
   LoadingHelper.hide();
 
   if (response.ok) {
@@ -41,7 +49,6 @@ export function* doLogin(api, action) {
       yield put(SessionActions.saveUserHeaders(headers)),
       yield put(SessionActions.setLogin(true)),
       yield put(SessionActions.saveUserData(data)),
-      yield put(SessionActions.setTypeBoarding(TYPE_ONBOARDING.selectBatch)),
     ]);
   } else {
     const message =

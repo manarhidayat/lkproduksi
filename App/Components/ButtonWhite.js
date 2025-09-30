@@ -4,6 +4,7 @@ import {TouchableOpacity} from 'react-native';
 import styles from './Styles/ButtonWhiteStyles';
 
 import Text from './Text';
+import {Colors} from '../Themes';
 
 export default class ButtonWhite extends PureComponent {
   render() {
@@ -14,7 +15,7 @@ export default class ButtonWhite extends PureComponent {
         style={[styles.button, style]}
         onPress={onPress}
         disabled={disabled}>
-        <Text style={[styles.buttonText, textStyle]}>
+        <Text style={[styles.buttonText, textStyle, {color: Colors.primary}]}>
           {text && text.toUpperCase()}
         </Text>
       </TouchableOpacity>

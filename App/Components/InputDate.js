@@ -61,7 +61,7 @@ class InputDate extends Component {
   }
 
   render() {
-    const {title, value, error, containerStyle, placeholder, editable} =
+    const {title, value, error, containerStyle, placeholder, editable, mode} =
       this.props;
     const showError = !!(error && error.length > 0);
 
@@ -70,9 +70,14 @@ class InputDate extends Component {
     ) : null;
 
     const isValid = value && value !== undefined && value !== '';
-    const text = isValid
-      ? Moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
-      : '';
+
+    let format = 'YYYY-MM-DD HH:mm';
+    if (mode === 'date') {
+      format = 'YYYY-MM-DD';
+    } else if (mode === 'time') {
+      format = 'HH:mm';
+    }
+    const text = isValid ? Moment(value).format(format) : '';
 
     return (
       <View style={containerStyle}>

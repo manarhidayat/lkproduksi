@@ -43,22 +43,26 @@ class InputSelect extends Component {
 
   renderItem({item, index}) {
     const {selected} = this.state;
-    const {isInventory, code_name, wc_desc} = this.props;
+    const {isEntity, isCustomer, isBarang, isLocation, isBranch} = this.props;
     let isSelected = selected.id === item.id;
 
     let name = item.name;
 
-    if (isInventory) {
-      name = item.item_name;
-    }
-    if (code_name) {
-      name = item.code_name;
-      isSelected = selected.code_id === item.code_id;
-    }
-
-    if (wc_desc) {
-      name = item.wc_desc;
-      isSelected = selected.wc_oid === item.wc_oid;
+    if (isEntity) {
+      name = item.en_desc;
+      isSelected = selected.en_id === item.en_id;
+    } else if (isCustomer) {
+      name = `Code: ${item.ptnr_code}\nSold To: ${item.ptnr_name}\nAddress: ${item.ptnra_line_1}`;
+      isSelected = selected.ptnr_oid === item.ptnr_oid;
+    } else if (isBarang) {
+      name = `Code: ${item.pt_code}\nDesc: ${item.pt_desc1}`;
+      isSelected = selected.pt_id === item.pt_id;
+    } else if (isLocation) {
+      name = item.loc_desc;
+      isSelected = selected.loc_oid === item.loc_oid;
+    } else if (isBranch) {
+      name = item.branch_name;
+      isSelected = selected.branch_id === item.branch_id;
     }
 
     return (
@@ -72,18 +76,42 @@ class InputSelect extends Component {
 
   renderData() {
     const {search} = this.state;
-    const {useSearch, data, isInventory, code_name} = this.props;
+    const {
+      useSearch,
+      data,
+      isEntity,
+      isCustomer,
+      isBarang,
+      isLocation,
+      isBranch,
+    } = this.props;
 
     let list = data;
     if (useSearch) {
-      if (isInventory) {
+      if (isEntity) {
         list = data.filter((item) =>
-          item.item_name.toLowerCase().includes(search.toLowerCase())
+          item.en_desc.toLowerCase().includes(search.toLowerCase())
         );
-      }
-      if (code_name) {
+      } else if (isCustomer) {
+        list = data.filter(
+          (item) =>
+            item.ptnr_name.toLowerCase().includes(search.toLowerCase()) ||
+            item.ptnr_code.toLowerCase().includes(search.toLowerCase()) ||
+            item.ptnra_line_1.toLowerCase().includes(search.toLowerCase())
+        );
+      } else if (isBarang) {
+        list = data.filter(
+          (item) =>
+            item.pt_code.toLowerCase().includes(search.toLowerCase()) ||
+            item.pt_desc1.toLowerCase().includes(search.toLowerCase())
+        );
+      } else if (isLocation) {
         list = data.filter((item) =>
-          item.code_name.toLowerCase().includes(search.toLowerCase())
+          item.loc_desc.toLowerCase().includes(search.toLowerCase())
+        );
+      } else if (isBranch) {
+        list = data.filter((item) =>
+          item.branch_name.toLowerCase().includes(search.toLowerCase())
         );
       } else {
         list = data.filter((item) =>

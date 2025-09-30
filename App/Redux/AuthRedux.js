@@ -10,7 +10,7 @@ const {Types, Creators} = createActions({
 
   changePasswordRequest: ['data'],
   changePasswordSuccess: ['payload'],
-  changePasswordFailure: ['error']
+  changePasswordFailure: ['error'],
 });
 
 export const AuthTypes = Types;
@@ -20,7 +20,7 @@ export default Creators;
 
 export const INITIAL_STATE = Immutable({
   doLogin: {fetching: false, data: null, error: null, payload: null},
-  changePassword: {fetching: false, data: null, error: null, payload: null}
+  changePassword: {fetching: false, data: null, error: null, payload: null},
 });
 
 /* ------------- Reducers ------------- */
@@ -37,7 +37,7 @@ export const changePasswordRequest = (state, {data}) =>
 export const changePasswordSuccess = (state, {payload}) =>
   state.merge({
     ...state,
-    changePassword: {fetching: false, error: null, payload}
+    changePassword: {fetching: false, error: null, payload},
   });
 export const changePasswordFailure = (state, {error}) =>
   state.merge({...state, changePassword: {fetching: false, error}});
@@ -51,5 +51,5 @@ export const reducer = createReducer(INITIAL_STATE, {
 
   [Types.CHANGE_PASSWORD_REQUEST]: changePasswordRequest,
   [Types.CHANGE_PASSWORD_SUCCESS]: changePasswordSuccess,
-  [Types.CHANGE_PASSWORD_FAILURE]: changePasswordFailure
+  [Types.CHANGE_PASSWORD_FAILURE]: changePasswordFailure,
 });

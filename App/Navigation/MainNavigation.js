@@ -6,38 +6,24 @@ import {createSelector} from 'reselect';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NAVIGATION_NAME} from './NavigationName';
 
-import SelectBatchScreen from '../Containers/PIC/SelectBatchScreen';
-import FormBatchScreen from '../Containers/PIC/FormBatchScreen';
-import ChangePasswordScreen from '../Containers/Auth/ChangePasswordScreen';
-import HomeScreen from '../Containers/PIC/HomeScreen';
-import TimerScreen from '../Containers/PIC/TimerScreen';
-import TimelineScreen from '../Containers/PIC/TimelineScreen';
+import InventoryScreen from '../Containers/Inventory/';
 
 import SessionActions, {SessionSelectors} from '../Redux/SessionRedux';
-import OperationActions from '../Redux/OperationRedux';
-import {TYPE_ONBOARDING} from '../Lib/Constans';
 import {ApplicationStyles, Colors} from '../Themes';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationServices from './NavigationServices';
+import DetailChecksheetScreen from '../Containers/Inventory/DetailChecksheetScreen';
+import AddChecksheetScreen from '../Containers/Inventory/AddChecksheetScreen';
+import AddListItemScreen from '../Containers/Inventory/AddListItemScreen';
+import DetailListItemScreen from '../Containers/Inventory/DetailListItemScreen';
+import AddSerialScreen from '../Containers/Inventory/AddSerialScreen';
 
 const Stack = createNativeStackNavigator();
 
 class MainNavigation extends PureComponent {
   render() {
-    const {boarding} = this.props;
-    let initialRouteName = NAVIGATION_NAME.PIC.selectBatch;
-    // if (boarding === TYPE_ONBOARDING.timer) {
-    //   initialRouteName = NAVIGATION_NAME.PIC.timer;
-    // }
-    if (boarding === TYPE_ONBOARDING.home) {
-      initialRouteName = NAVIGATION_NAME.PIC.home;
-    }
-    if (boarding === TYPE_ONBOARDING.timeline) {
-      initialRouteName = NAVIGATION_NAME.PIC.timeline;
-    }
-
-    // initialRouteName = NAVIGATION_NAME.PIC.home;
+    let initialRouteName = NAVIGATION_NAME.HOME.home;
 
     return (
       <Stack.Navigator
@@ -52,13 +38,12 @@ class MainNavigation extends PureComponent {
           freezeOnBlur: true,
         }}>
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.selectBatch}
-          component={SelectBatchScreen}
+          name={NAVIGATION_NAME.HOME.home}
+          component={InventoryScreen}
           options={({route}) => {
             const onPressLogout = route?.params?.onPressLogout;
-
             return {
-              title: 'Pilih Batch & Kitchen',
+              title: 'Entity',
               headerRight: () => {
                 return (
                   <TouchableOpacity
@@ -77,7 +62,6 @@ class MainNavigation extends PureComponent {
                             onPress: () => {
                               this.props.setLogin(false);
                               this.props.removeSession();
-                              this.props.removeOperations();
                             },
                           },
                         ],
@@ -88,70 +72,57 @@ class MainNavigation extends PureComponent {
                   </TouchableOpacity>
                 );
               },
+              // headerLeft: () => <View />,
             };
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.formBatch}
-          component={FormBatchScreen}
-          options={({route}) => {
-            const batch = route?.params?.batch;
-
-            return {
-              title: batch ? batch.woi_remarks : '',
-            };
-          }}
-        />
-        <Stack.Screen
-          name={NAVIGATION_NAME.AUTH.changePassword}
-          component={ChangePasswordScreen}
+          name={NAVIGATION_NAME.HOME.detailChecksheet}
+          component={DetailChecksheetScreen}
           options={({route}) => {
             return {
-              title: 'Ganti Password',
+              title: 'Detail Checksheet',
             };
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.timer}
-          component={TimerScreen}
+          name={NAVIGATION_NAME.HOME.addChecksheet}
+          component={AddChecksheetScreen}
           options={({route}) => {
-            const title = route?.params?.item
-              ? route?.params?.item.wc_desc
-              : '';
-            const hideBackButton = route?.params?.hideBackButton;
-
+            const isEdit = route?.params?.isEdit;
             return {
-              title: title,
-              headerLeft: () => (hideBackButton ? <View /> : undefined),
+              title: isEdit ? 'Edit Checksheet' : 'Add Checksheet',
             };
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.home}
-          component={HomeScreen}
+          name={NAVIGATION_NAME.HOME.addListItem}
+          component={AddListItemScreen}
+          options={({route}) => {
+            const isEdit = route?.params?.isEdit;
+            return {
+              title: isEdit ? 'Edit List Item' : 'Add List Item',
+            };
+          }}
+        />
+        <Stack.Screen
+          name={NAVIGATION_NAME.HOME.detailListItem}
+          component={DetailListItemScreen}
           options={({route}) => {
             return {
-              title: 'Proses',
-              headerRight: () => {
-                return (
-                  <TouchableOpacity
-                    onPress={() =>
-                      NavigationServices.push(
-                        NAVIGATION_NAME.AUTH.changePassword
-                      )
-                    }>
-                    <Icon name="lock-reset" size={20} color={'black'} />
-                  </TouchableOpacity>
-                );
-              },
-              headerLeft: () => <View />,
+              title: 'Detail List Item',
             };
           }}
         />
         <Stack.Screen
-          name={NAVIGATION_NAME.PIC.timeline}
-          component={TimelineScreen}
-          options={{headerShown: false}}
+          name={NAVIGATION_NAME.HOME.addSerial}
+          component={AddSerialScreen}
+          options={({route}) => {
+            const isEdit = route?.params?.isEdit;
+            return {
+              title: isEdit ? 'Edit Lot' : 'Add Lot',
+            };
+          }}
         />
       </Stack.Navigator>
     );
@@ -160,14 +131,11 @@ class MainNavigation extends PureComponent {
 
 // export default MainNavigation;
 
-const selector = createSelector(
-  [SessionSelectors.selectBoarding],
-  (boarding) => {
-    return {
-      boarding,
-    };
-  }
-);
+const selector = createSelector([SessionSelectors.selectUser], (user) => {
+  return {
+    user,
+  };
+});
 
 const mapStateToProps = (state) => {
   return selector(state);
@@ -176,8 +144,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   setLogin: (params) => dispatch(SessionActions.setLogin(params)),
   removeSession: (params) => dispatch(SessionActions.removeSession(params)),
-  removeOperations: (params) =>
-    dispatch(OperationActions.removeOperations(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainNavigation);

@@ -1,4 +1,4 @@
-import immutablePersistenceTransform from '../Services/ImmutablePersistenceTransform'
+import immutablePersistenceTransform from '../Services/ImmutablePersistenceTransform';
 import MMKVStoragePersistHelper from '../Lib/MMKVStoragePersistHelper';
 
 // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
@@ -12,9 +12,9 @@ const REDUX_PERSIST = {
     // blacklist: ['login', 'search', 'nav'],
     // Optionally, just specify the keys you DO want stored to persistence.
     // An empty array means 'don't store any reducers' -> infinitered/ignite#409
-    whitelist: ['session', 'operation'],
-    transforms: [immutablePersistenceTransform]
-  }
-}
+    whitelist: ['session'],
+    transforms: [immutablePersistenceTransform],
+  },
+};
 
-export default REDUX_PERSIST
+export default REDUX_PERSIST;

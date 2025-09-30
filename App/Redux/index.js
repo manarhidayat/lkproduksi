@@ -11,9 +11,7 @@ const resettable = resettableReducer('RESET');
 export const reducers = combineReducers({
   session: resettable(require('./SessionRedux').reducer),
   auth: resettable(require('./AuthRedux').reducer),
-  operation: resettable(require('./OperationRedux').reducer),
-  approval: resettable(require('./ApprovalRedux').reducer),
-  dashboard: resettable(require('./DashboardRedux').reducer),
+  inventory: resettable(require('./InventoryRedux').reducer),
 });
 
 export default () => {
